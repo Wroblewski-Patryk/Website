@@ -1,0 +1,7 @@
+RewriteEngine on
+
+Redirect 301 sendmsg.php https://wroblewskipatryk.pl/sendmsg
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.html [NC,L,QSA]

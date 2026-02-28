@@ -1,0 +1,103 @@
+@media screen and (orientation: landscape){
+  section#about{
+    #about-photo{
+      position: absolute;
+      left:0;
+      top:0;
+      display: block;
+      width:40%;
+      height: 100%;
+
+      padding: 20vh 5vh 10vh 30vh;
+      box-sizing: border-box;
+
+      &-container{
+        position: relative;
+        display: block;
+        width:100%;
+        height: 100%;
+
+        img{
+          position: absolute;
+          right: 0;
+          bottom: 1px;
+          display: block;
+          height: 100%;
+          width: auto;
+        }
+        canvas{
+          position: absolute;
+          right:0;
+          bottom:1px;
+          display: block;
+          min-height: 100%;
+          width: auto;
+        }
+        .photo-particle{
+          position: absolute;
+          left:0;
+          top:0;
+          display: block;
+          width:0;
+          height:0;
+
+          background-image: url('/img/portrait.png');
+          background-repeat: repeat;
+          background-position: 0 0;
+          background-size: 0 0;
+        }
+      }
+    }
+    #about-txt{
+      position: absolute;
+      right: 0;
+      top: 50%;
+
+      display: block;
+      width: 60%;
+      height: auto;
+
+      transform: translateY(-50%);
+
+      padding: 10vh 30vh 10vh 5vh;
+      box-sizing: border-box;
+
+      p{
+        position: relative;
+        left:0;
+        top:0;
+        display: block;
+        width:100%;
+        height: auto;
+
+        font-family: @font-family;
+        font-size: 3.5vh;
+        line-height: 5.2vh;
+        font-weight: @font-weight-regular;
+        color: @color-white;
+        text-align: left;
+        //text-align-last: center;
+        text-shadow: @color-purple 0.2vh 0.2vh 0;
+
+        span{
+          position: relative;
+          opacity: 0;
+        }
+
+        a{
+          color: @color-bamboo;
+          text-decoration: none;
+
+          transition: color @animation-time ease-in;
+
+          &:hover{
+            color: @color-white;
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (orientation: portrait){
+
+}

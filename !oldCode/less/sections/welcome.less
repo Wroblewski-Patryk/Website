@@ -1,0 +1,40 @@
+@media screen and (orientation: landscape){
+  section#welcome{
+    h1{
+      position: absolute;
+      left: 50%;
+      top: 39vh;
+      display: block;
+      width: 100vh;
+      height: auto;
+
+      margin-left: -50vh;
+
+      font-family: @font-family;
+      font-size: 7vh;
+      line-height: 11vh;
+      font-weight: @font-weight-regular;
+      color: @color-white;
+      text-align: center;
+      text-shadow: @color-purple 0.2vh 0.2vh 0;
+
+      opacity: 1;
+
+      perspective: 100000px;
+      span{
+        position: relative;
+        left: 0;
+        top: 0;
+
+        opacity: 0;
+
+        &.strong{
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+@media screen and (orientation: portrait){
+
+}

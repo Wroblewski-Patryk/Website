@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <title>Wróblewski Patryk | Front-End Developer</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="pl"/>
+
+    <meta name="Author" content="Wróblewski Patryk"/>
+    <meta name="Keywords" content="Patryk Wróblewski - Front-End Developer - HTML, JS, CSS">
+    <meta name="Description" content="">
+    <meta name="Copyright" content="Wróblewski Patryk"/>
+    <meta name="robots" content="all"/>
+
+    <link rel="stylesheet" href="./css/normalize.css">
+    <link rel="stylesheet" href="./css/styles.min.css">
+    <!--<link rel="canonical" href="https://wroblewskipatryk.pl"/>-->
+
+    <link href="https://fonts.googleapis.com/css?family=Titillium+Web:400,700&amp;subset=latin-ext" rel="stylesheet">
+
+    <!--<script async src="https://www.googletagmanager.com/gtag/js?id=UA-31458134-2"></script>-->
+    <!--<script>-->
+        <!--window.dataLayer = window.dataLayer || [];-->
+        <!--function gtag(){dataLayer.push(arguments);}-->
+        <!--gtag('js', new Date());-->
+        <!--gtag('config', 'UA-31458134-2');-->
+    <!--</script>-->
+
+    <script src="https://use.fontawesome.com/771acb85aa.js" defer></script>
+    <script src="./js/jquery.js"></script>
+    <script src="./js/gsap/TweenMax.min.js"></script>
+    <script src="./js/gsap/jquery.gsap.min.js"></script>
+    <script src="./js/validation/jquery.validate.min.js"></script>
+</head>
+<body>
+    <!--BACKGROUND-->
+    <div id="color"></div>
+    <div id="image"></div>
+    <div id="shadow"></div>
+    <div id="title"></div>
+    <div id="border">
+        <div></div><div></div><div></div>
+        <div id="border-left"></div>
+        <div id="border-main"></div>
+        <div id="border-right"></div>
+        <div></div><div></div><div></div>
+    </div>
+
+    <!--MAIN ELEMENTS-->
+<!--    <div id="lang">-->
+<!--        <a href="/" class="active">PL</a>-->
+<!--        <a href="/en/">EN</a>-->
+<!--    </div>-->
+    <nav>
+        <div id="nav-bg"></div>
+        <div id="hamburger"><span></span><span></span><span></span></div>
+        <ul>
+            <li>
+                <a href="/welcome">welcome</a>
+            </li>
+            <li>
+                <a href="/about">about</a>
+            </li>
+            <li>
+                <a href="/work">work</a>
+            </li>
+            <li>
+                <a href="/contact">contact</a>
+            </li>
+        </ul>
+    </nav>
+    <div id="info">
+        Use <img src="./img/mouse.png" alt="Mouse icon"/> or <img src="./img/arrows.png" alt="Keyboard icon"/> to move to another section.
+    </div>
+    <a id="logo" href="/">
+        <img src="./img/logo.png" alt="Logo"/>
+    </a>
+
+
+    <!--SECTIONS-->
+    <section id="welcome">
+        <h1>My name is <strong>Patryk Wróblewski</strong><br/>and I like to develop <strong>Front End</strong>.</h1>
+    </section>
+    <section id="about">
+        <div id="about-photo">
+            <div id="about-photo-container">
+                <img src="./img/portrait.png" alt="Portrait photo"/>
+                <canvas></canvas>
+            </div>
+        </div>
+        <div id="about-txt">
+            <p>I'm Patryk Wróblewski and I'm frontend developer. I spent most of my time working with marketing agencies.</p>
+            <p>I was involved in creating projects from the beginning to the end - from choosing the right hosting for the client, through cooperation with a graphic designer, to programming the application.</p>
+            <p>The greatest satisfaction comes from writing the frontend layer, which is finally seen and used by the demanding user.</p>
+        </div>
+    </section>
+    <section id="work">
+        <div id="work-portfolio">
+            <h2>Last projects:</h2>
+            <div class="projects">
+                <i class="fa fa-angle-left"></i>
+                <i class="fa fa-angle-right"></i>
+
+                <div class="project">
+                    <h3 class="project-title">adopciaki.pl <a href="https://adopciaki.pl" target="_blank"><i class="fa fa-external-link"></i></a></h3>
+                    <span class="project-date">20.06.2017r.</span>
+                    <div class="project-images">
+                        <img class="desktop" src="./img/portfolio/adopciaki-desktop.JPG" alt="Adopciaki widok desktopowy"/>
+                        <img class="mobile" src="./img/portfolio/adopciaki-mobile.JPG"/>
+                    </div>
+                    <p class="project-description">Portal for pet adoption. I was doing all frontend.</p>
+                </div>
+
+                <div class="project">
+                    <h3 class="project-title">sidio.pl <a href="https://sidio.pl" target="_blank"><i class="fa fa-external-link"></i></a></h3>
+                    <span class="project-date">20.06.2017r.</span>
+                    <div class="project-images">
+                        <img class="desktop" src="./img/portfolio/sidio-desktop.jpg"/>
+                        <img class="mobile" src="./img/portfolio/sidio-mobile.JPG"/>
+                    </div>
+                    <p class="project-description">Webpage for cybersecurity company.</p>
+                </div>
+
+                <div class="project">
+                    <h3 class="project-title">seryzgoliszewa.pl <a href="https://seryzgoliszewa.pl" target="_blank"><i class="fa fa-external-link"></i></a></h3>
+                    <span class="project-date">20.06.2017r.</span>
+                    <div class="project-images">
+                        <img class="desktop" src="./img/portfolio/seryzgoliszewa-desktop.JPG"/>
+                        <img class="mobile" src="./img/portfolio/seryzgoliszewa-mobile.JPG"/>
+                    </div>
+                    <p class="project-description">Storytelling webpage for cheese making company.</p>
+                </div>
+            </div>
+        </div>
+        <div id="work-species">
+            <h2>I'm using:</h2>
+            <ul>
+                <li><strong>HTML</strong> - structure</li>
+                <li><strong>CSS</strong> – styling - bootstrap, material</li>
+                <li><strong>JS</strong> – frontend - jQuery, GSAP, vue, react</li>
+                <li><strong>PHP</strong> – backend - WordPress, Blade(Laravel), Twig(Symfony)</li>
+                <li><strong>GRUNT, GULP</strong> - work automation - from LESS/SCSS to CSS, merge and minify files</li>
+                <li><strong>GIT</strong> – project versioning</li>
+                <li><strong>Vendor</strong> - managing dependencies - composer, npm</li>
+                <li><strong>Photoshop, Moqups, Miro</strong> – from project to code</li>
+                <li><strong>Nozbe, Trello, Basecamp, Jira</strong> - reporting of work progress</li>
+            </ul>
+        </div>
+    </section>
+    <section id="contact">
+        <div id="contact-data">
+            <div id="contact-data-intro">
+                <p>Feel free to contact with me by details attached below.</p>
+            </div>
+            <div id="contact-data-phone">
+                <i class="fa fa-phone"></i>
+                <a href="tel:+48-509-448-583">+48 509 448 583</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="tel:+41-795-298-290">+41 798 298 290</a>
+            </div>
+            <div id="contact-data-email">
+                <i class="fa fa-at"></i>
+                <a href="mailto:wroblewskipatryk@gmail.com">wroblewskipatryk@gmail.com</a>
+            </div>
+            <div id="contact-data-socials">
+                <a href="https://www.linkedin.com/in/wroblewskipatryk" target="_blank">
+                    <i class="fa fa-linkedin"></i>
+                </a>
+                <a href="https://github.com/Wroblewski-Patryk/" target="_blank">
+                    <i class="fa fa-github"></i>
+                </a>
+                <a href="https://bitbucket.org/WroblewskiPatryk/" target="_blank">
+                    <i class="fa fa-bitbucket"></i>
+                </a>
+                <a href="https://open.spotify.com/user/1177641604/playlist/2wjwnScOXqv2lug4TGtCmP" target="_blank">
+                    <i class="fa fa-spotify"></i>
+                </a>
+                <a href="https://www.instagram.com/patryk._.wroblewski/" target="_blank">
+                    <i class="fa fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+        <div id="contact-form">
+            <form action="#" method="POST">
+                <div class="form-row">
+                    <label for="name">Name</label>
+                    <input type="text" name="name" id="name" placeholder="e.g. John Snow"/>
+                </div>
+                <div class="form-row">
+                    <label for="email">E-mail address</label>
+                    <input type="email" name="email" id="email" placeholder="e.g. john.snow@domain.com"/>
+                </div>
+                <div class="form-row">
+                    <label for="message">Message</label>
+                    <textarea name="message" id="message" placeholder="Tell me more about your question."></textarea>
+                </div>
+                <div class="form-row">
+                    <button type="submit">Send</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <div id="useDesktop" class="portrait">
+        <div id="contact-data-temp">
+            <img src="./img/logo.png" alt="Logo"/>
+
+            <h1>Sorry, mobile version of webpage is under construction. <br/> Please use desktop to visit webpage.</h1>
+            <div id="contact-data-temp-phone">
+                <i class="fa fa-phone"></i>
+                <a href="tel:+48-509-448-583">+48 509 448 583</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="tel:+41-795-298-290">+41 798 298 290</a>
+            </div>
+            <div id="contact-data-temp-email">
+                <i class="fa fa-at"></i>
+                <a href="mailto:wroblewskipatryk@gmail.com">wroblewskipatryk@gmail.com</a>
+            </div>
+            <div id="contact-data-temp-socials">
+                <a href="https://www.linkedin.com/in/wroblewskipatryk" target="_blank">
+                    <i class="fa fa-linkedin"></i>
+                </a>
+                <a href="https://github.com/Wroblewski-Patryk/" target="_blank">
+                    <i class="fa fa-github"></i>
+                </a>
+                <a href="https://bitbucket.org/WroblewskiPatryk/" target="_blank">
+                    <i class="fa fa-bitbucket"></i> 
+                </a>
+                <a href="https://open.spotify.com/user/1177641604/playlist/2wjwnScOXqv2lug4TGtCmP" target="_blank">
+                    <i class="fa fa-spotify"></i>
+                </a>
+                <a href="https://www.instagram.com/patryk._.wroblewski/" target="_blank">
+                    <i class="fa fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/scripts.js"></script>
+    <script>
+        app.init();
+    </script>
+</body>
+</html>

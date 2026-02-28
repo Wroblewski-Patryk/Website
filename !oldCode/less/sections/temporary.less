@@ -1,0 +1,128 @@
+#useDesktop{
+  z-index: 10000;
+
+  position: absolute;
+  left:0;
+  top:0;
+
+  width:100%;
+  height:100%;
+
+  background-color: @color-blue;
+
+  #contact-data-temp{
+    position: absolute;
+    left:0;
+    top: 50%;
+    display: block;
+    width: 100%;
+    height:auto;
+
+    transform: translateY(-50%);
+
+    img{
+      display: block;
+      height: 5vh;
+      width: auto;
+      margin-bottom: 5vh;
+      margin-left: 50%;
+      transform: translateX(-50%);
+    }
+
+    h1{
+      display: block;
+      width:100%;
+      height:auto;
+
+      box-sizing: border-box;
+      margin-bottom: 5vh;
+      padding:1vh;
+
+      font-family: @font-family;
+      font-size: 3vh;
+      line-height: 5vh;
+      font-weight: @font-weight-regular;
+      color: @color-white;
+      text-align: center;
+      text-shadow: @color-purple 0.2vh 0.2vh 0;
+    }
+
+
+    &-phone,
+    &-email,
+    &-socials{
+      position: relative;
+      display: block;
+      width: 100%;
+      height: auto;
+
+      vertical-align: middle;
+      text-align: center;
+    }
+    &-phone,
+    &-email{
+      box-sizing: border-box;
+      //text-align: left;
+
+      i{
+        position: relative;
+        display: inline-block;
+        width: auto;
+        height: auto;
+
+        margin: 0 2.5vh 0 0;
+
+        font-size: 3vh;
+        line-height: 5vh;
+        color: @color-white;
+        text-shadow: @color-purple 0.2vh 0.2vh 0;
+      }
+      span,
+      a{
+        position: relative;
+        display: inline-block;
+
+        margin: 0 0 0 0;
+
+        text-align: center;
+
+        font-family: @font-family;
+        font-weight: @font-weight-regular;
+        color: @color-white;
+        font-size: 3vh;
+        line-height: 5vh;
+        text-decoration: none;
+        text-shadow: @color-purple 0.2vh 0.2vh 0;
+      }
+    }
+    &-email{
+      margin-bottom: 5vh;
+    }
+    &-socials {
+      position: relative;
+      display: block;
+      //bottom: 20vh;
+      //text-align: left;
+
+      a {
+        position: relative;
+        display: inline-block;
+        margin: 0 5vh 0 0;
+
+        i {
+          font-size: 4vh;
+          color: @color-white;
+
+          transition: transform @animation-time ease-in;
+          text-shadow: @color-purple 0.2vh 0.2vh 0;
+        }
+
+        &:hover {
+          i {
+            transform: scale(1.5);
+          }
+        }
+      }
+    }
+  }
+}
