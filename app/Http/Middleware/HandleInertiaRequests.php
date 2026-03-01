@@ -35,13 +35,29 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $header = \App\Models\Template::where('type', 'header')->where('is_active', true)->first();
-        $footer = \App\Models\Template::where('type', 'footer')->where('is_active', true)->first();
+        $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
+
+        $headerId = $settings['global_header_id'] ?? null;
+        $footerId = $settings['global_footer_id'] ?? null;
+
+        $header = $headerId
+            ?\App\Models\Template::find($headerId)
+            : \App\Models\Template::where('type', 'header')->where('is_active', true)->first();
+
+        $footer = $footerId
+            ?\App\Models\Template::find($footerId)
+            : \App\Models\Template::where('type', 'footer')->where('is_active', true)->first();
 
         return [
             ...parent::share($request),
             'header' => $header ? $header->content : null,
             'footer' => $footer ? $footer->content : null,
+            'site_settings' => [
+                'color_primary' => $settings['color_primary'] ?? '#000000',
+                'color_secondary' => $settings['color_secondary'] ?? '#ffffff',
+                'font_heading' => $settings['font_heading'] ?? 'Titillium Web',
+                'font_body' => $settings['font_body'] ?? 'Titillium Web',
+            ]
         ];
     }
 }

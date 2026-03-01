@@ -6,7 +6,7 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     $homeSlug = \App\Models\Setting::where('key', 'home_page_slug')->value('value') ?? 'home';
-    $page = Page::where('slug', $homeSlug)->first();
+    $page = Page::with(['headerOverride', 'footerOverride'])->where('slug', $homeSlug)->first();
 
     return Inertia::render('Welcome', [
     'page' => $page
@@ -41,7 +41,7 @@ Route::get('/{slug}', function ($slug) {
         return redirect('/');
     }
 
-    $page = Page::where('slug', $slug)->firstOrFail();
+    $page = Page::with(['headerOverride', 'footerOverride'])->where('slug', $slug)->firstOrFail();
 
     return Inertia::render('Welcome', [
     'page' => $page

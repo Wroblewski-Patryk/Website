@@ -10,13 +10,30 @@ class BlockBuilderHelper
     {
         return Forms\Components\Builder::make('content')
             ->columnSpanFull()
-            ->blocks([
+            ->blocks(self::getAllBlocks())
+            ->collapsible();
+    }
+
+    public static function getAllBlocks(): array
+    {
+        return [
+            // Structural
+            self::getColumnsBlock(),
+            self::getSectionBlock(),
+            self::getSpacingBlock(),
+
+            // Content
+            self::getHeadingBlock(),
+            self::getTextBlock(),
+            self::getImageBlock(),
+            self::getButtonBlock(),
+
+            // Legacy / Niche
             self::getNavBlock(),
             self::getHeroBlock(),
-            self::getTextBlock(),
             self::getPortfolioBlock(),
             self::getContactBlock(),
-        ]);
+        ];
     }
 
     private static function getNavBlock(): Forms\Components\Builder\Block
@@ -58,6 +75,114 @@ class BlockBuilderHelper
             Forms\Components\RichEditor::make('text')->required(),
             self::getAppearanceSchema(),
             self::getAnimationSchema(),
+        ]);
+    }
+
+    private static function getHeadingBlock(): Forms\Components\Builder\Block
+    {
+        return Forms\Components\Builder\Block::make('heading')
+            ->icon('heroicon-m-h1')
+            ->schema([
+            Forms\Components\TextInput::make('text')->required(),
+            Forms\Components\Select::make('level')
+            ->options([
+                'h1' => 'H1', 'h2' => 'H2', 'h3' => 'H3', 'h4' => 'H4', 'h5' => 'H5', 'h6' => 'H6'
+            ])->default('h2')->required(),
+            Forms\Components\Select::make('alignment')
+            ->options(['left' => 'Left', 'center' => 'Center', 'right' => 'Right'])
+            ->default('left'),
+            self::getAppearanceSchema(),
+            self::getAnimationSchema(),
+        ]);
+    }
+
+    private static function getImageBlock(): Forms\Components\Builder\Block
+    {
+        return Forms\Components\Builder\Block::make('image_block')
+            ->icon('heroicon-m-photo')
+            ->schema([
+            Forms\Components\FileUpload::make('image')->image()->required(),
+            Forms\Components\TextInput::make('alt_text'),
+            Forms\Components\Select::make('object_fit')
+            ->options(['cover' => 'Cover', 'contain' => 'Contain', 'fill' => 'Fill'])
+            ->default('cover'),
+            self::getAppearanceSchema(),
+            self::getAnimationSchema(),
+        ]);
+    }
+
+    private static function getButtonBlock(): Forms\Components\Builder\Block
+    {
+        return Forms\Components\Builder\Block::make('button_block')
+            ->icon('heroicon-m-cursor-arrow-rays')
+            ->schema([
+            Forms\Components\TextInput::make('label')->required(),
+            Forms\Components\TextInput::make('url')->url()->required(),
+            Forms\Components\Select::make('style')
+            ->options(['primary' => 'Primary', 'secondary' => 'Secondary', 'outline' => 'Outline'])
+            ->default('primary'),
+            Forms\Components\Select::make('alignment')
+            ->options(['left' => 'Left', 'center' => 'Center', 'right' => 'Right'])
+            ->default('left'),
+            self::getAppearanceSchema(),
+            self::getAnimationSchema(),
+        ]);
+    }
+
+    private static function getSpacingBlock(): Forms\Components\Builder\Block
+    {
+        return Forms\Components\Builder\Block::make('spacing_block')
+            ->icon('heroicon-m-arrows-up-down')
+            ->schema([
+            Forms\Components\TextInput::make('height')
+            ->label('Height (e.g. 50px, 4rem, 10vh)')
+            ->required()
+            ->default('50px'),
+            Forms\Components\Toggle::make('show_divider')->default(false),
+        ]);
+    }
+
+    private static function getColumnsBlock(): Forms\Components\Builder\Block
+    {
+        return Forms\Components\Builder\Block::make('grid_columns')
+            ->icon('heroicon-m-view-columns')
+            ->schema([
+            Forms\Components\Select::make('columns')
+            ->options(['1' => '1 Column', '2' => '2 Columns', '3' => '3 Columns', '4' => '4 Columns'])
+            ->default('2')->required(),
+            Forms\Components\Select::make('gap')
+            ->options(['none' => 'None', 'small' => 'Small', 'medium' => 'Medium', 'large' => 'Large'])
+            ->default('medium'),
+            Forms\Components\Builder::make('column_content')
+            ->label('Column Content Blocks')
+            ->blocks([
+                self::getHeadingBlock(),
+                self::getTextBlock(),
+                self::getImageBlock(),
+                self::getButtonBlock()
+            ]),
+            self::getAppearanceSchema(),
+        ]);
+    }
+
+    private static function getSectionBlock(): Forms\Components\Builder\Block
+    {
+        return Forms\Components\Builder\Block::make('section_wrapper')
+            ->icon('heroicon-m-stop')
+            ->label('Section (Container)')
+            ->schema([
+            Forms\Components\Toggle::make('full_width')->label('Full Width Background')->default(true),
+            Forms\Components\Builder::make('content')
+            ->label('Inside Section Content')
+            ->blocks([
+                self::getColumnsBlock(),
+                self::getHeadingBlock(),
+                self::getTextBlock(),
+                self::getImageBlock(),
+                self::getButtonBlock(),
+                self::getSpacingBlock()
+            ]),
+            self::getAppearanceSchema(),
         ]);
     }
 

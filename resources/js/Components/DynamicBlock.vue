@@ -57,7 +57,6 @@ onMounted(() => {
     const easing = data.easing || 'power2.out';
     const useScrollTrigger = data.scroll_trigger ?? true;
 
-    // Define from/to arguments based on animation type
     let vars = {
         duration,
         delay,
@@ -67,12 +66,11 @@ onMounted(() => {
     if (useScrollTrigger) {
         vars.scrollTrigger = {
             trigger: blockRef.value,
-            start: "top 85%", // adjust as needed
+            start: "top 85%",
             toggleActions: "play none none reverse",
         };
     }
 
-    // Set initial state based on type
     switch (animationType) {
         case 'fade':
             gsap.fromTo(blockRef.value, { opacity: 0 }, { opacity: 1, ...vars });
@@ -96,12 +94,48 @@ onMounted(() => {
 <template>
     <div 
         ref="blockRef" 
-        class="dynamic-block w-full"
+        class="dynamic-block w-full relative z-20"
         :class="customClasses"
         :style="appearance"
     >
-        <!-- Nav Block -->
-        <nav v-if="block.type === 'nav'" class="py-4 px-8 flex justify-between items-center z-50 relative">
+        <!-- Layout / Structural Blocks -->
+        <section v-if="block.type === 'section_wrapper'" class="w-full" :class="{'max-w-7xl mx-auto px-4': !block.data.full_width}">
+            <DynamicBlock v-for="(subBlock, idx) in block.data.content" :key="idx" :block="subBlock" />
+        </section>
+
+        <div v-else-if="block.type === 'grid_columns'" :class="['grid gap-' + (block.data.gap === 'none' ? '0' : (block.data.gap === 'small' ? '4' : (block.data.gap === 'large' ? '12' : '8'))), 'grid-cols-1', 'md:grid-cols-' + block.data.columns]">
+            <div v-for="(colBlock, idx) in block.data.column_content" :key="idx">
+                <DynamicBlock :block="colBlock" />
+            </div>
+        </div>
+
+        <div v-else-if="block.type === 'spacing_block'" :style="{ height: block.data.height }" class="w-full flex items-center justify-center">
+            <hr v-if="block.data.show_divider" class="w-1/2 border-white/20" />
+        </div>
+
+        <!-- Typography & Single Assets -->
+        <div v-else-if="block.type === 'heading'" :class="{'text-center': block.data.alignment === 'center', 'text-right': block.data.alignment === 'right', 'text-left': block.data.alignment === 'left'}">
+            <component :is="block.data.level || 'h2'" class="font-bold tracking-tight mb-4 uppercase" :class="{'text-6xl md:text-7xl': block.data.level === 'h1', 'text-4xl md:text-5xl': block.data.level === 'h2', 'text-3xl': block.data.level === 'h3', 'text-2xl': block.data.level === 'h4'}">
+                {{ block.data.text }}
+            </component>
+        </div>
+
+        <div v-else-if="block.type === 'image_block'" class="w-full flex" :class="{'justify-center': block.data.alignment === 'center', 'justify-end': block.data.alignment === 'right', 'justify-start': block.data.alignment === 'left'}">
+            <img :src="`/storage/${block.data.image}`" :alt="block.data.alt_text" class="w-full h-auto rounded-lg shadow-xl" :style="{ objectFit: block.data.object_fit || 'cover' }">
+        </div>
+
+        <div v-else-if="block.type === 'button_block'" class="flex" :class="{'justify-center': block.data.alignment === 'center', 'justify-end': block.data.alignment === 'right', 'justify-start': block.data.alignment === 'left'}">
+            <a :href="block.data.url" class="px-8 py-4 font-bold tracking-widest uppercase transition-colors" :class="{
+                'bg-white text-black hover:bg-gray-200': block.data.style === 'primary',
+                'bg-transparent border-2 border-white text-white hover:bg-white hover:text-black': block.data.style === 'outline',
+                'bg-gray-800 text-white hover:bg-gray-700': block.data.style === 'secondary'
+            }">
+                {{ block.data.label }}
+            </a>
+        </div>
+
+        <!-- Legacy / Specific Blocks -->
+        <nav v-else-if="block.type === 'nav'" class="py-4 px-8 flex justify-between items-center z-50 relative">
             <div class="text-2xl font-bold tracking-widest"><Link href="/">PORTFOLIO</Link></div>
             <ul class="flex gap-6">
                 <li v-for="(link, index) in block.data.links" :key="index">
@@ -110,19 +144,16 @@ onMounted(() => {
             </ul>
         </nav>
 
-        <!-- Hero Block -->
         <section v-else-if="block.type === 'hero'" class="py-32 flex flex-col items-center justify-center text-center relative z-20">
             <h1 class="text-6xl md:text-8xl font-black mb-6 uppercase tracking-tight">{{ block.data.heading }}</h1>
             <p v-if="block.data.subheading" class="text-2xl md:text-3xl font-light mb-12 max-w-3xl mx-auto">{{ block.data.subheading }}</p>
             <img v-if="block.data.image" :src="`/storage/${block.data.image}`" class="rounded-xl shadow-2xl max-w-4xl w-full object-cover">
         </section>
 
-        <!-- Text Content Block -->
-        <section v-else-if="block.type === 'text_content'" class="py-20 max-w-4xl mx-auto prose prose-xl dark:prose-invert relative z-20">
-            <div v-html="block.data.text" class="text-center md:text-left leading-relaxed"></div>
+        <section v-else-if="block.type === 'text_content'" class="py-20 max-w-3xl mx-auto prose prose-xl dark:prose-invert relative z-20">
+            <div v-html="block.data.text" class="leading-relaxed"></div>
         </section>
 
-        <!-- Portfolio Block (Work) -->
         <section v-else-if="block.type === 'portfolio_section'" class="py-20 max-w-7xl mx-auto px-4 relative z-20">
             <h2 v-if="block.data.section_title" class="text-4xl md:text-5xl font-bold mb-16 text-center uppercase">{{ block.data.section_title }}</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -135,7 +166,6 @@ onMounted(() => {
             </div>
         </section>
 
-        <!-- Contact Form Block -->
         <section v-else-if="block.type === 'contact_form'" class="py-24 max-w-2xl mx-auto relative z-20 px-4">
             <h2 class="text-4xl md:text-5xl font-bold mb-6 text-center uppercase tracking-wider">{{ block.data.heading || 'Contact' }}</h2>
             <p v-if="block.data.description" class="text-center mb-12 text-lg opacity-80">{{ block.data.description }}</p>
