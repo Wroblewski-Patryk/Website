@@ -178,8 +178,13 @@ const leftTab = ref('blocks');
 const formBlocks = ref([
     { type: 'form_input', label: 'Input', icon: 'fas fa-font' },
     { type: 'form_textarea', label: 'Textarea', icon: 'fas fa-align-justify' },
-    { type: 'form_select', label: 'Select', icon: 'fas fa-list' },
-    { type: 'form_submit', label: 'Submit Button', icon: 'fas fa-paper-plane' },
+    { type: 'image', label: 'Image', icon: 'fas fa-image' },
+    { type: 'button', label: 'Button', icon: 'fas fa-mouse-pointer' },
+    { type: 'portfolio', label: 'Portfolio', icon: 'fas fa-briefcase' },
+    { type: 'custom_code', label: 'Code', icon: 'fas fa-code' },
+    { type: 'contact_form', label: 'Form', icon: 'fas fa-envelope' },
+    { type: 'language_switcher', label: 'Lang', icon: 'fas fa-globe' },
+    { type: 'menu', label: 'Menu', icon: 'fas fa-bars' },
 ]);
 
 const layoutBlocks = ref([

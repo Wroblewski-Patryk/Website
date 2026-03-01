@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useGsapRuntime } from '@/Composables/useGsapRuntime';
 import { useForm, usePage } from '@inertiajs/vue3';
+import DynamicBlock from '@/Components/DynamicBlock.vue';
 
 const props = defineProps(['block']);
 const page = usePage();
@@ -15,210 +16,139 @@ const menuItems = computed(() => {
 const blockRef = ref(null);
 const { animateBlock } = useGsapRuntime();
 
-onMounted(() => {
-    if (props.block.appearance?.animations?.enabled) {
-        animateBlock(blockRef.value, props.block.appearance.animations);
+const initAnimations = () => {
+    if (props.block.settings?.animations?.enabled) {
+        animateBlock(blockRef.value, props.block.settings.animations);
     }
+};
+
+onMounted(() => {
+    initAnimations();
 });
 
+// Re-run animations if settings change in editor
+watch(() => props.block.settings?.animations, () => {
+    initAnimations();
+}, { deep: true });
+
 const styleObj = computed(() => {
+    const s = props.block.settings || {};
+    const l = s.layout || {};
     return {
-        backgroundColor: props.block.appearance?.backgroundColor !== 'transparent' ? props.block.appearance?.backgroundColor : undefined,
-        color: props.block.appearance?.textColor !== 'inherit' ? props.block.appearance?.textColor : undefined,
-        paddingTop: props.block.appearance?.paddingTop,
-        paddingBottom: props.block.appearance?.paddingBottom,
-        marginTop: props.block.appearance?.marginTop,
-        marginBottom: props.block.appearance?.marginBottom,
-        fontSize: props.block.appearance?.fontSize,
-        fontWeight: props.block.appearance?.fontWeight,
-        textAlign: props.block.appearance?.textAlign,
-        borderRadius: props.block.appearance?.borderRadius,
-        borderWidth: props.block.appearance?.borderWidth,
-        borderStyle: props.block.appearance?.borderWidth ? 'solid' : undefined,
-        borderColor: props.block.appearance?.borderColor,
-        boxShadow: props.block.appearance?.boxShadow,
+        minHeight: l.fullHeight ? '100vh' : undefined,
+        backgroundAttachment: l.fixedBg ? 'fixed' : undefined,
     };
+});
+
+const submitContact = () => {
+    // Basic implementation for the contact form block
+    console.log("Contact form submitted");
+};
+
+const contactForm = useForm({
+    name: '',
+    email: '',
+    message: '',
+    website: '' // honeypot
 });
 </script>
 
 <template>
     <div ref="blockRef" 
-         :id="block.appearance?.elementId"
-         :class="[block.appearance?.elementClass, block.appearance?.customClasses]" 
-         :style="styleObj">
-        <!-- Section Block (Layout Wrapper) -->
-        <div v-if="block.type === 'section'" 
-             :class="[
-                'w-full py-1 transition-all duration-700',
-                block.content?.width === 'boxed' ? 'max-w-7xl mx-auto px-6' : 'px-0',
-                block.content?.bg_color || ''
-             ]"
-             :style="{ 
-                backgroundImage: block.content?.bg_image ? `url(${block.content.bg_image})` : 'none',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundColor: block.appearance?.backgroundColor || 'transparent',
-                paddingTop: block.appearance?.paddingTop || '3rem',
-                paddingBottom: block.appearance?.paddingBottom || '3rem'
-             }">
+         :id="block.settings?.id"
+         :class="[block.settings?.class, block.settings?.layout?.padding]" 
+         :style="styleObj"
+         class="transition-all duration-500">
+        
+        <!-- Section Block -->
+        <div v-if="block.type === 'section'" class="w-full">
             <div class="space-y-4">
                 <DynamicBlock v-for="child in block.children" :key="child.id" :block="child" />
             </div>
         </div>
 
-        <!-- Button Block -->
-        <div v-else-if="block.type === 'button'" class="py-4" :style="{ textAlign: block.content.align || 'left' }">
-            <a :href="block.content.url || '#'" 
-               :target="block.content.newTab ? '_blank' : '_self'"
-               :class="[
-                    'btn shadow-lg transition-all hover:scale-105 active:scale-95',
-                    block.content.style === 'secondary' ? 'btn-secondary' : 'btn-primary',
-                    block.content.size === 'lg' ? 'btn-lg' : (block.content.size === 'sm' ? 'btn-sm' : '')
-               ]">
-                {{ block.content.label || 'Click Here' }}
-            </a>
-        </div>
-
-        <!-- Contact Form Block -->
-        <div v-else-if="block.type === 'contact_form'" class="max-w-xl mx-auto p-8 bg-base-100 rounded-3xl shadow-2xl border border-white/5">
-            <h3 class="text-2xl font-bold mb-6 text-primary">{{ block.content.title || 'Contact Us' }}</h3>
-            <form @submit.prevent="submitContact" class="space-y-4">
-                <!-- Honeypot -->
-                <div class="hidden">
-                    <input type="text" v-model="contactForm.website" tabindex="-1" autocomplete="off" />
-                </div>
-
-                <div class="form-control">
-                    <input type="text" v-model="contactForm.name" placeholder="Your Name" class="input input-bordered w-full" :class="{ 'input-error': contactForm.errors.name }" required />
-                    <div v-if="contactForm.errors.name" class="text-error text-sm mt-1">{{ contactForm.errors.name }}</div>
-                </div>
-                <div class="form-control">
-                    <input type="email" v-model="contactForm.email" placeholder="Your Email" class="input input-bordered w-full" :class="{ 'input-error': contactForm.errors.email }" required />
-                    <div v-if="contactForm.errors.email" class="text-error text-sm mt-1">{{ contactForm.errors.email }}</div>
-                </div>
-                <div class="form-control">
-                    <textarea v-model="contactForm.message" placeholder="How can we help?" class="textarea textarea-bordered h-32 w-full" :class="{ 'textarea-error': contactForm.errors.message }" required></textarea>
-                    <div v-if="contactForm.errors.message" class="text-error text-sm mt-1">{{ contactForm.errors.message }}</div>
-                </div>
-                
-                <button type="submit" class="btn btn-primary w-full shadow-lg shadow-primary/20" :disabled="contactForm.processing">
-                    <span v-if="contactForm.processing" class="loading loading-spinner"></span>
-                    {{ block.content?.button_text || 'Send Message' }}
-                </button>
-
-                <div v-if="contactForm.wasSuccessful" class="alert alert-success mt-4">
-                    {{ block.content?.success_message || 'Thank you! Message sent.' }}
-                </div>
-            </form>
-        </div>
-
-        <!-- Hero Block -->
-        <div v-else-if="block.type === 'hero'" 
-             class="relative py-32 px-10 text-center overflow-hidden"
-             :style="{
-                backgroundImage: block.content.bgImage ? `url(/storage/${block.content.bgImage})` : 'none',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-             }">
-            <div v-if="block.content.bgImage" class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
-            <div class="relative z-10">
-                <h1 class="text-6xl font-black mb-6 tracking-tight text-white drop-shadow-2xl italic">{{ block.content.headline || 'Your Premium Headline' }}</h1>
-                <p class="text-xl mb-10 text-white/90 max-w-2xl mx-auto drop-shadow-md">{{ block.content.subheadline || 'Elevate your digital presence with artisan-crafted designs.' }}</p>
-                <div class="flex justify-center gap-4">
-                    <button v-if="block.content.primaryLabel" class="btn btn-primary px-8 rounded-full shadow-xl shadow-primary/30">{{ block.content.primaryLabel }}</button>
-                    <button v-if="block.content.secondaryLabel" class="btn btn-outline btn-primary px-8 rounded-full backdrop-blur-md text-white border-white/30">{{ block.content.secondaryLabel }}</button>
+        <!-- Portfolio / Projects Block -->
+        <div v-else-if="block.type === 'portfolio'" class="max-w-7xl mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 gap-20">
+                <div v-for="(project, idx) in block.content.projects" :key="idx" class="group flex flex-col md:flex-row gap-12 items-center">
+                    <div class="w-full md:w-1/2 relative overflow-hidden rounded-3xl shadow-2xl aspect-video bg-base-200">
+                        <img :src="project.desktop_image || '/img/placeholder.png'" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Desktop view" />
+                        <div v-if="project.mobile_image" class="absolute bottom-4 right-4 w-1/4 aspect-[9/16] rounded-xl border-4 border-base-100 shadow-2xl overflow-hidden hidden md:block">
+                            <img :src="project.mobile_image" class="w-full h-full object-cover" alt="Mobile view" />
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2 space-y-4">
+                        <div class="flex items-center gap-4">
+                            <h3 class="text-3xl font-black italic uppercase tracking-tighter">{{ project.title }}</h3>
+                            <span class="text-xs opacity-40 font-mono">{{ project.date }}</span>
+                        </div>
+                        <p class="text-lg opacity-70 leading-relaxed">{{ project.description || 'Project description goes here...' }}</p>
+                        <a v-if="project.url" :href="project.url" target="_blank" class="btn btn-outline btn-primary rounded-full px-8">
+                            View Live <i class="fas fa-external-link-alt ml-2"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- Custom Code Block -->
+        <div v-else-if="block.type === 'custom_code'" class="w-full">
+            <div v-html="block.content.html"></div>
+            <component :is="'script'" v-if="block.content.js">
+                {{ block.content.js }}
+            </component>
+        </div>
+
         <!-- Heading Block -->
-        <div v-else-if="block.type === 'heading'" class="py-4">
-            <component :is="block.content.level || 'h2'" 
-                       :class="['font-bold', block.content.level === 'h1' ? 'text-6xl' : 'text-4xl']">
-                {{ block.content.text || 'Your Heading Here' }}
+        <div v-else-if="block.type === 'heading'" class="max-w-7xl mx-auto px-6">
+            <component :is="block.content.level === 1 ? 'h1' : 'h2'" 
+                       :class="[
+                           'font-black italic uppercase tracking-tighter', 
+                           block.content.level === 1 ? 'text-6xl md:text-8xl' : 'text-4xl md:text-6xl'
+                       ]">
+                <template v-if="block.settings?.animations?.type === 'reveal-text'">
+                    <span v-for="(char, i) in (block.content.text || 'Heading')" :key="i" class="inline-block whitespace-pre">{{ char }}</span>
+                </template>
+                <template v-else>
+                    {{ block.content.text || 'Heading' }}
+                </template>
             </component>
         </div>
 
         <!-- Text Block -->
-        <div v-else-if="block.type === 'text'" class="prose prose-lg max-w-none p-8" v-html="block.content.text || '<p>Start typing your content here...</p>'"></div>
+        <div v-else-if="block.type === 'text'" class="max-w-4xl mx-auto px-6 prose prose-xl opacity-80" v-html="block.content.text"></div>
+
+        <!-- Hero Block -->
+        <div v-else-if="block.type === 'hero'" class="relative min-h-[80vh] flex items-center justify-center text-center px-6 overflow-hidden">
+             <!-- Simplified for now -->
+             <div class="max-w-4xl">
+                <h1 class="text-7xl md:text-9xl font-black italic uppercase tracking-tighter mb-6">{{ block.content.headline }}</h1>
+                <p class="text-xl md:text-2xl opacity-60 mb-12">{{ block.content.subheadline }}</p>
+             </div>
+        </div>
 
         <!-- Columns Block -->
-        <div v-else-if="block.type === 'columns'" class="grid gap-8 p-8" :class="[`grid-cols-${block.content.columns || 2}`]">
-            <div v-for="(col, idx) in block.content.data" :key="idx" class="flex flex-col gap-4">
-                <DynamicBlock v-for="subBlock in col.blocks" :key="subBlock.id" :block="subBlock" />
-            </div>
-            <!-- Empty state for columns if no data -->
-            <div v-if="!block.content.data || block.content.data.length === 0" class="col-span-full border-2 border-dashed border-base-300 p-8 text-center opacity-50">
-                Columns Placeholder (Add elements in sidebar)
-            </div>
+        <div v-else-if="block.type === 'columns'" class="max-w-7xl mx-auto px-6 grid gap-8" :class="[`grid-cols-1 md:grid-cols-${block.content.count || 2}`]">
+             <div v-for="i in (block.content.count || 2)" :key="i" class="space-y-4">
+                 <DynamicBlock v-for="child in block.children?.filter(c => c.column === i)" :key="child.id" :block="child" />
+             </div>
         </div>
 
         <!-- Image Block -->
-        <div v-else-if="block.type === 'image'" class="flex justify-center p-8">
-            <template v-if="block.content.url">
-                <img :src="block.content.url" :alt="block.content.alt" class="max-w-full rounded-box shadow-xl" />
-            </template>
-            <template v-else>
-                <div class="w-full max-w-lg aspect-video bg-base-300 rounded-box flex items-center justify-center text-base-content/50">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                </div>
-            </template>
-        </div>
-        
-        <!-- Form Input Block -->
-        <div v-else-if="block.type === 'form_input'" class="form-control w-full py-2">
-            <label v-if="block.content.label" class="label"><span class="label-text font-semibold opacity-70">{{ block.content.label }}</span></label>
-            <input :type="block.content.type || 'text'" :placeholder="block.content.placeholder" class="input input-bordered w-full" :required="block.content.required" />
+        <div v-else-if="block.type === 'image'" class="max-w-7xl mx-auto px-6 flex justify-center">
+            <img :src="block.content.url" :alt="block.content.alt" class="max-w-full rounded-3xl shadow-2xl" />
         </div>
 
-        <!-- Form Textarea Block -->
-        <div v-else-if="block.type === 'form_textarea'" class="form-control w-full py-2">
-            <label v-if="block.content.label" class="label"><span class="label-text font-semibold opacity-70">{{ block.content.label }}</span></label>
-            <textarea :placeholder="block.content.placeholder" class="textarea textarea-bordered h-24 w-full" :required="block.content.required"></textarea>
+        <!-- Button Block -->
+        <div v-else-if="block.type === 'button'" class="max-w-7xl mx-auto px-6 flex py-4">
+            <a :href="block.content.url" class="btn btn-lg rounded-full px-12" :class="block.content.style === 'secondary' ? 'btn-secondary' : 'btn-primary'">
+                {{ block.content.text }}
+            </a>
         </div>
 
-        <!-- Form Select Block -->
-        <div v-else-if="block.type === 'form_select'" class="form-control w-full py-2">
-            <label v-if="block.content.label" class="label"><span class="label-text font-semibold opacity-70">{{ block.content.label }}</span></label>
-            <select class="select select-bordered w-full" :required="block.content.required">
-                <option disabled selected>{{ block.content.placeholder || 'Select option...' }}</option>
-                <option v-for="opt in (block.content.options || '').split('\n')" :key="opt" :value="opt">{{ opt }}</option>
-            </select>
-        </div>
-
-        <!-- Form Submit Block -->
-        <div v-else-if="block.type === 'form_submit'" class="py-4">
-            <button type="submit" :class="['btn', block.content.style === 'secondary' ? 'btn-secondary' : 'btn-primary', block.content.fullWidth ? 'w-full' : '']">
-                {{ block.content.label || 'Submit' }}
-            </button>
-        </div>
-
-        <!-- Language Switcher Block -->
-        <div v-else-if="block.type === 'language_switcher'" class="flex items-center gap-2 py-2">
-            <div class="join border border-base-300 rounded-full overflow-hidden bg-base-100">
-                <button class="join-item btn btn-xs px-3 hover:bg-primary hover:text-white transition-colors">PL</button>
-                <button class="join-item btn btn-xs px-3 hover:bg-primary hover:text-white transition-colors opacity-50">EN</button>
-            </div>
-        </div>
-
-        <!-- Menu Block -->
-        <div v-else-if="block.type === 'menu'" class="py-2">
-            <ul :class="[
-                'flex flex-wrap gap-6 items-center',
-                block.content.layout === 'vertical' ? 'flex-col items-start' : 'flex-row'
-            ]">
-                <li v-for="item in menuItems" :key="item.id" class="text-sm font-medium opacity-70 hover:opacity-100 hover:text-primary transition-all cursor-pointer">
-                    <a :href="item.url" :target="item.target">{{ item.label }}</a>
-                </li>
-                <li v-if="menuItems.length === 0" class="text-xs opacity-30 italic">
-                    {{ block.content.menu_id ? 'Menu is empty' : 'No menu selected' }}
-                </li>
-            </ul>
-        </div>
-
-        <!-- Fallback Block -->
-        <div v-else class="p-8 text-center text-error border border-error bg-error/10 m-4 rounded">
-            Unknown block type: {{ block.type }}
+        <!-- Fallback -->
+        <div v-else class="p-4 border border-dashed opacity-50 text-center rounded-xl">
+            Block: {{ block.type }}
         </div>
     </div>
 </template>

@@ -26,37 +26,44 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 form_select: { label: 'Label', name: 'field_' + Date.now(), options: 'Option 1\nOption 2', required: false },
                 form_submit: { label: 'Submit', style: 'primary', fullWidth: false },
                 language_switcher: { style: 'pill' },
-                menu: { menu_id: null, layout: 'horizontal' }
+                form_input: { label: 'Name', name: 'name', type: 'text', placeholder: '' },
+                form_textarea: { label: 'Message', name: 'message', placeholder: '' },
+                form_select: { label: 'Subject', name: 'subject', options: [] },
+                form_submit: { text: 'Send Message' },
+                language_switcher: { style: 'dropdown' },
+                menu: { menu_id: null },
+                portfolio: {
+                    projects: [
+                        { title: 'Project 1', date: '2024', description: '', desktop_image: '', mobile_image: '', url: '' }
+                    ]
+                },
+                custom_code: { html: '<div>Custom HTML</div>', js: 'console.log("Hello");' }
             };
 
-            return {
-                id: 'block_' + Math.random().toString(36).substr(2, 9),
+            const block = {
+                id: crypto.randomUUID(),
                 type,
-                parent_id: parentId || null,
+                parent_id: parentId, // Changed from parentId to parent_id to match existing structure
                 content: defaults[type] || {},
-                children: [],
-                appearance: {
-                    marginTop: '0px', marginBottom: '0px',
-                    paddingTop: '0px', paddingBottom: '0px',
-                    backgroundColor: 'transparent',
-                    textColor: 'inherit',
-                    textAlign: 'left',
-                    borderRadius: '0px',
-                    borderWidth: '0px',
-                    borderColor: 'transparent',
-                    boxShadow: 'none',
-                    elementId: '',
-                    elementClass: '',
-                    customClasses: '',
+                children: [], // Ensure children array is always present
+                settings: {
+                    id: '',
+                    class: '',
                     animations: {
                         enabled: false,
-                        preset: 'fadeUp',
+                        type: 'fade-up', // fade-up, slide-left, reveal-text
                         duration: 1,
                         delay: 0,
-                        trigger: 'in-view'
+                        ease: 'power2.out'
+                    },
+                    layout: {
+                        fullHeight: false,
+                        fixedBg: false,
+                        padding: 'py-20'
                     }
                 }
             };
+            return block;
         },
         addBlock(type, parentId = null) {
             const newBlock = this.createBlockObject(type, parentId);

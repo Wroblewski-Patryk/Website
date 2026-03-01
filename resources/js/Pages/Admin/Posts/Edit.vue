@@ -210,9 +210,11 @@ const layoutBlocks = ref([
 const contentBlocks = ref([
     { type: 'hero', label: 'Hero', icon: 'fas fa-star' },
     { type: 'heading', label: 'Heading', icon: 'fas fa-heading' },
-    { type: 'text', label: 'Text', icon: 'fas fa-align-left' },
     { type: 'image', label: 'Image', icon: 'fas fa-image' },
     { type: 'button', label: 'Button', icon: 'fas fa-mouse-pointer' },
+    { type: 'portfolio', label: 'Portfolio', icon: 'fas fa-briefcase' },
+    { type: 'custom_code', label: 'Code', icon: 'fas fa-code' },
+    { type: 'contact_form', label: 'Form', icon: 'fas fa-envelope' },
     { type: 'language_switcher', label: 'Lang', icon: 'fas fa-globe' },
     { type: 'menu', label: 'Menu', icon: 'fas fa-bars' },
 ]);
