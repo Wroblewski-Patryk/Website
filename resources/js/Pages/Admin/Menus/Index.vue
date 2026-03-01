@@ -23,7 +23,7 @@ function deleteMenu(id) {
                     </h1>
                     <p class="text-sm opacity-50 mt-1">Build and organize your site's navigation structures.</p>
                 </div>
-                <Link href="/admin/menus/create" class="btn btn-primary rounded-full px-6 shadow-lg shadow-primary/20">
+                <Link href="/admin/menus/create" class="btn btn-primary px-6 shadow-lg shadow-primary/20">
                     <i class="fas fa-plus mr-2"></i> Create New Menu
                 </Link>
             </div>
@@ -54,13 +54,9 @@ function deleteMenu(id) {
                                         {{ new Date(menu.created_at).toLocaleDateString() }}
                                     </td>
                                     <td class="text-right">
-                                        <div class="flex justify-end gap-1">
-                                            <Link :href="`/admin/menus/${menu.id}/edit`" class="btn btn-circle btn-ghost btn-sm text-primary hover:bg-primary/10">
-                                                <i class="fas fa-pen-nib"></i>
-                                            </Link>
-                                            <button @click="deleteMenu(menu.id)" class="btn btn-circle btn-ghost btn-sm text-error hover:bg-error/10">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
+                                        <div class="flex justify-end gap-2">
+                                            <Link :href="`/admin/menus/${menu.id}/edit`" class="btn btn-ghost btn-xs text-primary">Edit</Link>
+                                            <button @click="deleteMenu(menu.id)" class="btn btn-ghost btn-xs text-error">Delete</button>
                                         </div>
                                     </td>
                                 </tr>

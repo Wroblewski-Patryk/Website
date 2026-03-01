@@ -16,21 +16,21 @@ function deleteTemplate(id) {
     <Head title="Manage Templates" />
     <AdminLayout>
         <template #header>
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center text-base-content">
                 <div>
                     <h1 class="text-3xl font-black tracking-tight flex items-center gap-3">
                         <i class="fas fa-layer-group text-primary"></i>
-                        Global Templates
+                        Templates
                     </h1>
                     <p class="text-sm opacity-50 mt-1">Manage global headers and footers.</p>
                 </div>
-                <Link href="/admin/templates/create" class="btn btn-primary rounded-full px-6 shadow-lg shadow-primary/20">
+                <Link href="/admin/templates/create" class="btn btn-primary px-6 shadow-lg shadow-primary/20">
                     <i class="fas fa-plus mr-2"></i> Create Template
                 </Link>
             </div>
         </template>
 
-        <div class="bg-base-100 rounded-box shadow-sm border border-base-200 overflow-hidden">
+        <div class="bg-base-100 rounded-box shadow-sm border border-base-300 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="table w-full">
                     <thead>

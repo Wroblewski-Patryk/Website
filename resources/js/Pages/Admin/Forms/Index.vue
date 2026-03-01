@@ -18,12 +18,12 @@ function deleteForm(id) {
             <div class="flex justify-between items-center text-base-content">
                 <div>
                     <h1 class="text-3xl font-black tracking-tight flex items-center gap-3">
-                        <i class="fas fa-wpforms text-primary"></i>
+                        <i class="fas fa-envelope-open-text text-primary"></i>
                         Forms
                     </h1>
                     <p class="text-sm opacity-50 mt-1">Configure and manage user-facing forms.</p>
                 </div>
-                <Link href="/admin/forms/create" class="btn btn-primary rounded-full px-6 shadow-lg shadow-primary/20">
+                <Link href="/admin/forms/create" class="btn btn-primary px-6 shadow-lg shadow-primary/20">
                     <i class="fas fa-plus mr-2"></i> Create New Form
                 </Link>
             </div>

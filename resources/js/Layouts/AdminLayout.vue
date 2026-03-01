@@ -130,7 +130,7 @@ function applyTheme(themeName) {
                         <li class="menu-title mt-4"><span>System</span></li>
                         <li>
                             <Link href="/admin/languages" :class="{ 'active': $page.url.startsWith('/admin/languages') }">
-                                <i class="fas fa-language w-5"></i>
+                                <i class="fas fa-globe w-5"></i>
                                 Languages
                             </Link>
                         </li>

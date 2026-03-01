@@ -69,14 +69,15 @@ function deleteLanguage(id) {
                     </h1>
                     <p class="text-sm opacity-50 mt-1">Manage available locales and default site language.</p>
                 </div>
-                <button @click="openCreate" class="btn btn-primary rounded-full px-6 shadow-lg shadow-primary/20">
+                <button @click="openCreate" class="btn btn-primary px-6 shadow-lg shadow-primary/20">
                     <i class="fas fa-plus mr-2"></i> Add New Language
                 </button>
             </div>
         </template>
 
-        <div class="bg-base-100 rounded-box border border-base-300 shadow-sm overflow-hidden p-8">
-            <div v-if="isCreating" class="card bg-base-100 shadow-xl border border-primary/20 mb-8 max-w-2xl">
+        <div class="bg-base-100 rounded-box border border-base-300 shadow-sm overflow-hidden">
+            <div v-if="isCreating" class="p-8 pb-0">
+                <div class="card bg-base-100 shadow-xl border border-primary/20 mb-8 max-w-2xl">
                 <div class="card-body">
                     <h3 class="card-title text-primary">{{ editingLanguage ? 'Edit Language' : 'New Language' }}</h3>
                     <form @submit.prevent="submit" class="grid grid-cols-2 gap-4">
@@ -109,6 +110,7 @@ function deleteLanguage(id) {
                         </div>
                     </form>
                 </div>
+            </div>
             </div>
 
             <div class="overflow-x-auto">
