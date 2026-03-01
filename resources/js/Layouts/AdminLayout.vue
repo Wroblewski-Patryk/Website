@@ -37,8 +37,24 @@ function applyTheme(themeName) {
         <!-- Top Navbar -->
         <div class="navbar bg-base-100/80 backdrop-blur-md shadow-lg border-b border-base-300 z-50 sticky top-0 px-4">
             <div class="flex-1">
-                <Link href="/admin/dashboard" class="btn btn-ghost normal-case text-2xl font-black tracking-tighter gap-2">
-                    <img src="/img/featherly-sygnet.svg" alt="Featherly" class="h-8 w-auto object-contain" />
+                <Link href="/admin/dashboard" class="btn btn-ghost normal-case text-2xl font-black tracking-tighter gap-2 group">
+                    <svg
+                       class="h-8 w-auto"
+                       viewBox="0 0 132.29166 132.29167"
+                       version="1.1"
+                       xmlns="http://www.w3.org/2000/svg">
+                      <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" style="stop-color:oklch(var(--p));stop-opacity:1" />
+                          <stop offset="100%" style="stop-color:oklch(var(--a));stop-opacity:1" />
+                        </linearGradient>
+                      </defs>
+                      <g>
+                        <path
+                           style="fill:none;stroke:url(#logoGradient);stroke-width:2.17965;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+                           d="M 35.264421,104.92881 C 49.826309,69.774937 65.001539,52.561686 81.6769,33.218321 M 35.264421,104.92881 c 0.383429,1.08596 -7.518186,15.75712 -7.957596,25.50194 10.786989,-5.74794 6.134803,-15.94347 12.34037,-19.4341 7.659359,-3.6366 20.943003,-3.76646 31.282613,-15.460244 -5.61882,1.697012 -10.165842,1.907823 -16.825321,1.845022 C 72.195091,93.413459 88.230932,81.896878 94.505419,58.313249 89.285513,61.197777 84.151777,62.484231 78.811403,62.890093 103.02373,51.389301 104.91099,22.804844 96.903434,1.7278627 42.032744,42.10213 20.45948,60.830195 35.264421,104.92878 Z" />
+                      </g>
+                    </svg>
                     <span class="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent italic">Featherly</span>
                 </Link>
             </div>
