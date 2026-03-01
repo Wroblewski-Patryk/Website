@@ -57,7 +57,9 @@ Route::get('/', function () {
     ]);
 });
 
-Route::post('/contact', [\App\Http\Controllers\ContactController::class , 'send'])->name('contact.send');
+Route::post('/contact', [ContactController::class , 'store'])->name('contact.store');
+
+Route::get('/{slug}', [PageController::class , 'show'])->name('pages.show');
 
 Route::get('/blog', function (\Illuminate\Http\Request $request) {
     $posts = \App\Models\Post::where('is_published', true)

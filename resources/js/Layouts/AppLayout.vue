@@ -10,7 +10,10 @@
     <div id="border" class="fixed inset-0 pointer-events-none z-50 transition-all duration-300"></div>
 
     <!-- Header Wrapper -->
-    <header v-if="activeHeader">
+    <header v-if="activeHeader" class="relative">
+      <div class="fixed top-6 right-6 z-[60]">
+        <LanguageSwitcher />
+      </div>
       <DynamicBlock 
         v-for="(block, index) in activeHeader" 
         :key="'header-'+index" 
@@ -38,6 +41,7 @@
 import { computed } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import DynamicBlock from '@/Components/DynamicBlock.vue'
+import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
 
 const pageProps = usePage().props;
 

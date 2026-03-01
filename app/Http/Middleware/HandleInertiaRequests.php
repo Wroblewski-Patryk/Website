@@ -52,6 +52,7 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'header' => $header ? $header->content : null,
             'footer' => $footer ? $footer->content : null,
+            'locale' => app()->getLocale(),
             'site_settings' => [
                 'color_primary' => $settings['color_primary'] ?? '#000000',
                 'color_secondary' => $settings['color_secondary'] ?? '#ffffff',

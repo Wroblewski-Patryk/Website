@@ -7,20 +7,38 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         isDirty: false,
     }),
     actions: {
-        setBlocks(initialBlocks) {
+        init(initialBlocks) {
             this.blocks = Array.isArray(initialBlocks) ? initialBlocks : [];
             this.isDirty = false;
         },
-        addBlock(type) {
+        addBlock(type, parentId = null) {
+            const defaults = {
+                heading: { text: 'New Heading', level: 'h2', align: 'left' },
+                text: { text: 'Enter your content here...', align: 'left' },
+                hero: { headline: 'Premium Headline', subheadline: 'Elegant subtext for your high-end website.', primaryLabel: 'Get Started', secondaryLabel: 'Learn More' },
+                image: { url: '', alt: '' },
+                button: { label: 'Click Me', url: '#', style: 'primary', align: 'left', newTab: false },
+                section: { width: 'boxed', bgColor: 'transparent', align: 'left' },
+                columns: { columns: 2 },
+                contact_form: { title: 'Contact Us', successMessage: 'Message sent successfully!', button_text: 'Send Message' }
+            };
+
             const newBlock = {
                 id: 'block_' + Math.random().toString(36).substr(2, 9),
-                type: type,
-                content: {},
+                type,
+                parent_id: parentId || null,
+                content: defaults[type] || {},
+                children: [],
                 appearance: {
-                    marginTop: '0', marginBottom: '0',
-                    paddingTop: '0', paddingBottom: '0',
+                    marginTop: '0px', marginBottom: '0px',
+                    paddingTop: '0px', paddingBottom: '0px',
                     backgroundColor: 'transparent',
                     textColor: 'inherit',
+                    textAlign: 'left',
+                    borderRadius: '0px',
+                    borderWidth: '0px',
+                    borderColor: 'transparent',
+                    boxShadow: 'none',
                     customClasses: '',
                     animations: {
                         enabled: false,
@@ -31,7 +49,16 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                     }
                 }
             };
-            this.blocks.push(newBlock);
+
+            if (parentId) {
+                const parent = this.blocks.find(b => b.id === parentId);
+                if (parent) {
+                    if (!parent.children) parent.children = [];
+                    parent.children.push(newBlock);
+                }
+            } else {
+                this.blocks.push(newBlock);
+            }
             this.activeBlockId = newBlock.id;
             this.isDirty = true;
         },
@@ -41,30 +68,29 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
             this.isDirty = true;
         },
         updateBlock(id, payload) {
-            const index = this.blocks.findIndex(b => b.id === id);
-            if (index !== -1) {
-                this.blocks[index] = { ...this.blocks[index], ...payload };
-                this.isDirty = true;
-            }
+            const findAndUpdate = (list) => {
+                for (let i = 0; i < list.length; i++) {
+                    if (list[i].id === id) {
+                        list[i] = { ...list[i], ...payload };
+                        return true;
+                    }
+                    if (list[i].children && findAndUpdate(list[i].children)) return true;
+                }
+                return false;
+            };
+            findAndUpdate(this.blocks);
+            this.isDirty = true;
         },
         setActiveBlock(id) {
             this.activeBlockId = id;
         },
-        moveBlock(id, direction) {
-            const index = this.blocks.findIndex(b => b.id === id);
-            if (index < 0) return;
+        moveBlock(index, delta) {
+            const newIndex = index + delta;
+            if (newIndex < 0 || newIndex >= this.blocks.length) return;
 
-            if (direction === 'up' && index > 0) {
-                const temp = this.blocks[index];
-                this.blocks[index] = this.blocks[index - 1];
-                this.blocks[index - 1] = temp;
-                this.isDirty = true;
-            } else if (direction === 'down' && index < this.blocks.length - 1) {
-                const temp = this.blocks[index];
-                this.blocks[index] = this.blocks[index + 1];
-                this.blocks[index + 1] = temp;
-                this.isDirty = true;
-            }
+            const element = this.blocks.splice(index, 1)[0];
+            this.blocks.splice(newIndex, 0, element);
+            this.isDirty = true;
         }
     },
     getters: {

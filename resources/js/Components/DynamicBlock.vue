@@ -1,13 +1,9 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useGsapRuntime } from '@/Composables/useGsapRuntime';
+import { useForm } from '@inertiajs/vue3';
 
-const props = defineProps({
-    block: {
-        type: Object,
-        required: true
-    }
-});
+const props = defineProps(['block']);
 
 const blockRef = ref(null);
 const { animateBlock } = useGsapRuntime();
@@ -40,11 +36,89 @@ const styleObj = computed(() => {
 
 <template>
     <div ref="blockRef" :class="[block.appearance?.customClasses]" :style="styleObj">
+        <!-- Section Block (Layout Wrapper) -->
+        <div v-if="block.type === 'section'" 
+             :class="[
+                'w-full py-1 transition-all duration-700',
+                block.content?.width === 'boxed' ? 'max-w-7xl mx-auto px-6' : 'px-0',
+                block.content?.bg_color || ''
+             ]"
+             :style="{ 
+                backgroundImage: block.content?.bg_image ? `url(${block.content.bg_image})` : 'none',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundColor: block.appearance?.backgroundColor || 'transparent',
+                paddingTop: block.appearance?.paddingTop || '3rem',
+                paddingBottom: block.appearance?.paddingBottom || '3rem'
+             }">
+            <div class="space-y-4">
+                <DynamicBlock v-for="child in block.children" :key="child.id" :block="child" />
+            </div>
+        </div>
+
+        <!-- Button Block -->
+        <div v-else-if="block.type === 'button'" class="py-4" :style="{ textAlign: block.content.align || 'left' }">
+            <a :href="block.content.url || '#'" 
+               :target="block.content.newTab ? '_blank' : '_self'"
+               :class="[
+                    'btn shadow-lg transition-all hover:scale-105 active:scale-95',
+                    block.content.style === 'secondary' ? 'btn-secondary' : 'btn-primary',
+                    block.content.size === 'lg' ? 'btn-lg' : (block.content.size === 'sm' ? 'btn-sm' : '')
+               ]">
+                {{ block.content.label || 'Click Here' }}
+            </a>
+        </div>
+
+        <!-- Contact Form Block -->
+        <div v-else-if="block.type === 'contact_form'" class="max-w-xl mx-auto p-8 bg-base-100 rounded-3xl shadow-2xl border border-white/5">
+            <h3 class="text-2xl font-bold mb-6 text-primary">{{ block.content.title || 'Contact Us' }}</h3>
+            <form @submit.prevent="submitContact" class="space-y-4">
+                <!-- Honeypot -->
+                <div class="hidden">
+                    <input type="text" v-model="contactForm.website" tabindex="-1" autocomplete="off" />
+                </div>
+
+                <div class="form-control">
+                    <input type="text" v-model="contactForm.name" placeholder="Your Name" class="input input-bordered w-full" :class="{ 'input-error': contactForm.errors.name }" required />
+                    <div v-if="contactForm.errors.name" class="text-error text-sm mt-1">{{ contactForm.errors.name }}</div>
+                </div>
+                <div class="form-control">
+                    <input type="email" v-model="contactForm.email" placeholder="Your Email" class="input input-bordered w-full" :class="{ 'input-error': contactForm.errors.email }" required />
+                    <div v-if="contactForm.errors.email" class="text-error text-sm mt-1">{{ contactForm.errors.email }}</div>
+                </div>
+                <div class="form-control">
+                    <textarea v-model="contactForm.message" placeholder="How can we help?" class="textarea textarea-bordered h-32 w-full" :class="{ 'textarea-error': contactForm.errors.message }" required></textarea>
+                    <div v-if="contactForm.errors.message" class="text-error text-sm mt-1">{{ contactForm.errors.message }}</div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-full shadow-lg shadow-primary/20" :disabled="contactForm.processing">
+                    <span v-if="contactForm.processing" class="loading loading-spinner"></span>
+                    {{ block.content?.button_text || 'Send Message' }}
+                </button>
+
+                <div v-if="contactForm.wasSuccessful" class="alert alert-success mt-4">
+                    {{ block.content?.success_message || 'Thank you! Message sent.' }}
+                </div>
+            </form>
+        </div>
+
         <!-- Hero Block -->
-        <div v-if="block.type === 'hero'" class="py-20 px-10 text-center">
-            <h1 class="text-5xl font-bold mb-4">{{ block.content.headline || 'Your Headline Here' }}</h1>
-            <p class="text-xl opacity-90 leading-relaxed">{{ block.content.subheadline || 'Provide a compelling subheadline that captures attention.' }}</p>
-            <button v-if="block.content.buttonText" class="btn btn-primary mt-6">{{ block.content.buttonText }}</button>
+        <div v-else-if="block.type === 'hero'" 
+             class="relative py-32 px-10 text-center overflow-hidden"
+             :style="{
+                backgroundImage: block.content.bgImage ? `url(/storage/${block.content.bgImage})` : 'none',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+             }">
+            <div v-if="block.content.bgImage" class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
+            <div class="relative z-10">
+                <h1 class="text-6xl font-black mb-6 tracking-tight text-white drop-shadow-2xl italic">{{ block.content.headline || 'Your Premium Headline' }}</h1>
+                <p class="text-xl mb-10 text-white/90 max-w-2xl mx-auto drop-shadow-md">{{ block.content.subheadline || 'Elevate your digital presence with artisan-crafted designs.' }}</p>
+                <div class="flex justify-center gap-4">
+                    <button v-if="block.content.primaryLabel" class="btn btn-primary px-8 rounded-full shadow-xl shadow-primary/30">{{ block.content.primaryLabel }}</button>
+                    <button v-if="block.content.secondaryLabel" class="btn btn-outline btn-primary px-8 rounded-full backdrop-blur-md text-white border-white/30">{{ block.content.secondaryLabel }}</button>
+                </div>
+            </div>
         </div>
 
         <!-- Heading Block -->

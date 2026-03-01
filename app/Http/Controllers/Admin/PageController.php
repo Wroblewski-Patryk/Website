@@ -20,17 +20,63 @@ class PageController extends Controller
     public function create()
     {
         return Inertia::render('Admin/Pages/Edit', [
-            'page' => new Page(),
-            'templates' => \App\Models\Template::all()
+            'page' => (new Page())->setAttribute('revisions', []),
+            'templates' => [
+                'header' => \App\Models\Template::where('type', 'header')->get(),
+                'footer' => \App\Models\Template::where('type', 'footer')->get(),
+            ]
         ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|array',
+            'slug' => 'required|array',
+            'content' => 'required|array',
+            'is_published' => 'boolean',
+            'header_override_id' => 'nullable|exists:templates,id',
+            'footer_override_id' => 'nullable|exists:templates,id',
+        ]);
+
+        Page::create($validated);
+
+        return redirect()->route('admin.pages.index')->with('success', 'Page created successfully.');
     }
 
     public function edit(Page $page)
     {
         return Inertia::render('Admin/Pages/Edit', [
-            'page' => $page,
-            'templates' => \App\Models\Template::all()
+            'page' => $page->load('revisions'),
+            'templates' => [
+                'header' => \App\Models\Template::where('type', 'header')->get(),
+                'footer' => \App\Models\Template::where('type', 'footer')->get(),
+            ]
         ]);
+    }
+
+    public function update(Request $request, Page $page)
+    {
+        $validated = $request->validate([
+            'title' => 'required|array',
+            'slug' => 'required|array',
+            'content' => 'required|array',
+            'is_published' => 'boolean',
+            'header_override_id' => 'nullable|exists:templates,id',
+            'footer_override_id' => 'nullable|exists:templates,id',
+        ]);
+
+        // Store revision of OLD content before update
+        if ($page->content) {
+            $page->revisions()->create([
+                'content' => $page->content,
+                'user_id' => auth()->id(),
+            ]);
+        }
+
+        $page->update($validated);
+
+        return redirect()->route('admin.pages.index')->with('success', 'Page updated successfully.');
     }
 
     public function destroy(Page $page)

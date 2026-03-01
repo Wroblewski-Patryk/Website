@@ -17,7 +17,7 @@ const form = useForm({
 });
 
 onMounted(() => {
-    store.setBlocks(props.template?.content || []);
+    store.init(props.template?.content || []);
 });
 
 function saveTemplate() {
