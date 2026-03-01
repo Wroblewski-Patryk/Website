@@ -1,4 +1,5 @@
 <script setup>
+import { Head, useForm } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -13,6 +14,19 @@ const props = defineProps({
 });
 
 const blockRef = ref(null);
+
+const form = useForm({
+    name: '',
+    email: '',
+    message: '',
+});
+
+const submitContact = () => {
+    form.post('/contact', {
+        preserveScroll: true,
+        onSuccess: () => form.reset(),
+    });
+};
 
 onMounted(() => {
     if (!blockRef.value) return;
@@ -94,21 +108,29 @@ onMounted(() => {
         <section v-if="block.type === 'contact_form'" class="py-16 max-w-xl mx-auto bg-gray-50 rounded-2xl p-8 shadow-sm border border-gray-100">
             <h2 class="text-3xl font-bold mb-4 text-center">{{ block.data.heading || 'Contact Us' }}</h2>
             <p v-if="block.data.description" class="text-gray-600 text-center mb-8">{{ block.data.description }}</p>
-            <form class="space-y-4">
+            
+            <div v-if="form.recentlySuccessful" class="mb-6 p-4 bg-green-100 text-green-700 rounded-lg text-center">
+                Message sent successfully!
+            </div>
+
+            <form @submit.prevent="submitContact" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium mb-1">Name</label>
-                    <input type="text" class="w-full border-gray-300 rounded-lg p-3">
+                    <input v-model="form.name" type="text" class="w-full border-gray-300 rounded-lg p-3" required>
+                    <div v-if="form.errors.name" class="text-red-500 text-sm mt-1">{{ form.errors.name }}</div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">Email</label>
-                    <input type="email" class="w-full border-gray-300 rounded-lg p-3">
+                    <input v-model="form.email" type="email" class="w-full border-gray-300 rounded-lg p-3" required>
+                    <div v-if="form.errors.email" class="text-red-500 text-sm mt-1">{{ form.errors.email }}</div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">Message</label>
-                    <textarea class="w-full border-gray-300 rounded-lg p-3" rows="4"></textarea>
+                    <textarea v-model="form.message" class="w-full border-gray-300 rounded-lg p-3" rows="4" required></textarea>
+                    <div v-if="form.errors.message" class="text-red-500 text-sm mt-1">{{ form.errors.message }}</div>
                 </div>
-                <button type="button" class="w-full bg-black text-white rounded-lg py-3 font-medium hover:bg-gray-800 transition">
-                    Send Message
+                <button type="submit" :disabled="form.processing" class="w-full bg-black text-white rounded-lg py-3 font-medium hover:bg-gray-800 transition disabled:opacity-50">
+                    {{ form.processing ? 'Sending...' : 'Send Message' }}
                 </button>
             </form>
         </section>
