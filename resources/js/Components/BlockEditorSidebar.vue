@@ -1,11 +1,37 @@
 <script setup>
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import UnitInput from '@/Components/UnitInput.vue';
+import { ColorPicker } from 'vue3-colorpicker';
+import 'vue3-colorpicker/style.css';
 
 const props = defineProps(['menus']);
 
 const store = useBlockBuilderStore();
 const activeSidebarTab = ref('content');
+
+const getBlockStyleColor = (prop) => computed({
+    get: () => {
+        if (!store.activeBlock || !store.activeBlock.settings.style) return 'rgba(0,0,0,0)';
+        return store.activeBlock.settings.style[prop] || 'rgba(0,0,0,0)';
+    },
+    set: (val) => {
+        if (store.activeBlock && store.activeBlock.settings.style) {
+            store.activeBlock.settings.style[prop] = val === 'rgba(0,0,0,0)' ? '' : val;
+        }
+    }
+});
+
+const bgColor = getBlockStyleColor('backgroundColor');
+const textColor = getBlockStyleColor('textColor');
+const borderColor = getBlockStyleColor('borderColor');
+
+watch(() => store.activeBlock, (newBlock) => {
+    if (newBlock) {
+        if (!newBlock.settings) newBlock.settings = {};
+        if (!newBlock.settings.style) newBlock.settings.style = {};
+    }
+}, { immediate: true });
 
 const addProject = () => {
     store.activeBlock.content.projects.push({
@@ -419,8 +445,158 @@ const removeProject = (idx) => {
             </div>
 
             <!-- STYLE & ADVANCED TABS -->
-            <div v-if="activeSidebarTab === 'style'" class="space-y-4 opacity-50 italic text-xs">
-                Color and typography overrides coming soon...
+            <div v-if="activeSidebarTab === 'style'" class="space-y-6 animate-in fade-in">
+                
+                <!-- Colors -->
+                <div class="space-y-4">
+                    <h4 class="text-[10px] uppercase font-black tracking-widest opacity-50 border-b border-white/5 pb-2">Colors</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-control items-center">
+                            <label class="label self-start"><span class="label-text text-[10px] uppercase">Background</span></label>
+                            <ColorPicker v-model:pureColor="bgColor" format="rgb" shape="square" useType="pure" />
+                        </div>
+                        <div class="form-control items-center">
+                            <label class="label self-start"><span class="label-text text-[10px] uppercase">Text Color</span></label>
+                            <ColorPicker v-model:pureColor="textColor" format="rgb" shape="square" useType="pure" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spacing (Margin) -->
+                <div class="space-y-4">
+                    <h4 class="text-[10px] uppercase font-black tracking-widest opacity-50 border-b border-white/5 pb-2">Margin</h4>
+                    <div class="grid grid-cols-2 gap-2">
+                        <UnitInput v-model="store.activeBlock.settings.style.marginTop" placeholder="Top" />
+                        <UnitInput v-model="store.activeBlock.settings.style.marginBottom" placeholder="Bottom" />
+                        <UnitInput v-model="store.activeBlock.settings.style.marginLeft" placeholder="Left" />
+                        <UnitInput v-model="store.activeBlock.settings.style.marginRight" placeholder="Right" />
+                    </div>
+                </div>
+
+                <!-- Spacing (Padding) -->
+                <div class="space-y-4">
+                    <h4 class="text-[10px] uppercase font-black tracking-widest opacity-50 border-b border-white/5 pb-2">Padding</h4>
+                    <div class="grid grid-cols-2 gap-2">
+                        <UnitInput v-model="store.activeBlock.settings.style.paddingTop" placeholder="Top" />
+                        <UnitInput v-model="store.activeBlock.settings.style.paddingBottom" placeholder="Bottom" />
+                        <UnitInput v-model="store.activeBlock.settings.style.paddingLeft" placeholder="Left" />
+                        <UnitInput v-model="store.activeBlock.settings.style.paddingRight" placeholder="Right" />
+                    </div>
+                </div>
+
+                <!-- Typography -->
+                <div class="space-y-4">
+                    <h4 class="text-[10px] uppercase font-black tracking-widest opacity-50 border-b border-white/5 pb-2">Typography</h4>
+                    
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-[10px] uppercase">Font Family</span></label>
+                        <select v-model="store.activeBlock.settings.style.fontFamily" class="select select-bordered select-sm w-full">
+                            <option :value="undefined">Default</option>
+                            <option value="sans-serif">Sans Serif</option>
+                            <option value="serif">Serif</option>
+                            <option value="monospace">Monospace</option>
+                            <option value="'Inter', sans-serif">Inter</option>
+                            <option value="'Titillium Web', sans-serif">Titillium Web</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label"><span class="label-text text-[10px] uppercase">Font Size</span></label>
+                            <UnitInput v-model="store.activeBlock.settings.style.fontSize" placeholder="Size" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label"><span class="label-text text-[10px] uppercase">Letter Spacing</span></label>
+                            <UnitInput v-model="store.activeBlock.settings.style.letterSpacing" placeholder="Spacing" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label"><span class="label-text text-[10px] uppercase">Alignment</span></label>
+                            <select v-model="store.activeBlock.settings.style.textAlign" class="select select-bordered select-sm w-full">
+                                <option :value="undefined">Default</option>
+                                <option value="left">Left</option>
+                                <option value="center">Center</option>
+                                <option value="right">Right</option>
+                                <option value="justify">Justify</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label class="label"><span class="label-text text-[10px] uppercase">Weight</span></label>
+                            <select v-model="store.activeBlock.settings.style.fontWeight" class="select select-bordered select-sm w-full">
+                                <option :value="undefined">Default</option>
+                                <option value="300">Light</option>
+                                <option value="normal">Normal</option>
+                                <option value="500">Medium</option>
+                                <option value="bold">Bold</option>
+                                <option value="900">Black/Heavy</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Borders -->
+                <div class="space-y-4">
+                    <h4 class="text-[10px] uppercase font-black tracking-widest opacity-50 border-b border-white/5 pb-2">Border & Appearance</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label"><span class="label-text text-[10px] uppercase">Radius</span></label>
+                            <UnitInput v-model="store.activeBlock.settings.style.borderRadius" placeholder="Radius" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label"><span class="label-text text-[10px] uppercase">Width</span></label>
+                            <UnitInput v-model="store.activeBlock.settings.style.borderWidth" placeholder="Width" />
+                        </div>
+                        <div class="form-control col-span-2 items-center">
+                            <label class="label self-start"><span class="label-text text-[10px] uppercase">Border Color</span></label>
+                            <ColorPicker v-model:pureColor="borderColor" format="rgb" shape="square" useType="pure" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layout & Position -->
+                <div class="space-y-4">
+                    <h4 class="text-[10px] uppercase font-black tracking-widest opacity-50 border-b border-white/5 pb-2">Layout & Position</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label"><span class="label-text text-[10px] uppercase">Position</span></label>
+                            <select v-model="store.activeBlock.settings.style.position" class="select select-bordered select-sm w-full">
+                                <option :value="undefined">Static</option>
+                                <option value="relative">Relative</option>
+                                <option value="absolute">Absolute</option>
+                                <option value="fixed">Fixed</option>
+                                <option value="sticky">Sticky</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label class="label"><span class="label-text text-[10px] uppercase">Z-Index</span></label>
+                            <input type="number" v-model="store.activeBlock.settings.style.zIndex" class="input input-sm input-bordered w-full" />
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2 mt-2">
+                        <UnitInput v-model="store.activeBlock.settings.style.top" placeholder="Top" />
+                        <UnitInput v-model="store.activeBlock.settings.style.bottom" placeholder="Bottom" />
+                        <UnitInput v-model="store.activeBlock.settings.style.left" placeholder="Left" />
+                        <UnitInput v-model="store.activeBlock.settings.style.right" placeholder="Right" />
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mt-2">
+                        <div class="form-control">
+                            <label class="label"><span class="label-text text-[10px] uppercase">Width</span></label>
+                            <UnitInput v-model="store.activeBlock.settings.style.width" placeholder="Width" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label"><span class="label-text text-[10px] uppercase">Height</span></label>
+                            <UnitInput v-model="store.activeBlock.settings.style.height" placeholder="Height" />
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-control mt-6">
+                    <button @click="store.activeBlock.settings.style = {}" class="btn btn-outline btn-error btn-sm w-full">Reset Styles</button>
+                </div>
             </div>
 
             <div v-if="activeSidebarTab === 'advanced'" class="space-y-4">

@@ -87,10 +87,10 @@
             </div>
 
             <!-- Center: Canvas -->
-            <div class="flex-1 bg-base-300 overflow-y-auto p-8 flex justify-center custom-scrollbar">
+            <div class="flex-1 bg-base-300 overflow-y-auto p-4 md:p-8 flex justify-center custom-scrollbar">
                 <div :class="[
-                    'bg-white shadow-2xl transition-all duration-500 rounded-sm overflow-x-hidden min-h-screen relative',
-                    viewport === 'desktop' ? 'w-full max-w-6xl' : (viewport === 'tablet' ? 'w-[768px]' : 'w-[375px]')
+                    'bg-white shadow-2xl transition-all duration-500 rounded-sm overflow-x-hidden min-h-screen relative mx-auto',
+                    viewport === 'desktop' ? 'w-full' : (viewport === 'tablet' ? 'w-[768px]' : 'w-[375px]')
                 ]">
                     <slot name="canvas-header"></slot>
 

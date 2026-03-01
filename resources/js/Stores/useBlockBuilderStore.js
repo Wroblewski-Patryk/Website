@@ -8,7 +8,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         categories: [
             {
                 id: 'content',
-                label: '1. Content',
+                label: 'Content',
                 icon: 'fas fa-font',
                 blocks: [
                     { type: 'paragraph', label: 'Paragraph', icon: 'fas fa-paragraph' },
@@ -24,7 +24,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
             },
             {
                 id: 'media',
-                label: '2. Media',
+                label: 'Media',
                 icon: 'fas fa-images',
                 blocks: [
                     { type: 'image', label: 'Image', icon: 'fas fa-image' },
@@ -38,7 +38,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
             },
             {
                 id: 'layout',
-                label: '3. Layout',
+                label: 'Layout',
                 icon: 'fas fa-layer-group',
                 blocks: [
                     { type: 'section', label: 'Section', icon: 'fas fa-vector-square' },
@@ -49,7 +49,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
             },
             {
                 id: 'marketing',
-                label: '4. Marketing',
+                label: 'Marketing',
                 icon: 'fas fa-bullhorn',
                 blocks: [
                     { type: 'hero', label: 'Hero', icon: 'fas fa-star' },
@@ -63,7 +63,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
             },
             {
                 id: 'theme',
-                label: '5. Theme (FSE)',
+                label: 'Theme (FSE)',
                 icon: 'fas fa-palette',
                 blocks: [
                     { type: 'site_logo', label: 'Site Logo', icon: 'fas fa-fingerprint' },
@@ -74,7 +74,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
             },
             {
                 id: 'embed',
-                label: '6. Embeds',
+                label: 'Embeds',
                 icon: 'fas fa-external-link-alt',
                 blocks: [
                     { type: 'google_maps', label: 'Maps', icon: 'fas fa-map-marked-alt' },

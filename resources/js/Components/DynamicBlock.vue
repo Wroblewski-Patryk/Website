@@ -42,9 +42,38 @@ const displayedProjects = computed(() => {
 const styleObj = computed(() => {
     const s = props.block.settings || {};
     const l = s.layout || {};
+    const st = s.style || {};
+    
     return {
-        minHeight: l.fullHeight ? '100vh' : undefined,
+        minHeight: l.fullHeight ? '100vh' : st.height,
+        height: st.height,
+        width: st.width,
         backgroundAttachment: l.fixedBg ? 'fixed' : undefined,
+        backgroundColor: st.backgroundColor,
+        color: st.textColor,
+        marginTop: st.marginTop,
+        marginBottom: st.marginBottom,
+        marginLeft: st.marginLeft,
+        marginRight: st.marginRight,
+        paddingTop: st.paddingTop,
+        paddingBottom: st.paddingBottom,
+        paddingLeft: st.paddingLeft,
+        paddingRight: st.paddingRight,
+        position: st.position,
+        zIndex: st.zIndex,
+        top: st.top,
+        bottom: st.bottom,
+        left: st.left,
+        right: st.right,
+        borderRadius: st.borderRadius,
+        borderColor: st.borderColor,
+        borderWidth: st.borderWidth,
+        borderStyle: st.borderWidth ? 'solid' : undefined,
+        textAlign: st.textAlign,
+        fontWeight: st.fontWeight,
+        fontFamily: st.fontFamily,
+        fontSize: st.fontSize,
+        letterSpacing: st.letterSpacing,
     };
 });
 
