@@ -30,6 +30,8 @@ Route::name('admin.')->prefix('admin')->group(function () {
                 Route::resource('forms', \App\Http\Controllers\Admin\FormController::class)->except(['show']);
                 Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class)->except(['show']);
                 Route::resource('translations', \App\Http\Controllers\Admin\TranslationController::class)->except(['show']);
+                Route::resource('projects', \App\Http\Controllers\Admin\ProjectController::class)->except(['show']);
+                Route::resource('languages', \App\Http\Controllers\Admin\LanguageController::class)->except(['show']);
 
                 Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class , 'index'])->name('settings.index');
 

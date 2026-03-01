@@ -29,13 +29,23 @@ function saveSettings() {
 <template>
     <Head title="Global Settings" />
     <AdminLayout>
-        <div class="p-6 max-w-4xl mx-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold">Global Settings</h1>
-                <button @click="saveSettings" class="btn btn-primary" :disabled="form.processing">
-                    <span v-if="form.processing" class="loading loading-spinner loading-sm"></span> Save Settings
+        <template #header>
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-black tracking-tight flex items-center gap-3">
+                        <i class="fas fa-cog text-primary"></i>
+                        Global Settings
+                    </h1>
+                    <p class="text-sm opacity-50 mt-1">Configure your website's main parameters.</p>
+                </div>
+                <button @click="saveSettings" class="btn btn-primary px-6 shadow-lg shadow-primary/20" :disabled="form.processing">
+                    <span v-if="form.processing" class="loading loading-spinner loading-sm mr-2"></span>
+                    <i class="fas fa-save mr-2"></i> Save Settings
                 </button>
             </div>
+        </template>
+
+        <div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Routing Settings -->

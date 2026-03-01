@@ -31,6 +31,14 @@ watch(() => props.block.settings?.animations, () => {
     initAnimations();
 }, { deep: true });
 
+const displayedProjects = computed(() => {
+    if (props.block.type !== 'portfolio') return [];
+    if (props.block.content.use_projects_module) {
+        return page.props.all_projects || [];
+    }
+    return props.block.content.projects || [];
+});
+
 const styleObj = computed(() => {
     const s = props.block.settings || {};
     const l = s.layout || {};
@@ -70,7 +78,7 @@ const contactForm = useForm({
         <!-- Portfolio / Projects Block -->
         <div v-else-if="block.type === 'portfolio'" class="max-w-7xl mx-auto px-6 py-12">
             <div class="grid grid-cols-1 gap-20">
-                <div v-for="(project, idx) in block.content.projects" :key="idx" class="group flex flex-col md:flex-row gap-12 items-center">
+                <div v-for="(project, idx) in displayedProjects" :key="idx" class="group flex flex-col md:flex-row gap-12 items-center">
                     <div class="w-full md:w-1/2 relative overflow-hidden rounded-3xl shadow-2xl aspect-video bg-base-200">
                         <img :src="project.desktop_image || '/img/placeholder.png'" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Desktop view" />
                         <div v-if="project.mobile_image" class="absolute bottom-4 right-4 w-1/4 aspect-[9/16] rounded-xl border-4 border-base-100 shadow-2xl overflow-hidden hidden md:block">

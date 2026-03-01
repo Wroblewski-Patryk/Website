@@ -6,30 +6,46 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 <template>
     <Head title="Admin Dashboard" />
     <AdminLayout>
-        <div class="p-6">
-            <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
+        <template #header>
+            <h1 class="text-3xl font-black tracking-tight flex items-center gap-3">
+                <i class="fas fa-chart-line text-primary"></i>
+                Dashboard
+            </h1>
+        </template>
+
+        <div>
             <div class="alert alert-info shadow-sm mb-6">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 <span>Welcome to VueCMS Administrator Panel. You have successfully authenticated.</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="card bg-base-100 shadow-sm border border-base-200">
+                <div class="card bg-base-100 shadow-sm border border-base-300 rounded-box overflow-hidden group hover:shadow-md transition-all">
                     <div class="card-body">
-                        <h2 class="card-title">Pages</h2>
-                        <p>Manage your website pages and utilize the Visual Block Builder.</p>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="p-2 bg-primary/10 text-primary rounded-lg group-hover:bg-primary group-hover:text-primary-content transition-colors">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <h2 class="card-title text-lg">Pages</h2>
+                        </div>
+                        <p class="text-sm opacity-60">Manage your website pages and utilize the Visual Block Builder.</p>
                         <div class="card-actions justify-end mt-4">
-                            <button class="btn btn-primary btn-sm">Manage Pages</button>
+                            <Link href="/admin/pages" class="btn btn-ghost btn-sm group-hover:btn-primary">Manage Pages <i class="fas fa-arrow-right ml-1"></i></Link>
                         </div>
                     </div>
                 </div>
 
-                <div class="card bg-base-100 shadow-sm border border-base-200">
+                <div class="card bg-base-100 shadow-sm border border-base-300 rounded-box overflow-hidden group hover:shadow-md transition-all">
                     <div class="card-body">
-                        <h2 class="card-title">Blog Posts</h2>
-                        <p>Write and publish blog articles with full SEO settings.</p>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="p-2 bg-secondary/10 text-secondary rounded-lg group-hover:bg-secondary group-hover:text-secondary-content transition-colors">
+                                <i class="fas fa-blog"></i>
+                            </div>
+                            <h2 class="card-title text-lg">Blog Posts</h2>
+                        </div>
+                        <p class="text-sm opacity-60">Write and publish blog articles with full SEO settings.</p>
                         <div class="card-actions justify-end mt-4">
-                            <button class="btn btn-primary btn-sm">Manage Posts</button>
+                            <Link href="/admin/posts" class="btn btn-ghost btn-sm group-hover:btn-secondary">Manage Posts <i class="fas fa-arrow-right ml-1"></i></Link>
                         </div>
                     </div>
                 </div>

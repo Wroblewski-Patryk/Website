@@ -41,11 +41,14 @@ function copyUrl(path) {
 <template>
     <Head title="Media Library" />
     <AdminLayout>
-        <div class="p-6">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6 p-6 bg-base-100/50 backdrop-blur-xl rounded-2xl border border-white/10 shadow-xl">
+        <template #header>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 class="text-3xl font-black tracking-tight text-primary">Media Library</h1>
-                    <p class="text-sm opacity-60">Manage your high-resolution assets</p>
+                    <h1 class="text-3xl font-black tracking-tight text-primary flex items-center gap-3">
+                        <i class="fas fa-photo-video"></i>
+                        Media Library
+                    </h1>
+                    <p class="text-sm opacity-60 mt-1">Manage your high-resolution assets</p>
                 </div>
                 
                 <form @submit.prevent="submitUpload" class="flex flex-wrap items-center gap-3">
@@ -57,10 +60,13 @@ function copyUrl(path) {
                     </button>
                 </form>
             </div>
+        </template>
+
+        <div class="p-0">
             
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
                 <div v-for="item in media.data" :key="item.id" 
-                     class="group relative aspect-square bg-base-300 rounded-2xl overflow-hidden border border-white/5 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
+                     class="group relative aspect-square bg-base-300 rounded-box overflow-hidden border border-white/5 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
                     
                     <img :src="'/storage/' + item.path" :alt="item.alt_text" class="object-cover w-full h-full grayscale group-hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-110" />
                     
@@ -78,7 +84,7 @@ function copyUrl(path) {
                     </div>
                 </div>
 
-                <div v-if="media.data.length === 0" class="col-span-full py-24 text-center bg-base-100/30 backdrop-blur-lg border-2 border-dashed border-base-content/10 rounded-3xl animate-pulse">
+                <div v-if="media.data.length === 0" class="col-span-full py-24 text-center bg-base-100/30 backdrop-blur-lg border-2 border-dashed border-base-content/10 rounded-box animate-pulse">
                     <p class="text-xl font-medium opacity-40 italic">Your gallery is waiting for its first masterpiece...</p>
                 </div>
             </div>

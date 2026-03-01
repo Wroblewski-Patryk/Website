@@ -2,34 +2,36 @@
     <AdminLayout>
         <Head title="Translations" />
 
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-8">
+        <template #header>
+            <div class="flex justify-between items-center">
                 <div>
                     <h1 class="text-3xl font-black tracking-tight flex items-center gap-3">
                         <i class="fas fa-language text-primary"></i>
                         Translations
                     </h1>
-                    <p class="opacity-50 text-sm mt-1">Manage multi-language strings for your website UI.</p>
+                    <p class="text-sm opacity-50 mt-1">Manage multi-language strings for your website UI.</p>
                 </div>
                 <button @click="showAddModal = true" class="btn btn-primary rounded-full px-6 shadow-lg shadow-primary/20">
                     <i class="fas fa-plus mr-2"></i> Add Key
                 </button>
             </div>
+        </template>
 
+        <div class="p-0">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="stat bg-base-100 rounded-3xl border border-white/5 shadow-sm overflow-hidden relative">
-                    <div class="stat-title opacity-40 uppercase text-[10px] font-bold tracking-widest">Total Keys</div>
-                    <div class="stat-value text-2xl font-black">{{ translations.length }}</div>
+                <div class="stat bg-base-100 rounded-box border border-base-300 shadow-sm overflow-hidden relative">
+                    <div class="stat-title opacity-40 uppercase text-[10px] font-bold tracking-widest text-base-content">Total Keys</div>
+                    <div class="stat-value text-2xl font-black text-primary">{{ translations.length }}</div>
                     <i class="fas fa-key absolute -right-2 -bottom-2 text-4xl opacity-5"></i>
                 </div>
-                <div class="stat bg-base-100 rounded-3xl border border-white/5 shadow-sm overflow-hidden relative">
-                    <div class="stat-title opacity-40 uppercase text-[10px] font-bold tracking-widest">Active Locales</div>
-                    <div class="stat-value text-2xl font-black">2</div>
+                <div class="stat bg-base-100 rounded-box border border-base-300 shadow-sm overflow-hidden relative">
+                    <div class="stat-title opacity-40 uppercase text-[10px] font-bold tracking-widest text-base-content">Active Locales</div>
+                    <div class="stat-value text-2xl font-black text-secondary">2</div>
                     <i class="fas fa-globe absolute -right-2 -bottom-2 text-4xl opacity-5"></i>
                 </div>
             </div>
 
-            <div class="bg-base-100 rounded-3xl border border-white/5 shadow-xl overflow-hidden">
+            <div class="bg-base-100 rounded-box border border-base-300 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="table table-lg w-full">
                         <thead>

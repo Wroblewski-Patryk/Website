@@ -1,0 +1,60 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Language;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class LanguageController extends Controller
+{
+    public function index()
+    {
+        return Inertia::render('Admin/Languages/Index', [
+            'languages' => Language::all()
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|unique:languages',
+            'name' => 'required|string',
+            'is_default' => 'boolean',
+            'is_active' => 'boolean',
+        ]);
+
+        if ($validated['is_default']) {
+            Language::where('is_default', true)->update(['is_default' => false]);
+        }
+
+        Language::create($validated);
+        return redirect()->back()->with('message', 'Language added');
+    }
+
+    public function update(Request $request, Language $language)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'is_default' => 'boolean',
+            'is_active' => 'boolean',
+        ]);
+
+        if ($validated['is_default']) {
+            Language::where('is_default', true)->update(['is_default' => false]);
+        }
+
+        $language->update($validated);
+        return redirect()->back()->with('message', 'Language updated');
+    }
+
+    public function destroy(Language $language)
+    {
+        if ($language->is_default) {
+            return redirect()->back()->withErrors(['message' => 'Cannot delete default language']);
+        }
+        $language->delete();
+        return redirect()->back()->with('message', 'Language deleted');
+    }
+}

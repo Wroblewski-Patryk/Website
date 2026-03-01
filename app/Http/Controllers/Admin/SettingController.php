@@ -13,6 +13,7 @@ class SettingController extends Controller
     public function index()
     {
         $settings = Setting::all()->pluck('value', 'key');
+        // Fetch all templates to ensure dropdowns have what they need
         $templates = Template::select('id', 'name', 'type')->get();
 
         return Inertia::render('Admin/Settings/Index', [

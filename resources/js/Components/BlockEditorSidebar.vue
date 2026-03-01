@@ -78,27 +78,43 @@ const removeProject = (idx) => {
 
                 <!-- Portfolio -->
                 <div v-if="store.activeBlock.type === 'portfolio'" class="space-y-6">
-                    <div v-for="(project, idx) in store.activeBlock.content.projects" :key="idx" class="p-4 bg-base-200 rounded-2xl relative group/item">
-                        <button @click="removeProject(idx)" class="absolute -right-2 -top-2 btn btn-circle btn-xs btn-error opacity-0 group-hover/item:opacity-100 transition-opacity">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        <div class="space-y-3">
-                            <input type="text" v-model="project.title" placeholder="Project Title" class="input input-sm input-bordered w-full font-bold" />
-                            <div class="grid grid-cols-2 gap-2">
-                                <input type="text" v-model="project.date" placeholder="Date" class="input input-sm input-bordered w-full text-xs" />
-                                <input type="text" v-model="project.url" placeholder="Live URL" class="input input-sm input-bordered w-full text-xs" />
+                    <div class="form-control p-4 bg-primary/5 rounded-2xl border border-primary/10">
+                        <label class="label cursor-pointer justify-start gap-4">
+                            <input type="checkbox" v-model="store.activeBlock.content.use_projects_module" class="checkbox checkbox-primary" />
+                            <div>
+                                <span class="text-sm font-bold block">Dynamic Projects</span>
+                                <span class="text-[10px] opacity-50">Fetch all projects from Projects module</span>
                             </div>
-                            <textarea v-model="project.description" placeholder="Description" class="textarea textarea-sm textarea-bordered w-full" rows="2"></textarea>
-                            <div class="space-y-2">
-                                <label class="text-[10px] opacity-40 uppercase font-black">Images</label>
-                                <input type="text" v-model="project.desktop_image" placeholder="Desktop Image URL" class="input input-xs input-bordered w-full font-mono" />
-                                <input type="text" v-model="project.mobile_image" placeholder="Mobile Image URL" class="input input-xs input-bordered w-full font-mono" />
+                        </label>
+                    </div>
+
+                    <div v-if="!store.activeBlock.content.use_projects_module" class="space-y-6">
+                        <div v-for="(project, idx) in store.activeBlock.content.projects" :key="idx" class="p-4 bg-base-200 rounded-2xl relative group/item">
+                            <button @click="removeProject(idx)" class="absolute -right-2 -top-2 btn btn-circle btn-xs btn-error opacity-0 group-hover/item:opacity-100 transition-opacity">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <div class="space-y-3">
+                                <input type="text" v-model="project.title" placeholder="Project Title" class="input input-sm input-bordered w-full font-bold" />
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="text" v-model="project.date" placeholder="Date" class="input input-sm input-bordered w-full text-xs" />
+                                    <input type="text" v-model="project.url" placeholder="Live URL" class="input input-sm input-bordered w-full text-xs" />
+                                </div>
+                                <textarea v-model="project.description" placeholder="Description" class="textarea textarea-sm textarea-bordered w-full" rows="2"></textarea>
+                                <div class="space-y-2">
+                                    <label class="text-[10px] opacity-40 uppercase font-black">Images</label>
+                                    <input type="text" v-model="project.desktop_image" placeholder="Desktop Image URL" class="input input-xs input-bordered w-full font-mono" />
+                                    <input type="text" v-model="project.mobile_image" placeholder="Mobile Image URL" class="input input-xs input-bordered w-full font-mono" />
+                                </div>
                             </div>
                         </div>
+                        <button @click="addProject" class="btn btn-outline btn-primary btn-sm btn-block rounded-xl border-dashed">
+                            <i class="fas fa-plus mr-2"></i> Add Project
+                        </button>
                     </div>
-                    <button @click="addProject" class="btn btn-outline btn-primary btn-sm btn-block rounded-xl border-dashed">
-                        <i class="fas fa-plus mr-2"></i> Add Project
-                    </button>
+                    <div v-else class="p-8 text-center opacity-40 italic text-xs">
+                        <i class="fas fa-magic mb-2 text-xl block"></i>
+                        Showing all projects from module.
+                    </div>
                 </div>
 
                 <!-- Custom Code -->
@@ -179,7 +195,7 @@ const removeProject = (idx) => {
                 </div>
             </div>
 
-            <!-- STYLE & ADVANCED TABS (Simplified for demo) -->
+            <!-- STYLE & ADVANCED TABS -->
             <div v-if="activeSidebarTab === 'style'" class="space-y-4 opacity-50 italic text-xs">
                 Color and typography overrides coming soon...
             </div>

@@ -46,7 +46,7 @@ function applyTheme(themeName) {
                     <label tabindex="0" class="btn btn-ghost btn-circle">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>
                     </label>
-                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200">
+                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200">
                         <li class="menu-title"><span>Select Theme</span></li>
                         <li v-for="theme in themes" :key="theme">
                             <a :class="{ 'active': currentTheme === theme }" @click="currentTheme = theme">
@@ -63,7 +63,7 @@ function applyTheme(themeName) {
                             <span>AD</span>
                         </div>
                     </label>
-                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200">
+                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200">
                         <li><a>Settings</a></li>
                         <li><a>Logout</a></li>
                     </ul>
@@ -77,7 +77,7 @@ function applyTheme(themeName) {
                 <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
                 <div class="drawer-side h-full absolute lg:static">
                     <label for="admin-drawer" class="drawer-overlay"></label> 
-                    <ul class="menu p-4 w-64 h-full bg-base-100 text-base-content border-r border-base-300">
+                    <ul class="menu p-4 w-64 h-full bg-base-100 text-base-content border-r border-base-300 gap-0.5">
                         <!-- Sidebar content here -->
                         <li class="menu-title"><span>Content</span></li>
                         <li>
@@ -93,7 +93,13 @@ function applyTheme(themeName) {
                             </Link>
                         </li>
                         <li>
-                            <Link href="/admin/forms" :class="{ 'active': $page.url.startsWith('/admin/forms') }">
+                            <Link href="/admin/projects" :class="{ 'active': $page.url.startsWith('/admin/projects') }">
+                                <i class="fas fa-project-diagram w-5"></i>
+                                Projects
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/admin/forms" :class="{ 'active': $page.url === '/admin/forms' || $page.url.startsWith('/admin/forms/') }">
                                 <i class="fas fa-envelope-open-text w-5"></i>
                                 Forms
                             </Link>
@@ -123,6 +129,12 @@ function applyTheme(themeName) {
 
                         <li class="menu-title mt-4"><span>System</span></li>
                         <li>
+                            <Link href="/admin/languages" :class="{ 'active': $page.url.startsWith('/admin/languages') }">
+                                <i class="fas fa-language w-5"></i>
+                                Languages
+                            </Link>
+                        </li>
+                        <li>
                             <Link href="/admin/translations" :class="{ 'active': $page.url.startsWith('/admin/translations') }">
                                 <i class="fas fa-language w-5"></i>
                                 Translations
@@ -149,8 +161,15 @@ function applyTheme(themeName) {
                     </label>
                 </div>
 
-                <div class="max-w-7xl mx-auto rounded-box overflow-hidden shadow-sm border border-base-300 bg-base-100">
-                    <slot></slot>
+                <div class="max-w-7xl mx-auto">
+                    <!-- Header Section if provided -->
+                    <div v-if="$slots.header" class="mb-6 p-6 bg-base-100 rounded-box shadow-sm border border-base-300">
+                        <slot name="header"></slot>
+                    </div>
+
+                    <div>
+                        <slot></slot>
+                    </div>
                 </div>
             </main>
         </div>

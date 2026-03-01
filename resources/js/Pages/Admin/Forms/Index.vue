@@ -15,17 +15,22 @@ function deleteForm(id) {
     <Head title="Forms Management" />
     <AdminLayout>
         <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="text-xl font-semibold leading-tight">Forms</h2>
-                <Link href="/admin/forms/create" class="btn btn-primary btn-sm">Create New Form</Link>
+            <div class="flex justify-between items-center text-base-content">
+                <div>
+                    <h1 class="text-3xl font-black tracking-tight flex items-center gap-3">
+                        <i class="fas fa-wpforms text-primary"></i>
+                        Forms
+                    </h1>
+                    <p class="text-sm opacity-50 mt-1">Configure and manage user-facing forms.</p>
+                </div>
+                <Link href="/admin/forms/create" class="btn btn-primary rounded-full px-6 shadow-lg shadow-primary/20">
+                    <i class="fas fa-plus mr-2"></i> Create New Form
+                </Link>
             </div>
         </template>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-base-100 overflow-hidden shadow-sm sm:rounded-lg border border-base-200">
-                    <div class="p-6 text-base-content">
-                        <table class="table w-full">
+        <div class="bg-base-100 rounded-box shadow-sm border border-base-300 overflow-hidden">
+                <table class="table w-full">
                             <thead>
                                 <tr>
                                     <th>Name</th>
@@ -58,11 +63,8 @@ function deleteForm(id) {
                                         No forms found. Create your first one!
                                     </td>
                                 </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </AdminLayout>
+            </tbody>
+        </table>
+    </div>
+</AdminLayout>
 </template>

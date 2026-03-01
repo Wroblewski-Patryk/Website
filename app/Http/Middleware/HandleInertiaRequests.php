@@ -37,8 +37,8 @@ class HandleInertiaRequests extends Middleware
     {
         $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
 
-        $headerId = $settings['global_header_id'] ?? null;
-        $footerId = $settings['global_footer_id'] ?? null;
+        $headerId = $settings['default_header_id'] ?? null;
+        $footerId = $settings['default_footer_id'] ?? null;
 
         $header = $headerId
             ?\App\Models\Template::find($headerId)
@@ -53,11 +53,12 @@ class HandleInertiaRequests extends Middleware
             'header' => $header ? $header->content : null,
             'footer' => $footer ? $footer->content : null,
             'locale' => app()->getLocale(),
+            'all_projects' => \App\Models\Project::orderBy('order')->get(),
             'site_settings' => [
-                'color_primary' => $settings['color_primary'] ?? '#000000',
-                'color_secondary' => $settings['color_secondary'] ?? '#ffffff',
-                'font_heading' => $settings['font_heading'] ?? 'Titillium Web',
-                'font_body' => $settings['font_body'] ?? 'Titillium Web',
+                'color_primary' => $settings['brand_primary_color'] ?? '#000000',
+                'color_secondary' => $settings['brand_secondary_color'] ?? '#ffffff',
+                'font_heading' => $settings['brand_font_family'] ?? 'Titillium Web',
+                'font_body' => $settings['brand_font_family'] ?? 'Titillium Web',
             ]
         ];
     }

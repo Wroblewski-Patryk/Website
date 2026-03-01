@@ -15,13 +15,23 @@ function deletePost(id) {
 <template>
     <Head title="Manage Posts" />
     <AdminLayout>
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold">Blog Posts</h1>
-                <Link href="/admin/posts/create" class="btn btn-primary">Create Post</Link>
+        <template #header>
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-black tracking-tight flex items-center gap-3">
+                        <i class="fas fa-feather text-primary"></i>
+                        Blog Posts
+                    </h1>
+                    <p class="text-sm opacity-50 mt-1">Share your thoughts and news with the world.</p>
+                </div>
+                <Link href="/admin/posts/create" class="btn btn-primary px-6 shadow-lg shadow-primary/20">
+                    <i class="fas fa-plus mr-2"></i> Create Post
+                </Link>
             </div>
-            
-            <div class="overflow-x-auto bg-base-100 rounded-box shadow-sm border border-base-200">
+        </template>
+
+        <div class="bg-base-100 rounded-box shadow-sm border border-base-300 overflow-hidden">
+            <div class="overflow-x-auto">
                 <table class="table w-full">
                     <thead>
                         <tr>
