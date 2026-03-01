@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Page;
 use Inertia\Inertia;
 
+// Redirect default login name to Admin login
+Route::redirect('login', 'admin/login')->name('login');
+
 // Admin Routes
 Route::name('admin.')->prefix('admin')->group(function () {
     Route::middleware('guest')->group(function () {
