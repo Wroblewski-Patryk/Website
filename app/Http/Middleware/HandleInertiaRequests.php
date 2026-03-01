@@ -35,9 +35,13 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $header = \App\Models\Template::where('type', 'header')->where('is_active', true)->first();
+        $footer = \App\Models\Template::where('type', 'footer')->where('is_active', true)->first();
+
         return [
             ...parent::share($request),
-            //
+            'header' => $header ? $header->content : null,
+            'footer' => $footer ? $footer->content : null,
         ];
     }
 }

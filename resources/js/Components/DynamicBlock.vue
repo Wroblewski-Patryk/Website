@@ -1,6 +1,6 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
-import { ref, onMounted } from 'vue';
+import { useForm, Link } from '@inertiajs/vue3';
+import { ref, onMounted, computed } from 'vue';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -27,6 +27,22 @@ const submitContact = () => {
         onSuccess: () => form.reset(),
     });
 };
+
+const appearance = computed(() => {
+    const data = props.block.data || {};
+    return {
+        marginTop: data.margin_top || '',
+        marginBottom: data.margin_bottom || '',
+        paddingTop: data.padding_top || '',
+        paddingBottom: data.padding_bottom || '',
+        backgroundColor: data.background_color || '',
+        color: data.text_color || '',
+    };
+});
+
+const customClasses = computed(() => {
+    return props.block.data?.custom_css_classes || '';
+});
 
 onMounted(() => {
     if (!blockRef.value) return;
@@ -78,58 +94,70 @@ onMounted(() => {
 </script>
 
 <template>
-    <div ref="blockRef" class="dynamic-block w-full">
+    <div 
+        ref="blockRef" 
+        class="dynamic-block w-full"
+        :class="customClasses"
+        :style="appearance"
+    >
+        <!-- Nav Block -->
+        <nav v-if="block.type === 'nav'" class="py-4 px-8 flex justify-between items-center z-50 relative">
+            <div class="text-2xl font-bold tracking-widest"><Link href="/">PORTFOLIO</Link></div>
+            <ul class="flex gap-6">
+                <li v-for="(link, index) in block.data.links" :key="index">
+                    <a :href="link.url" class="hover:text-gray-400 transition">{{ link.label }}</a>
+                </li>
+            </ul>
+        </nav>
+
         <!-- Hero Block -->
-        <section v-if="block.type === 'hero'" class="py-20 flex flex-col items-center justify-center text-center">
-            <h1 class="text-5xl font-bold mb-4">{{ block.data.heading }}</h1>
-            <p v-if="block.data.subheading" class="text-xl text-gray-600 mb-8">{{ block.data.subheading }}</p>
-            <img v-if="block.data.image" :src="`/storage/${block.data.image}`" class="rounded-xl shadow-lg max-w-4xl w-full object-cover">
+        <section v-else-if="block.type === 'hero'" class="py-32 flex flex-col items-center justify-center text-center relative z-20">
+            <h1 class="text-6xl md:text-8xl font-black mb-6 uppercase tracking-tight">{{ block.data.heading }}</h1>
+            <p v-if="block.data.subheading" class="text-2xl md:text-3xl font-light mb-12 max-w-3xl mx-auto">{{ block.data.subheading }}</p>
+            <img v-if="block.data.image" :src="`/storage/${block.data.image}`" class="rounded-xl shadow-2xl max-w-4xl w-full object-cover">
         </section>
 
         <!-- Text Content Block -->
-        <section v-if="block.type === 'text_content'" class="py-16 max-w-4xl mx-auto prose prose-lg dark:prose-invert">
-            <div v-html="block.data.text"></div>
+        <section v-else-if="block.type === 'text_content'" class="py-20 max-w-4xl mx-auto prose prose-xl dark:prose-invert relative z-20">
+            <div v-html="block.data.text" class="text-center md:text-left leading-relaxed"></div>
         </section>
 
-        <!-- Portfolio Block -->
-        <section v-if="block.type === 'portfolio_section'" class="py-16 max-w-6xl mx-auto">
-            <h2 v-if="block.data.section_title" class="text-3xl font-bold mb-8 text-center">{{ block.data.section_title }}</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <a v-for="(item, index) in block.data.items" :key="index" :href="item.link_url || '#'" class="block relative overflow-hidden rounded-xl group">
-                    <img :src="`/storage/${item.thumbnail}`" class="w-full h-64 object-cover transition duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
-                        <h3 class="text-white text-xl font-semibold">{{ item.title }}</h3>
+        <!-- Portfolio Block (Work) -->
+        <section v-else-if="block.type === 'portfolio_section'" class="py-20 max-w-7xl mx-auto px-4 relative z-20">
+            <h2 v-if="block.data.section_title" class="text-4xl md:text-5xl font-bold mb-16 text-center uppercase">{{ block.data.section_title }}</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                <a v-for="(item, index) in block.data.items" :key="index" :href="item.link_url || '#'" class="block relative overflow-hidden group">
+                    <img :src="`/storage/${item.thumbnail}`" class="w-full h-80 object-cover transition-transform duration-700 group-hover:scale-105 filter grayscale group-hover:grayscale-0">
+                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                        <h3 class="text-white text-2xl font-bold tracking-wider uppercase border-2 border-white px-6 py-2">{{ item.title }}</h3>
                     </div>
                 </a>
             </div>
         </section>
 
         <!-- Contact Form Block -->
-        <section v-if="block.type === 'contact_form'" class="py-16 max-w-xl mx-auto bg-gray-50 rounded-2xl p-8 shadow-sm border border-gray-100">
-            <h2 class="text-3xl font-bold mb-4 text-center">{{ block.data.heading || 'Contact Us' }}</h2>
-            <p v-if="block.data.description" class="text-gray-600 text-center mb-8">{{ block.data.description }}</p>
+        <section v-else-if="block.type === 'contact_form'" class="py-24 max-w-2xl mx-auto relative z-20 px-4">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 text-center uppercase tracking-wider">{{ block.data.heading || 'Contact' }}</h2>
+            <p v-if="block.data.description" class="text-center mb-12 text-lg opacity-80">{{ block.data.description }}</p>
             
-            <div v-if="form.recentlySuccessful" class="mb-6 p-4 bg-green-100 text-green-700 rounded-lg text-center">
-                Message sent successfully!
+            <div v-if="form.recentlySuccessful" class="mb-8 p-6 bg-white/10 border border-white/20 text-white rounded text-center text-xl">
+                Thanks for your message. We'll be in touch!
             </div>
 
-            <form @submit.prevent="submitContact" class="space-y-4">
+            <form @submit.prevent="submitContact" class="space-y-6">
                 <div>
-                    <label class="block text-sm font-medium mb-1">Name</label>
-                    <input v-model="form.name" type="text" class="w-full border-gray-300 rounded-lg p-3" required>
-                    <div v-if="form.errors.name" class="text-red-500 text-sm mt-1">{{ form.errors.name }}</div>
+                    <input v-model="form.name" type="text" placeholder="Name" class="w-full bg-transparent border-0 border-b-2 border-white/30 focus:border-white focus:ring-0 px-0 py-4 text-xl placeholder-white/50 transition" required>
+                    <div v-if="form.errors.name" class="text-red-400 text-sm mt-2">{{ form.errors.name }}</div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">Email</label>
-                    <input v-model="form.email" type="email" class="w-full border-gray-300 rounded-lg p-3" required>
-                    <div v-if="form.errors.email" class="text-red-500 text-sm mt-1">{{ form.errors.email }}</div>
+                    <input v-model="form.email" type="email" placeholder="Email" class="w-full bg-transparent border-0 border-b-2 border-white/30 focus:border-white focus:ring-0 px-0 py-4 text-xl placeholder-white/50 transition" required>
+                    <div v-if="form.errors.email" class="text-red-400 text-sm mt-2">{{ form.errors.email }}</div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">Message</label>
-                    <textarea v-model="form.message" class="w-full border-gray-300 rounded-lg p-3" rows="4" required></textarea>
-                    <div v-if="form.errors.message" class="text-red-500 text-sm mt-1">{{ form.errors.message }}</div>
+                    <textarea v-model="form.message" placeholder="Message" class="w-full bg-transparent border-0 border-b-2 border-white/30 focus:border-white focus:ring-0 px-0 py-4 text-xl placeholder-white/50 transition" rows="4" required></textarea>
+                    <div v-if="form.errors.message" class="text-red-400 text-sm mt-2">{{ form.errors.message }}</div>
                 </div>
-                <button type="submit" :disabled="form.processing" class="w-full bg-black text-white rounded-lg py-3 font-medium hover:bg-gray-800 transition disabled:opacity-50">
+                <button type="submit" :disabled="form.processing" class="w-full border-2 border-white hover:bg-white hover:text-black text-white py-4 text-xl font-bold tracking-widest uppercase transition-colors disabled:opacity-50 mt-8">
                     {{ form.processing ? 'Sending...' : 'Send Message' }}
                 </button>
             </form>
