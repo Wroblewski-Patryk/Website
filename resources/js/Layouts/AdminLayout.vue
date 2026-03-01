@@ -37,7 +37,10 @@ function applyTheme(themeName) {
         <!-- Top Navbar -->
         <div class="navbar bg-base-100/80 backdrop-blur-md shadow-lg border-b border-base-300 z-50 sticky top-0 px-4">
             <div class="flex-1">
-                <a class="btn btn-ghost normal-case text-2xl font-black tracking-tighter bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent italic">Featherly</a>
+                <Link href="/admin/dashboard" class="btn btn-ghost normal-case text-2xl font-black tracking-tighter gap-2">
+                    <img src="/img/featherly-sygnet.svg" alt="Featherly" class="h-8 w-auto object-contain" />
+                    <span class="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent italic">Featherly</span>
+                </Link>
             </div>
             
             <div class="flex-none gap-2">
