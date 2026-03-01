@@ -10,6 +10,8 @@ class EditPage extends EditRecord
 {
     protected static string $resource = PageResource::class;
 
+    protected static string $view = 'filament.resources.pages.visual-builder-edit';
+
     protected function getHeaderActions(): array
     {
         return [

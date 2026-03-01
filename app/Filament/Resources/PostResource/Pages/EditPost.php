@@ -10,6 +10,8 @@ class EditPost extends EditRecord
 {
     protected static string $resource = PostResource::class;
 
+    protected static string $view = 'filament.resources.pages.visual-builder-edit';
+
     protected function getHeaderActions(): array
     {
         return [

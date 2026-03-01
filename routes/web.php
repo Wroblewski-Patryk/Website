@@ -34,6 +34,12 @@ Route::get('/blog/{slug}', function (string $slug) {
     'post' => $post,
     ]);
 });
+Route::get('/live-preview', function () {
+    return Inertia::render('Preview', [
+    'page' => new \App\Models\Page()
+    ]);
+})->name('live-preview');
+
 Route::get('/{slug}', function ($slug) {
     // If user tries to visit the slug directly, check if it's the home page
     $homeSlug = \App\Models\Setting::where('key', 'home_page_slug')->value('value') ?? 'home';

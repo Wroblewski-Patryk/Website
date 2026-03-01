@@ -9,4 +9,6 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateTemplate extends CreateRecord
 {
     protected static string $resource = TemplateResource::class;
+
+    protected static string $view = 'filament.resources.pages.visual-builder-edit';
 }

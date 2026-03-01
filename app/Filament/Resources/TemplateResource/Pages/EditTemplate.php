@@ -10,6 +10,8 @@ class EditTemplate extends EditRecord
 {
     protected static string $resource = TemplateResource::class;
 
+    protected static string $view = 'filament.resources.pages.visual-builder-edit';
+
     protected function getHeaderActions(): array
     {
         return [
