@@ -161,35 +161,8 @@
                             <div v-if="blocks.length === 0" class="text-xs opacity-40 italic mt-2">No blocks on canvas.</div>
                         </div>
                         <div v-show="timelineTab === 'timeline'" class="flex-1 flex flex-col">
-                            <p class="text-[10px] font-bold uppercase tracking-widest opacity-30 mb-4 px-2">GSAP Animation Sequence</p>
-                            
-                            <div class="space-y-1">
-                                <div v-for="(block, index) in timelineBlocks" :key="block.id" class="text-xs py-2 px-3 border border-white/5 rounded-lg flex items-center gap-4 bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer" @click="store.activeBlockId = block.id" :class="{ 'ring-1 ring-primary bg-primary/20': store.activeBlockId === block.id }">
-                                    
-                                    <div class="w-6 text-center font-mono opacity-40 font-bold">{{ index + 1 }}</div>
-                                    <i :class="block.icon || 'fas fa-cube'" class="opacity-50 text-primary"></i>
-                                    
-                                    <div class="flex-1">
-                                        <div class="font-bold text-primary">{{ block.type.charAt(0).toUpperCase() + block.type.slice(1) }}</div>
-                                        <div class="text-[10px] opacity-50 space-x-2">
-                                            <span><i class="fas fa-bolt mr-1"></i>{{ block.settings.animations.trigger }}</span>
-                                            <span><i class="fas fa-magic mr-1"></i>{{ block.settings.animations.preset }}</span>
-                                            <span><i class="fas fa-stopwatch mr-1"></i>{{ block.settings.animations.duration }}s</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="w-32 h-2 bg-base-300 rounded-full overflow-hidden relative" title="Timeline visual representation placeholder">
-                                        <div class="absolute top-0 bottom-0 bg-primary opacity-50 rounded-full" :style="{ left: `${(block.settings.animations.delay || 0) * 10}%`, width: `${(block.settings.animations.duration || 1) * 20}%`, minWidth: '4px' }"></div>
-                                    </div>
-                                    
-                                    <span class="opacity-30 text-[10px] font-mono">{{ block.id.split('-')[0] }}</span>
-                                </div>
-                                
-                                <div v-if="timelineBlocks.length === 0" class="flex-1 flex flex-col items-center justify-center opacity-30 my-8 py-8 pointer-events-none">
-                                    <i class="fas fa-project-diagram text-4xl mb-4"></i>
-                                    <p class="text-xs text-center max-w-sm">No blocks are attached to the Main Timeline. Select a block, open its Animation settings, and check "Attach to Main Timeline".</p>
-                                </div>
-                            </div>
+                            <p class="text-[10px] font-bold uppercase tracking-widest opacity-30 mb-2 px-2">GSAP Animation Sequence</p>
+                            <GsapTimelineEditor :blocks="timelineBlocks" class="flex-1" />
                         </div>
                     </div>
                 </div>
@@ -209,6 +182,7 @@ import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
 import BlockEditorSidebar from '@/Components/BlockEditorSidebar.vue';
 import LayerTreeItem from '@/Components/LayerTreeItem.vue';
+import GsapTimelineEditor from '@/Components/GsapTimelineEditor.vue';
 import draggable from 'vuedraggable';
 import gsap from 'gsap';
 
