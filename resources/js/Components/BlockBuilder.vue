@@ -152,16 +152,13 @@
                     <div class="flex-1 overflow-y-auto p-4 custom-scrollbar flex gap-4">
                         <div v-show="timelineTab === 'layers'" class="flex-1">
                             <p class="text-[10px] font-bold uppercase tracking-widest opacity-30 mb-4">Canvas Graph</p>
-                            <div class="space-y-1">
-                                <div v-for="block in blocks" :key="block.id" class="text-xs py-2 px-3 border border-white/5 rounded-lg flex items-center gap-3 bg-base-200/30 hover:bg-base-200 transition-colors" :class="{ 'ring-1 ring-primary bg-primary/5': store.activeBlockId === block.id }">
-                                    <i class="fas fa-grip-vertical opacity-20 cursor-move"></i>
-                                    <i :class="block.icon || 'fas fa-cube'" class="opacity-50"></i>
-                                    <span class="font-semibold cursor-pointer flex-1" @click="store.activeBlockId = block.id">{{ block.type.charAt(0).toUpperCase() + block.type.slice(1) }}</span>
-                                    <span class="opacity-30 text-[10px] font-mono">{{ block.id.split('-')[0] }}</span>
-                                    <button @click.stop="store.removeBlock(block.id)" class="btn btn-ghost btn-xs btn-circle text-error ml-2"><i class="fas fa-trash"></i></button>
-                                </div>
-                                <div v-if="blocks.length === 0" class="text-xs opacity-40 italic">No blocks on canvas.</div>
-                            </div>
+                            
+                            <LayerTreeItem 
+                                :blocks="blocks" 
+                                @change="store.isDirty = true" 
+                            />
+                            
+                            <div v-if="blocks.length === 0" class="text-xs opacity-40 italic mt-2">No blocks on canvas.</div>
                         </div>
                         <div v-show="timelineTab === 'timeline'" class="flex-1 flex flex-col">
                             <p class="text-[10px] font-bold uppercase tracking-widest opacity-30 mb-4 px-2">GSAP Animation Sequence</p>
@@ -211,6 +208,7 @@ import { ref, computed } from 'vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
 import BlockEditorSidebar from '@/Components/BlockEditorSidebar.vue';
+import LayerTreeItem from '@/Components/LayerTreeItem.vue';
 import draggable from 'vuedraggable';
 import gsap from 'gsap';
 
