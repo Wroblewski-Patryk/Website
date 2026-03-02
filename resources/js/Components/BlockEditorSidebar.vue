@@ -30,8 +30,28 @@ watch(() => store.activeBlock, (newBlock) => {
     if (newBlock) {
         if (!newBlock.settings) newBlock.settings = {};
         if (!newBlock.settings.style) newBlock.settings.style = {};
+        if (!newBlock.settings.animations) {
+            newBlock.settings.animations = {
+                enabled: false,
+                trigger: 'onEnter',
+                preset: 'fade-up',
+                duration: 0.8,
+                delay: 0,
+                ease: 'power2.out',
+                bindToTimeline: false,
+                once: true,
+            };
+        }
+        if (!newBlock.settings.layout) {
+            newBlock.settings.layout = {
+                fullHeight: false,
+                fixedBg: false,
+                padding: 'py-20',
+                zIndex: 1
+            };
+        }
     }
-}, { immediate: true });
+}, { immediate: true, deep: true });
 
 const addProject = () => {
     store.activeBlock.content.projects.push({
@@ -373,21 +393,23 @@ const removeProject = (idx) => {
             </div>
 
             <!-- ANIMATIONS TAB -->
-            <div v-if="activeSidebarTab === 'animations'" class="space-y-6">
-                 <div class="form-control p-4 bg-primary/5 rounded-2xl border border-primary/10">
-                    <label class="label cursor-pointer justify-between">
-                        <span class="text-sm font-black text-primary uppercase italic">Enable Magic Sauce</span>
-                        <input type="checkbox" v-model="store.activeBlock.settings.animations.enabled" class="toggle toggle-primary" />
+            <div v-if="activeSidebarTab === 'animations'" class="space-y-6 animate-in fade-in">
+                
+                <div class="form-control">
+                    <label class="label cursor-pointer justify-between bg-base-200/50 p-3 rounded-xl border border-white/5">
+                        <span class="label-text font-bold text-xs uppercase tracking-widest opacity-70">Enable Animations</span>
+                        <input type="checkbox" v-model="store.activeBlock.settings.animations.enabled" class="toggle toggle-primary toggle-sm" />
                     </label>
                 </div>
 
-                <div v-if="store.activeBlock.settings.animations.enabled" class="space-y-4 animate-in fade-in slide-in-from-top-2">
+                <div v-if="store.activeBlock.settings.animations.enabled" class="space-y-4">
                     <div class="form-control">
                         <label class="label"><span class="label-text text-[10px] opacity-40 uppercase font-bold">Trigger Event</span></label>
                         <select v-model="store.activeBlock.settings.animations.trigger" class="select select-bordered select-sm w-full">
                             <option value="onEnter">On Enter (Viewport)</option>
                             <option value="onLoad">On Page Load</option>
                             <option value="onScroll">On Scroll (Scrub)</option>
+                            <option value="timeline">Main GSAP Timeline sequence</option>
                         </select>
                     </div>
 
@@ -400,17 +422,16 @@ const removeProject = (idx) => {
                             <option value="slide-right">Slide Right</option>
                             <option value="zoom-in">Zoom In</option>
                             <option value="clip-reveal">Clip Reveal</option>
-                            <option value="reveal-text">Text Reveal (Chars)</option>
                         </select>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] opacity-40 uppercase">Duration</span></label>
+                            <label class="label"><span class="label-text text-[10px] opacity-40 uppercase">Duration (s)</span></label>
                             <input type="number" step="0.1" v-model="store.activeBlock.settings.animations.duration" class="input input-bordered input-sm" />
                         </div>
                         <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] opacity-40 uppercase">Delay</span></label>
+                            <label class="label"><span class="label-text text-[10px] opacity-40 uppercase">Delay (s)</span></label>
                             <input type="number" step="0.1" v-model="store.activeBlock.settings.animations.delay" class="input input-bordered input-sm" />
                         </div>
                     </div>
@@ -425,22 +446,6 @@ const removeProject = (idx) => {
                         </select>
                     </div>
 
-                    <div class="divider text-[10px] opacity-30 uppercase tracking-widest">Advanced Sequencing</div>
-
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-[10px] opacity-40 uppercase font-bold">Timeline ID</span></label>
-                        <input type="text" v-model="store.activeBlock.settings.animations.timelineId" placeholder="e.g. hero-reveal" class="input input-bordered input-sm font-mono text-[10px]" />
-                        <label class="label">
-                            <span class="label-text-alt opacity-40">Group elements into a sequence</span>
-                        </label>
-                    </div>
-
-                    <div class="form-control">
-                        <label class="label cursor-pointer justify-between">
-                            <span class="label-text text-xs opacity-60">Run Only Once</span>
-                            <input type="checkbox" v-model="store.activeBlock.settings.animations.once" class="checkbox checkbox-xs" />
-                        </label>
-                    </div>
                 </div>
             </div>
 
