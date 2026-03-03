@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
+import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue';
 
 defineProps({
     fullWidth: {
@@ -40,6 +41,7 @@ function applyTheme(themeName) {
 </script>
 
 <template>
+    <ThemeStyleProvider />
     <div class="min-h-screen bg-base-200 text-base-content font-sans">
         <!-- Top Navbar -->
         <div class="navbar bg-base-100/80 backdrop-blur-md shadow-lg border-b border-base-300 z-50 sticky top-0 px-4">
@@ -120,7 +122,18 @@ function applyTheme(themeName) {
                             </Link>
                         </li>
                         
-                        <li class="menu-title mt-4"><span>Design & Layout</span></li>
+                        <li class="menu-title mt-4"><span>Design</span></li>
+                        <li>
+                            <details :open="['/admin/theme-configurator/colors', '/admin/theme-configurator/fonts', '/admin/theme-configurator/sizes', '/admin/theme-configurator/blocks'].includes($page.url)">
+                                <summary><i class="fas fa-paint-roller w-5"></i> Theme</summary>
+                                <ul>
+                                    <li><Link href="/admin/theme-configurator/colors" :class="{ 'active': $page.url === '/admin/theme-configurator/colors' }">Colors</Link></li>
+                                    <li><Link href="/admin/theme-configurator/fonts" :class="{ 'active': $page.url === '/admin/theme-configurator/fonts' }">Fonts</Link></li>
+                                    <li><Link href="/admin/theme-configurator/sizes" :class="{ 'active': $page.url === '/admin/theme-configurator/sizes' }">Sizes / Metrics</Link></li>
+                                    <li><Link href="/admin/theme-configurator/blocks" :class="{ 'active': $page.url === '/admin/theme-configurator/blocks' }">Block Defaults</Link></li>
+                                </ul>
+                            </details>
+                        </li>
                         <li>
                             <Link href="/admin/templates" :class="{ 'active': $page.url.startsWith('/admin/templates') }">
                                 <i class="fas fa-layer-group w-5"></i>

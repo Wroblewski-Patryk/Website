@@ -8,6 +8,11 @@ const props = defineProps(['templates']);
 const tableRef = ref(null);
 const deleteForm = useForm({});
 
+const breadcrumbs = [
+    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Templates' }
+];
+
 const columns = [
     { key: 'id', label: 'ID', sortable: true },
     { key: 'name', label: 'Name', sortable: true },
@@ -28,6 +33,7 @@ function deleteTemplate(item) {
             title="Templates"
             description="Reusable layouts for headers, footers, and global sections."
             icon="fas fa-layer-group"
+            :breadcrumbs="breadcrumbs"
             :resources="templates"
             :columns="columns"
             create-route="/admin/templates/create"

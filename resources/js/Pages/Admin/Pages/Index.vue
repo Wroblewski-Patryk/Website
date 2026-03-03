@@ -8,6 +8,11 @@ const props = defineProps(['pages']);
 const tableRef = ref(null);
 const deleteForm = useForm({});
 
+const breadcrumbs = [
+    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Pages' }
+];
+
 const columns = [
     { key: 'id', label: 'ID', sortable: true },
     { key: 'title', label: 'Title', sortable: true },
@@ -28,6 +33,7 @@ function deletePage(item) {
             title="Pages"
             description="Manage your website pages and visual content."
             icon="fas fa-file-alt"
+            :breadcrumbs="breadcrumbs"
             :resources="pages"
             :columns="columns"
             create-route="/admin/pages/create"

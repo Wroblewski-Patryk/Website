@@ -8,6 +8,11 @@ const props = defineProps(['posts']);
 const tableRef = ref(null);
 const deleteForm = useForm({});
 
+const breadcrumbs = [
+    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Blog Posts' }
+];
+
 const columns = [
     { key: 'id', label: 'ID', sortable: true },
     { key: 'title', label: 'Title', sortable: true },
@@ -28,6 +33,7 @@ function deletePost(item) {
             title="Blog Posts"
             description="Share your thoughts and news with the world."
             icon="fas fa-feather"
+            :breadcrumbs="breadcrumbs"
             :resources="posts"
             :columns="columns"
             create-route="/admin/posts/create"

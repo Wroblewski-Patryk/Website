@@ -17,6 +17,11 @@ const addForm = useForm({
     text: { pl: '', en: '' }
 });
 
+const breadcrumbs = [
+    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Translations' }
+];
+
 const columns = [
     { key: 'group_key', label: 'Group / Key', sortable: true },
     { key: 'text.pl', label: 'Polish (PL)', sortable: true },
@@ -67,6 +72,7 @@ const deleteTranslation = (item) => {
             title="Translations"
             description="Manage multi-language strings for your website UI."
             icon="fas fa-language"
+            :breadcrumbs="breadcrumbs"
             :resources="translations"
             :columns="columns"
             persistence-key="translations"

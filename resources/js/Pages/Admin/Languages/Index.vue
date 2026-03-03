@@ -19,6 +19,11 @@ const form = useForm({
     is_active: true
 });
 
+const breadcrumbs = [
+    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Languages' }
+];
+
 const columns = [
     { key: 'id', label: 'ID', sortable: true },
     { key: 'name', label: 'Name', sortable: true },
@@ -113,6 +118,7 @@ function deleteLanguage(item) {
             title="Languages"
             description="Manage available locales and site internationalization."
             icon="fas fa-globe"
+            :breadcrumbs="breadcrumbs"
             :resources="languages"
             :columns="columns"
             persistence-key="languages"

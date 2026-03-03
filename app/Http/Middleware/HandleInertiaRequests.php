@@ -59,7 +59,10 @@ class HandleInertiaRequests extends Middleware
                 'color_secondary' => $settings['brand_secondary_color'] ?? '#ffffff',
                 'font_heading' => $settings['brand_font_family'] ?? 'Titillium Web',
                 'font_body' => $settings['brand_font_family'] ?? 'Titillium Web',
-            ]
+            ],
+            'theme_config' => isset($settings['theme_config']) ? 
+            (is_array($settings['theme_config']) ? $settings['theme_config'] : json_decode($settings['theme_config'], true))
+            : null,
         ];
     }
 }

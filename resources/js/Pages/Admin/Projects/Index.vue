@@ -8,6 +8,11 @@ const props = defineProps(['projects']);
 const tableRef = ref(null);
 const deleteForm = useForm({});
 
+const breadcrumbs = [
+    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Projects' }
+];
+
 const columns = [
     { key: 'id', label: 'ID', sortable: true },
     { key: 'title', label: 'Title', sortable: true },
@@ -28,6 +33,7 @@ function deleteProject(item) {
             title="Projects"
             description="Showcase your best work in a curated portfolio."
             icon="fas fa-project-diagram"
+            :breadcrumbs="breadcrumbs"
             :resources="projects"
             :columns="columns"
             create-route="/admin/projects/create"

@@ -1,5 +1,6 @@
 <template>
-  <div class="relative bg-base-100 min-h-screen flex flex-col mx-auto w-full overflow-x-hidden shadow-2xl" :style="cssVariables">
+  <ThemeStyleProvider />
+  <div class="relative bg-base-100 min-h-screen flex flex-col mx-auto w-full overflow-x-hidden shadow-2xl">
     <!-- Header Wrapper -->
     <header v-if="activeHeader" class="relative">
       <div class="fixed top-6 right-6 z-[60]">
@@ -33,6 +34,7 @@ import { computed, onMounted } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import DynamicBlock from '@/Components/DynamicBlock.vue'
 import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
+import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue'
 
 const props = defineProps({
   settings: {
@@ -53,17 +55,7 @@ const activeFooter = computed(() => {
   return pageProps.settings?.default_footer_content;
 });
 
-const cssVariables = computed(() => {
-  const brand = pageProps.settings?.brand_colors || {};
-  const fonts = pageProps.settings?.brand_fonts || {};
-  return {
-    '--p': brand.primary || '#4f46e5',
-    '--s': brand.secondary || '#10b981',
-    '--a': brand.accent || '#f59e0b',
-    '--font-heading': fonts.heading ? `"${fonts.heading}", sans-serif` : 'inherit',
-    '--font-body': fonts.body ? `"${fonts.body}", sans-serif` : 'inherit',
-  };
-});
+
 
 onMounted(() => {
   // Reset the theme to light for the public frontend 

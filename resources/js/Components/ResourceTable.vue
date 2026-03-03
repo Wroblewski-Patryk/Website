@@ -1,59 +1,55 @@
 <template>
     <div class="space-y-6">
-        <!-- Header Section -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-base-100 p-6 rounded-box shadow-sm border border-base-300">
-            <div class="flex items-center gap-4">
-                <div v-if="icon" class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-xl shadow-inner">
-                    <i :class="icon"></i>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-black tracking-tight flex items-center gap-2">
-                        {{ title }}
-                        <div class="badge badge-sm badge-ghost opacity-50">{{ resources.total }}</div>
-                    </h1>
-                    <p v-if="description" class="text-sm opacity-50 mt-0.5">{{ description }}</p>
-                </div>
-            </div>
+        <div class="bg-base-100 p-6 rounded-box shadow-sm border border-base-300">
+            <ModuleHeader 
+                :title="title" 
+                :description="description" 
+                :icon="icon"
+                :breadcrumbs="breadcrumbs"
+            >
+                <template #title-append>
+                    <div class="badge badge-sm badge-ghost opacity-50">{{ resources.total }}</div>
+                </template>
+                <template #actions>
+                    <!-- Search Input -->
+                    <div class="relative group">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 group-focus-within:text-primary transition-all"></i>
+                        <input 
+                            v-model="search" 
+                            type="text" 
+                            :placeholder="searchPlaceholder || 'Search...'" 
+                            class="input input-bordered pl-10 w-full md:w-64 bg-base-200/50 focus:bg-base-100 transition-all rounded-xl border-white/5"
+                        />
+                    </div>
 
-            <div class="flex items-center gap-3">
-                <!-- Search Input -->
-                <div class="relative group">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 group-focus-within:text-primary transition-all"></i>
-                    <input 
-                        v-model="search" 
-                        type="text" 
-                        :placeholder="searchPlaceholder || 'Search...'" 
-                        class="input input-bordered pl-10 w-full md:w-64 bg-base-200/50 focus:bg-base-100 transition-all rounded-xl border-white/5"
-                    />
-                </div>
-
-                <!-- Column Toggle -->
-                <div class="dropdown dropdown-end">
-                    <label tabindex="0" class="btn btn-ghost btn-square rounded-xl bg-base-200/50 border-white/5 hover:bg-base-200 transition-all">
-                        <i class="fas fa-columns opacity-50"></i>
-                    </label>
-                    <div tabindex="0" class="dropdown-content z-[1] menu p-4 shadow-xl bg-base-100 border border-base-300 rounded-box w-56 mt-2">
-                        <h3 class="text-[10px] font-black uppercase tracking-widest opacity-40 mb-3 px-2">Toggle Columns</h3>
-                        <div class="space-y-1">
-                            <label v-for="col in toggleableColumns" :key="col.key" class="label cursor-pointer hover:bg-base-200/50 px-2 rounded-lg transition-colors">
-                                <span class="label-text text-xs font-bold">{{ col.label }}</span>
-                                <input 
-                                    type="checkbox" 
-                                    :checked="visibleColumns.includes(col.key)" 
-                                    @change="toggleColumn(col.key)"
-                                    class="checkbox checkbox-xs checkbox-primary" 
-                                />
-                            </label>
+                    <!-- Column Toggle -->
+                    <div class="dropdown dropdown-end">
+                        <label tabindex="0" class="btn btn-ghost btn-square rounded-xl bg-base-200/50 border-white/5 hover:bg-base-200 transition-all">
+                            <i class="fas fa-columns opacity-50"></i>
+                        </label>
+                        <div tabindex="0" class="dropdown-content z-[1] menu p-4 shadow-xl bg-base-100 border border-base-300 rounded-box w-56 mt-2">
+                            <h3 class="text-[10px] font-black uppercase tracking-widest opacity-40 mb-3 px-2">Toggle Columns</h3>
+                            <div class="space-y-1">
+                                <label v-for="col in toggleableColumns" :key="col.key" class="label cursor-pointer hover:bg-base-200/50 px-2 rounded-lg transition-colors">
+                                    <span class="label-text text-xs font-bold">{{ col.label }}</span>
+                                    <input 
+                                        type="checkbox" 
+                                        :checked="visibleColumns.includes(col.key)" 
+                                        @change="toggleColumn(col.key)"
+                                        class="checkbox checkbox-xs checkbox-primary" 
+                                    />
+                                </label>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <slot name="header-actions"></slot>
+                    <slot name="header-actions"></slot>
 
-                <Link v-if="createRoute" :href="createRoute" class="btn btn-primary px-6 rounded-xl shadow-lg shadow-primary/20">
-                    <i class="fas fa-plus mr-1"></i> {{ createLabel || 'Create' }}
-                </Link>
-            </div>
+                    <Link v-if="createRoute" :href="createRoute" class="btn btn-primary px-6 rounded-xl shadow-lg shadow-primary/20">
+                        <i class="fas fa-plus mr-1"></i> {{ createLabel || 'Create' }}
+                    </Link>
+                </template>
+            </ModuleHeader>
         </div>
 
         <!-- Table Section -->
@@ -156,6 +152,7 @@
 <script setup>
 import { ref, watch, computed, onMounted } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
+import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
 
 // Simple debounce implementation to avoid lodash dependency
 function debounce(fn, delay) {
@@ -176,6 +173,7 @@ const props = defineProps({
     createLabel: String,
     searchPlaceholder: String,
     routeName: String,
+    breadcrumbs: Array,
     // Optional: persistence key for visible columns
     persistenceKey: String,
     // Optional: automatically handle deletion

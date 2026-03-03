@@ -7,6 +7,11 @@ import { ref } from 'vue';
 defineProps(['menus']);
 const tableRef = ref(null);
 
+const breadcrumbs = [
+    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Menus' }
+];
+
 const columns = [
     { key: 'id', label: 'ID', sortable: true },
     { key: 'name', label: 'Name', sortable: true },
@@ -27,6 +32,7 @@ function deleteMenu(item) {
             title="Menus"
             description="Build and organize your site's navigation structures."
             icon="fas fa-bars"
+            :breadcrumbs="breadcrumbs"
             :resources="menus"
             :columns="columns"
             create-route="/admin/menus/create"

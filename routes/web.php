@@ -42,9 +42,21 @@ Route::name('admin.')->prefix('admin')->group(function () {
 
                 Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class , 'index'])->name('settings.index');
                 Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class , 'store'])->name('settings.store');
-            }
-            );
-        });
+
+                Route::prefix('theme-configurator')->name('theme.')->group(function () {
+                    Route::get('/', function () {
+                            return redirect()->route('admin.theme.colors'); }
+                        )->name('index');
+                        Route::get('colors', [\App\Http\Controllers\Admin\ThemeController::class , 'colors'])->name('colors');
+                        Route::get('fonts', [\App\Http\Controllers\Admin\ThemeController::class , 'fonts'])->name('fonts');
+                        Route::get('sizes', [\App\Http\Controllers\Admin\ThemeController::class , 'sizes'])->name('sizes');
+                        Route::get('blocks', [\App\Http\Controllers\Admin\ThemeController::class , 'blocks'])->name('blocks');
+                        Route::post('/', [\App\Http\Controllers\Admin\ThemeController::class , 'store'])->name('store');
+                    }
+                    );
+                }
+                );
+            });
 
 // Public Routes
 Route::get('/', function () {

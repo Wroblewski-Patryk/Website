@@ -8,6 +8,11 @@ const props = defineProps(['forms']);
 const tableRef = ref(null);
 const deleteForm = useForm({});
 
+const breadcrumbs = [
+    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Forms' }
+];
+
 const columns = [
     { key: 'id', label: 'ID', sortable: true },
     { key: 'name', label: 'Name', sortable: true },
@@ -27,6 +32,7 @@ function deleteFormItem(item) {
             title="Forms"
             description="Capture leads and feedback with custom-built forms."
             icon="fas fa-wpforms"
+            :breadcrumbs="breadcrumbs"
             :resources="forms"
             :columns="columns"
             create-route="/admin/forms/create"

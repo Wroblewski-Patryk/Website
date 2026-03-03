@@ -47,6 +47,9 @@ const styleObj = computed(() => {
     const s = props.block.settings || {};
     const l = s.layout || {};
     const st = s.style || {};
+    
+    // Get theme defaults for this specific block type
+    const themeDefaults = page.props.theme_config?.block_defaults?.[props.block.type] || {};
 
     let fillStyles = {};
 
@@ -99,15 +102,15 @@ const styleObj = computed(() => {
         width: st.width,
         backgroundAttachment: l.fixedBg ? 'fixed' : undefined,
         
-        // Spacing
-        marginTop: st.marginTop,
-        marginBottom: st.marginBottom,
-        marginLeft: st.marginLeft,
-        marginRight: st.marginRight,
-        paddingTop: st.paddingTop,
-        paddingBottom: st.paddingBottom,
-        paddingLeft: st.paddingLeft,
-        paddingRight: st.paddingRight,
+        // Spacing (with theme defaults fallback)
+        marginTop: st.marginTop || themeDefaults.marginTop,
+        marginBottom: st.marginBottom || themeDefaults.marginBottom,
+        marginLeft: st.marginLeft || themeDefaults.marginLeft,
+        marginRight: st.marginRight || themeDefaults.marginRight,
+        paddingTop: st.paddingTop || themeDefaults.paddingTop,
+        paddingBottom: st.paddingBottom || themeDefaults.paddingBottom,
+        paddingLeft: st.paddingLeft || themeDefaults.paddingLeft,
+        paddingRight: st.paddingRight || themeDefaults.paddingRight,
         
         // Position
         position: st.position,
@@ -130,12 +133,13 @@ const styleObj = computed(() => {
         
         borderStyle: (st.borderTopWidth || st.borderRightWidth || st.borderBottomWidth || st.borderLeftWidth) ? 'solid' : undefined,
         
-        // Typography
-        textAlign: st.textAlign,
-        fontWeight: st.fontWeight,
-        fontFamily: st.fontFamily,
-        fontSize: st.fontSize,
-        letterSpacing: st.letterSpacing,
+        // Typography (with theme defaults fallback)
+        textAlign: st.textAlign || themeDefaults.textAlign,
+        fontWeight: st.fontWeight || themeDefaults.fontWeight,
+        fontFamily: st.fontFamily || themeDefaults.fontFamily,
+        fontSize: st.fontSize || themeDefaults.fontSize,
+        letterSpacing: st.letterSpacing || themeDefaults.letterSpacing,
+        opacity: themeDefaults.opacity || undefined, // Opacity is not in default style panel yet, but can be set in theme
     };
 });
 
