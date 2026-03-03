@@ -75,6 +75,29 @@ const addProject = () => {
 const removeProject = (idx) => {
     store.activeBlock.content.projects.splice(idx, 1);
 };
+
+const toggleOffset = (direction) => {
+    if (!store.activeBlock || !store.activeBlock.settings.style) return;
+    const style = store.activeBlock.settings.style;
+    
+    if (direction === 'top') {
+        const val = style.bottom ?? style.top ?? '0px';
+        style.bottom = undefined;
+        style.top = val;
+    } else if (direction === 'bottom') {
+        const val = style.top ?? style.bottom ?? '0px';
+        style.top = undefined;
+        style.bottom = val;
+    } else if (direction === 'left') {
+        const val = style.right ?? style.left ?? '0px';
+        style.right = undefined;
+        style.left = val;
+    } else if (direction === 'right') {
+        const val = style.left ?? style.right ?? '0px';
+        style.left = undefined;
+        style.right = val;
+    }
+};
 </script>
 
 <template>
@@ -495,15 +518,19 @@ const removeProject = (idx) => {
                     <div class="collapse-title text-[10px] uppercase font-black tracking-widest opacity-50">Spacing</div>
                     <div class="collapse-content space-y-6">
                         <LinkedUnitInput 
-                            v-model="store.activeBlock.settings.style.margin" 
+                            v-model:top="store.activeBlock.settings.style.marginTop"
+                            v-model:right="store.activeBlock.settings.style.marginRight"
+                            v-model:bottom="store.activeBlock.settings.style.marginBottom"
+                            v-model:left="store.activeBlock.settings.style.marginLeft"
                             label="Margin" 
-                            :mapping="{ top: 'marginTop', right: 'marginRight', bottom: 'marginBottom', left: 'marginLeft' }"
                         />
                         <div class="divider my-0 opacity-10"></div>
                         <LinkedUnitInput 
-                            v-model="store.activeBlock.settings.style.padding" 
+                            v-model:top="store.activeBlock.settings.style.paddingTop"
+                            v-model:right="store.activeBlock.settings.style.paddingRight"
+                            v-model:bottom="store.activeBlock.settings.style.paddingBottom"
+                            v-model:left="store.activeBlock.settings.style.paddingLeft"
                             label="Padding" 
-                            :mapping="{ top: 'paddingTop', right: 'paddingRight', bottom: 'paddingBottom', left: 'paddingLeft' }"
                         />
                     </div>
                 </div>
@@ -565,18 +592,22 @@ const removeProject = (idx) => {
                     <div class="collapse-content space-y-6">
                         <!-- Border Radius Linked Input -->
                         <LinkedUnitInput 
-                            v-model="store.activeBlock.settings.style.border" 
+                            v-model:top="store.activeBlock.settings.style.borderTopLeftRadius"
+                            v-model:right="store.activeBlock.settings.style.borderTopRightRadius"
+                            v-model:bottom="store.activeBlock.settings.style.borderBottomRightRadius"
+                            v-model:left="store.activeBlock.settings.style.borderBottomLeftRadius"
                             label="Radius" 
-                            :mapping="{ top: 'borderTopLeftRadius', right: 'borderTopRightRadius', bottom: 'borderBottomRightRadius', left: 'borderBottomLeftRadius' }"
                         />
 
                         <div class="divider my-0 opacity-10"></div>
 
                         <!-- Border Width Linked Input -->
                         <LinkedUnitInput 
-                            v-model="store.activeBlock.settings.style.border" 
+                            v-model:top="store.activeBlock.settings.style.borderTopWidth"
+                            v-model:right="store.activeBlock.settings.style.borderRightWidth"
+                            v-model:bottom="store.activeBlock.settings.style.borderBottomWidth"
+                            v-model:left="store.activeBlock.settings.style.borderLeftWidth"
                             label="Width" 
-                            :mapping="{ top: 'borderTopWidth', right: 'borderRightWidth', bottom: 'borderBottomWidth', left: 'borderLeftWidth' }"
                         />
 
                         <div class="divider my-0 opacity-10"></div>
@@ -594,7 +625,12 @@ const removeProject = (idx) => {
                     <input type="checkbox" /> 
                     <div class="collapse-title text-[10px] uppercase font-black tracking-widest opacity-50">Layout & Position</div>
                     <div class="collapse-content space-y-4">
+                        <!-- 1. Z-Index and Position -->
                         <div class="grid grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label"><span class="label-text text-[10px] uppercase">Z-Index</span></label>
+                                <input type="number" v-model="store.activeBlock.settings.style.zIndex" class="input input-sm input-bordered w-full" />
+                            </div>
                             <div class="form-control">
                                 <label class="label"><span class="label-text text-[10px] uppercase">Position</span></label>
                                 <select v-model="store.activeBlock.settings.style.position" class="select select-bordered select-sm w-full">
@@ -605,19 +641,49 @@ const removeProject = (idx) => {
                                     <option value="sticky">Sticky</option>
                                 </select>
                             </div>
-                            <div class="form-control">
-                                <label class="label"><span class="label-text text-[10px] uppercase">Z-Index</span></label>
-                                <input type="number" v-model="store.activeBlock.settings.style.zIndex" class="input input-sm input-bordered w-full" />
-                            </div>
                         </div>
                         
-                        <LinkedUnitInput 
-                            v-if="['absolute', 'fixed', 'sticky', 'relative'].includes(store.activeBlock.settings.style.position)"
-                            v-model="store.activeBlock.settings.style.positionOffset" 
-                            label="Offsets" 
-                            class="mt-4"
-                        />
+                        <!-- 2. Offsets (Only visible if not static) -->
+                        <div v-if="['absolute', 'fixed', 'sticky', 'relative'].includes(store.activeBlock.settings.style.position)" class="bg-base-300/50 p-4 rounded-xl mt-4 space-y-4">
+                            <div class="text-[10px] uppercase font-bold opacity-50 mb-2 border-b border-white/10 pb-1">Offsets</div>
 
+                            <div class="flex items-center gap-4">
+                                <div class="join">
+                                    <button @click="toggleOffset('top')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.top !== undefined || store.activeBlock.settings.style.bottom === undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Top Offset"><i class="fas fa-arrow-up"></i></button>
+                                    <button @click="toggleOffset('bottom')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.bottom !== undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Bottom Offset"><i class="fas fa-arrow-down"></i></button>
+                                </div>
+                                <UnitInput v-if="store.activeBlock.settings.style.bottom !== undefined" v-model="store.activeBlock.settings.style.bottom" placeholder="Bottom value" class="flex-1" />
+                                <UnitInput v-else v-model="store.activeBlock.settings.style.top" placeholder="Top value" class="flex-1" />
+                            </div>
+                            
+                            <div class="flex items-center gap-4">
+                                <div class="join">
+                                    <button @click="toggleOffset('left')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.left !== undefined || store.activeBlock.settings.style.right === undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Left Offset"><i class="fas fa-arrow-left"></i></button>
+                                    <button @click="toggleOffset('right')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.right !== undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Right Offset"><i class="fas fa-arrow-right"></i></button>
+                                </div>
+                                <UnitInput v-if="store.activeBlock.settings.style.right !== undefined" v-model="store.activeBlock.settings.style.right" placeholder="Right value" class="flex-1" />
+                                <UnitInput v-else v-model="store.activeBlock.settings.style.left" placeholder="Left value" class="flex-1" />
+                            </div>
+                        </div>
+
+                        <div class="divider my-0 opacity-10"></div>
+
+                        <!-- 3. Display -->
+                        <div class="form-control">
+                            <label class="label"><span class="label-text text-[10px] uppercase">Display</span></label>
+                            <select v-model="store.activeBlock.settings.style.display" class="select select-bordered select-sm w-full">
+                                <option :value="undefined">Default</option>
+                                <option value="block">Block</option>
+                                <option value="inline-block">Inline Block</option>
+                                <option value="flex">Flex</option>
+                                <option value="grid">Grid</option>
+                                <option value="inline-flex">Inline Flex</option>
+                                <option value="inline-grid">Inline Grid</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                        
+                        <!-- 4. Width / Height -->
                         <div class="grid grid-cols-2 gap-4 mt-2">
                             <div class="form-control">
                                 <label class="label"><span class="label-text text-[10px] uppercase">Width</span></label>

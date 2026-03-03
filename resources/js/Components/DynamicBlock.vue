@@ -107,6 +107,7 @@ const styleObj = computed(() => {
         
         // Position
         position: st.position,
+        display: st.display,
         zIndex: st.zIndex,
         top: st.top,
         bottom: st.bottom,

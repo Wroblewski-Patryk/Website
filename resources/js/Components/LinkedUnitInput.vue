@@ -77,23 +77,14 @@
 import { reactive, watch, ref } from 'vue';
 
 const props = defineProps({
-    modelValue: {
-        type: Object,
-        default: () => ({ top: '', right: '', bottom: '', left: '' })
-    },
-    label: {
-        type: String,
-        default: ''
-    },
-    // Allows mapping internal top/right/bottom/left to custom object keys on emit
-    // Example for border-radius: { top: 'topLeft', right: 'topRight', bottom: 'bottomRight', left: 'bottomLeft' }
-    mapping: {
-        type: Object,
-        default: null
-    }
+    top: { type: [String, Number], default: '' },
+    right: { type: [String, Number], default: '' },
+    bottom: { type: [String, Number], default: '' },
+    left: { type: [String, Number], default: '' },
+    label: { type: String, default: '' },
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:top', 'update:right', 'update:bottom', 'update:left']);
 
 // Toggles logic
 const linkAll = ref(true); 
@@ -110,27 +101,18 @@ const internal = reactive({
 });
 
 // Watch incoming value to sync local state
-watch(() => props.modelValue, (newVal) => {
-    if(!newVal) return;
-    
+watch([() => props.top, () => props.right, () => props.bottom, () => props.left], ([t, r, b, l]) => {
     // Parse raw values like '10px' or '-5rem' into unit ('px') and number ('10')
     const parseValue = (raw) => {
         if (!raw && raw !== 0) return '';
-        // Match numbers including negatives and decimals
         const match = String(raw).match(/^(-?\d*\.?\d+)(.*)$/);
         return match ? parseFloat(match[1]) : '';
     };
 
-    // Helper to get mapped values if mapping exists
-    const getKey = (internalKey) => {
-        return props.mapping ? props.mapping[internalKey] : internalKey;
-    };
-
-    // Parse incoming values using mapped keys
-    const rawTop = newVal[getKey('top')] || '';
-    const rawRight = newVal[getKey('right')] || '';
-    const rawBottom = newVal[getKey('bottom')] || '';
-    const rawLeft = newVal[getKey('left')] || '';
+    const rawTop = t || '';
+    const rawRight = r || '';
+    const rawBottom = b || '';
+    const rawLeft = l || '';
 
     // Try to guess global unit from existing values
     const units = [rawTop, rawRight, rawBottom, rawLeft]
@@ -138,7 +120,7 @@ watch(() => props.modelValue, (newVal) => {
         .filter(v => v && v.length > 0);
     
     if (units.length > 0) {
-        globalUnit.value = units[0];
+        globalUnit.value = units[0] || 'px';
     }
 
     internal.top = parseValue(rawTop);
@@ -165,20 +147,15 @@ watch(() => props.modelValue, (newVal) => {
 
 const emitChanges = () => {
     const formatValue = (num) => {
-        if (num === '' || num === null || num === undefined) return '';
+        if (num === '' || num === null || num === undefined) return undefined;
         if (num === '0' || num === 0) return '0'; // Allow naked zero
         return `${num}${globalUnit.value}`;
     };
 
-    const out = {};
-    const getKey = (internalKey) => props.mapping ? props.mapping[internalKey] : internalKey;
-
-    out[getKey('top')] = formatValue(internal.top);
-    out[getKey('right')] = formatValue(internal.right);
-    out[getKey('bottom')] = formatValue(internal.bottom);
-    out[getKey('left')] = formatValue(internal.left);
-
-    emit('update:modelValue', out);
+    emit('update:top', formatValue(internal.top));
+    emit('update:right', formatValue(internal.right));
+    emit('update:bottom', formatValue(internal.bottom));
+    emit('update:left', formatValue(internal.left));
 };
 
 // Re-emit immediately if unit changes so all suffixes update

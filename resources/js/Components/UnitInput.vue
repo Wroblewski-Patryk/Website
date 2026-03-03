@@ -3,13 +3,13 @@
         <input 
             type="number" 
             :value="numericValue" 
-            @input="updateValue($event.target.value, unit)"
+            @input="handleInput($event.target.value)"
             class="input input-sm input-bordered join-item w-full bg-base-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
             :placeholder="placeholder" 
         />
         <select 
-            :value="unit" 
-            @change="updateValue(numericValue, $event.target.value)"
+            v-model="localUnit"
+            @change="handleUnitChange"
             class="select select-sm select-bordered join-item bg-base-200"
         >
             <option value="px">px</option>
@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
     modelValue: { type: String, default: '' },
@@ -32,23 +32,36 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue']);
 
+// Local state for unit to prevent reverting when typing or empty
+const localUnit = ref('px');
+
+watch(() => props.modelValue, (newVal) => {
+    if (newVal) {
+        const match = String(newVal).match(/[a-zA-Z%]+$/);
+        if (match) {
+            localUnit.value = match[0];
+        }
+    }
+}, { immediate: true });
+
 const numericValue = computed(() => {
     if (!props.modelValue) return '';
     const match = String(props.modelValue).match(/^-?\d*\.?\d+/);
     return match ? match[0] : '';
 });
 
-const unit = computed(() => {
-    if (!props.modelValue) return 'px';
-    const match = String(props.modelValue).match(/[a-zA-Z%]+$/);
-    return match ? match[0] : 'px';
-});
-
-const updateValue = (num, u) => {
-    if (!num && num !== 0 && num !== '0') {
+const handleInput = (val) => {
+    if (val === '' || val === null || val === undefined) {
         emit('update:modelValue', undefined);
     } else {
-        emit('update:modelValue', `${num}${u}`);
+        emit('update:modelValue', `${val}${localUnit.value}`);
+    }
+};
+
+const handleUnitChange = () => {
+    // Only emit if there's a number to attach it to, otherwise just keep unit in local state
+    if (numericValue.value !== '') {
+        emit('update:modelValue', `${numericValue.value}${localUnit.value}`);
     }
 };
 </script>
