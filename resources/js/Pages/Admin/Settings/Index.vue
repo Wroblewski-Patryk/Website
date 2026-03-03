@@ -2,11 +2,17 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
 
 const props = defineProps({
     settings: Object,
     templates: Array
 });
+
+const breadcrumbs = [
+    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Settings' }
+];
 
 const form = useForm({
     home_page_slug: props.settings.home_page_slug || 'home',
@@ -30,19 +36,19 @@ function saveSettings() {
     <Head title="Global Settings" />
     <AdminLayout>
         <template #header>
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-3xl font-black tracking-tight flex items-center gap-3">
-                        <i class="fas fa-cog text-primary"></i>
-                        Global Settings
-                    </h1>
-                    <p class="text-sm opacity-50 mt-1">Configure your website's main parameters.</p>
-                </div>
-                <button @click="saveSettings" class="btn btn-primary px-6 shadow-lg shadow-primary/20" :disabled="form.processing">
-                    <span v-if="form.processing" class="loading loading-spinner loading-sm mr-2"></span>
-                    <i class="fas fa-save mr-2"></i> Save Settings
-                </button>
-            </div>
+            <ModuleHeader
+                title="Global Settings"
+                description="Configure your website's main parameters."
+                icon="fas fa-cog"
+                :breadcrumbs="breadcrumbs"
+            >
+                <template #actions>
+                    <button @click="saveSettings" class="btn btn-primary shadow-lg shadow-primary/20" :disabled="form.processing">
+                        <span v-if="form.processing" class="loading loading-spinner loading-sm mr-2"></span>
+                        <i class="fas fa-save mr-2"></i> Save
+                    </button>
+                </template>
+            </ModuleHeader>
         </template>
 
         <div>

@@ -10,7 +10,7 @@ const deleteForm = useForm({});
 
 const breadcrumbs = [
     { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
-    { label: 'Blog Posts' }
+    { label: 'Posts' }
 ];
 
 const columns = [
@@ -30,7 +30,7 @@ function deletePost(item) {
     <Head title="Manage Posts" />
     <AdminLayout>
         <ResourceTable
-            title="Blog Posts"
+            title="Posts"
             description="Share your thoughts and news with the world."
             icon="fas fa-feather"
             :breadcrumbs="breadcrumbs"

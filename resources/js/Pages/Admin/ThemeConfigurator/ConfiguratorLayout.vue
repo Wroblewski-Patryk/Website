@@ -63,7 +63,7 @@ const saveConfig = () => {
                     <span v-if="savedMessage" class="text-success text-sm font-semibold flex items-center gap-1 mr-4"><i class="fas fa-check-circle"></i> Saved</span>
                     <button @click="saveConfig" class="btn btn-primary shadow-lg shadow-primary/20" :class="{'loading': isSaving}">
                         <i class="fas fa-save" v-if="!isSaving"></i> 
-                        Save Theme
+                        Save
                     </button>
                 </template>
             </ModuleHeader>

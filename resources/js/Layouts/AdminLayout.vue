@@ -104,10 +104,13 @@ function applyTheme(themeName) {
                             </Link>
                         </li>
                         <li>
-                            <Link href="/admin/posts" :class="{ 'active': $page.url.startsWith('/admin/posts') }">
-                                <i class="fas fa-blog w-5"></i>
-                                Blog Posts
-                            </Link>
+                            <details :open="['/admin/posts'].some(p => $page.url.startsWith(p))">
+                                <summary><i class="fas fa-feather w-5"></i> Posts</summary>
+                                <ul>
+                                    <li><Link href="/admin/posts" :class="{ 'active': $page.url === '/admin/posts' || $page.url.startsWith('/admin/posts/') }">All Posts</Link></li>
+                                    <li><Link href="#" :class="{ 'active': $page.url.startsWith('/admin/categories') }">Categories</Link></li>
+                                </ul>
+                            </details>
                         </li>
                         <li>
                             <Link href="/admin/projects" :class="{ 'active': $page.url.startsWith('/admin/projects') }">
@@ -137,7 +140,7 @@ function applyTheme(themeName) {
                         <li>
                             <Link href="/admin/templates" :class="{ 'active': $page.url.startsWith('/admin/templates') }">
                                 <i class="fas fa-layer-group w-5"></i>
-                                Headers & Footers
+                                Templates
                             </Link>
                         </li>
                         <li>

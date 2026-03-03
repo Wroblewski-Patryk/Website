@@ -31,7 +31,7 @@ function deleteFormItem(item) {
         <ResourceTable
             title="Forms"
             description="Capture leads and feedback with custom-built forms."
-            icon="fas fa-wpforms"
+            icon="fas fa-envelope-open-text"
             :breadcrumbs="breadcrumbs"
             :resources="forms"
             :columns="columns"

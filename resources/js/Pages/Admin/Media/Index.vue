@@ -2,8 +2,14 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
 
 const props = defineProps(['media']);
+
+const breadcrumbs = [
+    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Media Library' }
+];
 
 const uploadForm = useForm({
     file: null,
@@ -42,25 +48,29 @@ function copyUrl(path) {
     <Head title="Media Library" />
     <AdminLayout>
         <template #header>
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div>
-                    <h1 class="text-3xl font-black tracking-tight text-primary flex items-center gap-3">
-                        <i class="fas fa-photo-video"></i>
-                        Media Library
-                    </h1>
-                    <p class="text-sm opacity-60 mt-1">Manage your high-resolution assets</p>
-                </div>
-                
-                <form @submit.prevent="submitUpload" class="flex flex-wrap items-center gap-3">
-                    <input type="file" @change="handleFileChange" class="file-input file-input-primary file-input-bordered file-input-sm w-full max-w-xs" accept="image/*" required ref="fileInput" />
-                    <input type="text" v-model="uploadForm.alt_text" placeholder="Alt Text" class="input input-bordered input-sm focus:input-primary" />
-                    <button type="submit" class="btn btn-primary btn-sm px-6 shadow-md shadow-primary/20" :disabled="uploadForm.processing">
-                        <span v-if="uploadForm.processing" class="loading loading-spinner loading-xs"></span>
-                        Upload
-                    </button>
-                </form>
-            </div>
+            <ModuleHeader
+                title="Media Library"
+                description="Manage your high-resolution assets."
+                icon="fas fa-photo-video"
+                :breadcrumbs="breadcrumbs"
+            >
+                <template #actions>
+                    <!-- Space reserved for future filters -->
+                </template>
+            </ModuleHeader>
         </template>
+
+        <div class="mb-6 bg-base-100 p-4 rounded-box shadow-sm border border-base-300 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <h2 class="font-bold text-lg flex items-center gap-2"><i class="fas fa-cloud-upload-alt text-primary"></i> Upload New Media</h2>
+            <form @submit.prevent="submitUpload" class="flex flex-wrap items-center gap-3">
+                <input type="file" @change="handleFileChange" class="file-input file-input-primary file-input-bordered file-input-sm w-full max-w-xs" accept="image/*" required ref="fileInput" />
+                <input type="text" v-model="uploadForm.alt_text" placeholder="Alt Text" class="input input-bordered input-sm focus:input-primary" />
+                <button type="submit" class="btn btn-primary btn-sm px-6 shadow-md shadow-primary/20" :disabled="uploadForm.processing">
+                    <span v-if="uploadForm.processing" class="loading loading-spinner loading-xs"></span>
+                    Upload
+                </button>
+            </form>
+        </div>
 
         <div class="p-0">
             

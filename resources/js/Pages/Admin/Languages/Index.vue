@@ -127,8 +127,8 @@ function deleteLanguage(item) {
             @delete-confirmed="deleteLanguage"
         >
             <template #header-actions>
-                <button @click="openCreate" class="btn btn-primary px-6 rounded-xl shadow-lg shadow-primary/20">
-                    <i class="fas fa-plus mr-1"></i> Add Language
+                <button @click="openCreate" class="btn btn-primary shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                    <i class="fas fa-plus mr-1"></i> Create
                 </button>
             </template>
 

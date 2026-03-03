@@ -55,18 +55,7 @@ const deleteTranslation = (item) => {
     <AdminLayout>
         <Head title="Translations" />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="stat bg-base-100 rounded-box border border-base-300 shadow-sm overflow-hidden relative">
-                <div class="stat-title opacity-40 uppercase text-[10px] font-bold tracking-widest text-base-content">Total Keys</div>
-                <div class="stat-value text-2xl font-black text-primary">{{ translations.total }}</div>
-                <i class="fas fa-key absolute -right-2 -bottom-2 text-4xl opacity-5"></i>
-            </div>
-            <div class="stat bg-base-100 rounded-box border border-base-300 shadow-sm overflow-hidden relative">
-                <div class="stat-title opacity-40 uppercase text-[10px] font-bold tracking-widest text-base-content">Active Locales</div>
-                <div class="stat-value text-2xl font-black text-secondary">2</div>
-                <i class="fas fa-globe absolute -right-2 -bottom-2 text-4xl opacity-5"></i>
-            </div>
-        </div>
+
 
         <ResourceTable
             title="Translations"
@@ -80,8 +69,8 @@ const deleteTranslation = (item) => {
             @delete-confirmed="deleteTranslation"
         >
             <template #header-actions>
-                <button @click="showAddModal = true" class="btn btn-primary rounded-xl px-6 shadow-lg shadow-primary/20">
-                    <i class="fas fa-plus mr-2"></i> Add Key
+                <button @click="showAddModal = true" class="btn btn-primary shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                    <i class="fas fa-plus mr-1"></i> Create
                 </button>
             </template>
 

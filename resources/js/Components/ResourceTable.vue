@@ -11,43 +11,58 @@
                     <div class="badge badge-sm badge-ghost opacity-50">{{ resources.total }}</div>
                 </template>
                 <template #actions>
-                    <!-- Search Input -->
-                    <div class="relative group">
-                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 group-focus-within:text-primary transition-all"></i>
-                        <input 
-                            v-model="search" 
-                            type="text" 
-                            :placeholder="searchPlaceholder || 'Search...'" 
-                            class="input input-bordered pl-10 w-full md:w-64 bg-base-200/50 focus:bg-base-100 transition-all rounded-xl border-white/5"
-                        />
-                    </div>
-
-                    <!-- Column Toggle -->
-                    <div class="dropdown dropdown-end">
-                        <label tabindex="0" class="btn btn-ghost btn-square rounded-xl bg-base-200/50 border-white/5 hover:bg-base-200 transition-all">
-                            <i class="fas fa-columns opacity-50"></i>
-                        </label>
-                        <div tabindex="0" class="dropdown-content z-[1] menu p-4 shadow-xl bg-base-100 border border-base-300 rounded-box w-56 mt-2">
-                            <h3 class="text-[10px] font-black uppercase tracking-widest opacity-40 mb-3 px-2">Toggle Columns</h3>
-                            <div class="space-y-1">
-                                <label v-for="col in toggleableColumns" :key="col.key" class="label cursor-pointer hover:bg-base-200/50 px-2 rounded-lg transition-colors">
-                                    <span class="label-text text-xs font-bold">{{ col.label }}</span>
-                                    <input 
-                                        type="checkbox" 
-                                        :checked="visibleColumns.includes(col.key)" 
-                                        @change="toggleColumn(col.key)"
-                                        class="checkbox checkbox-xs checkbox-primary" 
-                                    />
-                                </label>
+                    <div class="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0 justify-end flex-wrap">
+                        <!-- Search Input -->
+                        <div class="relative group flex-1 md:flex-none">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-base-content/30 group-focus-within:text-primary transition-colors z-10">
+                                <i class="fas fa-search text-sm"></i>
+                            </div>
+                            <input 
+                                v-model="search" 
+                                type="text" 
+                                :placeholder="searchPlaceholder || 'Search...'" 
+                                class="input input-bordered w-full sm:w-[260px] pl-10 pr-12 bg-base-100 focus:bg-base-100 hover:border-base-300 focus:border-primary shadow-sm hover:shadow-md focus:shadow-md focus:ring-4 focus:ring-primary/10 transition-all font-medium"
+                            />
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-40 group-focus-within:opacity-0 transition-opacity duration-300">
+                                <kbd class="kbd kbd-sm font-sans font-bold bg-base-200 border-none shadow-none text-[10px]">⌘K</kbd>
                             </div>
                         </div>
+
+                        <!-- Column Toggle -->
+                        <div class="dropdown dropdown-end">
+                            <label tabindex="0" class="btn btn-square bg-base-100 border-base-200 shadow-sm hover:shadow-md hover:border-primary/40 text-base-content/60 hover:text-primary transition-all">
+                                <i class="fas fa-sliders-h text-lg"></i>
+                            </label>
+                            <div tabindex="0" class="dropdown-content z-[20] p-4 shadow-2xl bg-base-100 rounded-box w-64 mt-3 border border-base-200">
+                                <div class="flex items-center gap-3 mb-4 pb-3 border-b border-base-200">
+                                    <div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                                        <i class="fas fa-columns text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-sm leading-tight text-base-content">Layout</h3>
+                                        <p class="text-[10px] opacity-50 uppercase tracking-widest font-bold">Toggle Columns</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-1">
+                                    <label v-for="col in toggleableColumns" :key="col.key" class="label cursor-pointer hover:bg-base-200/50 px-3 py-2.5 rounded-xl transition-all border border-transparent hover:border-base-300 group/item">
+                                        <span class="label-text font-semibold group-hover/item:text-primary transition-colors">{{ col.label }}</span>
+                                        <input 
+                                            type="checkbox" 
+                                            :checked="visibleColumns.includes(col.key)" 
+                                            @change="toggleColumn(col.key)"
+                                            class="toggle toggle-primary toggle-sm" 
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <slot name="header-actions"></slot>
+
+                        <Link v-if="createRoute" :href="createRoute" class="btn btn-primary shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                            <i class="fas fa-plus mr-1"></i> Create
+                        </Link>
                     </div>
-
-                    <slot name="header-actions"></slot>
-
-                    <Link v-if="createRoute" :href="createRoute" class="btn btn-primary px-6 rounded-xl shadow-lg shadow-primary/20">
-                        <i class="fas fa-plus mr-1"></i> {{ createLabel || 'Create' }}
-                    </Link>
                 </template>
             </ModuleHeader>
         </div>
