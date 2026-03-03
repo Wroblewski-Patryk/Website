@@ -4,8 +4,7 @@ import { computed, ref, watch } from 'vue';
 import UnitInput from '@/Components/UnitInput.vue';
 import LinkedUnitInput from '@/Components/LinkedUnitInput.vue';
 import LayerTreeItem from '@/Components/LayerTreeItem.vue';
-import { ColorPicker } from 'vue3-colorpicker';
-import 'vue3-colorpicker/style.css';
+import FillControl from '@/Components/FillControl.vue';
 
 const props = defineProps(['menus']);
 
@@ -13,21 +12,27 @@ const store = useBlockBuilderStore();
 const activeSidebarTab = ref('content');
 const activeInspectorTab = ref('layers'); // For Document Inspector State
 
-const getBlockStyleColor = (prop) => computed({
+const createFillProxy = (newProp, legacyProp) => computed({
     get: () => {
-        if (!store.activeBlock || !store.activeBlock.settings.style) return 'rgba(0,0,0,0)';
-        return store.activeBlock.settings.style[prop] || 'rgba(0,0,0,0)';
+        if (!store.activeBlock || !store.activeBlock.settings.style) return undefined;
+        // Prefer the new advanced object
+        if (store.activeBlock.settings.style[newProp] !== undefined) {
+            return store.activeBlock.settings.style[newProp];
+        }
+        // Fallback to legacy string
+        return store.activeBlock.settings.style[legacyProp];
     },
     set: (val) => {
         if (store.activeBlock && store.activeBlock.settings.style) {
-            store.activeBlock.settings.style[prop] = val === 'rgba(0,0,0,0)' ? '' : val;
+            store.activeBlock.settings.style[legacyProp] = undefined;
+            store.activeBlock.settings.style[newProp] = val;
         }
     }
 });
 
-const bgColor = getBlockStyleColor('backgroundColor');
-const textColor = getBlockStyleColor('textColor');
-const borderColor = getBlockStyleColor('borderColor');
+const backgroundFill = createFillProxy('backgroundFill', 'backgroundColor');
+const textFill = createFillProxy('textFill', 'textColor');
+const borderFill = createFillProxy('borderFill', 'borderColor');
 
 watch(() => store.activeBlock, (newBlock) => {
     if (newBlock) {
@@ -473,13 +478,12 @@ const removeProject = (idx) => {
                     <div class="collapse-title text-[10px] uppercase font-black tracking-widest opacity-50">Colors</div>
                     <div class="collapse-content space-y-4">
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="form-control items-center">
-                                <label class="label self-start"><span class="label-text text-[10px] uppercase">Background</span></label>
-                                <ColorPicker v-model:pureColor="bgColor" format="rgb" shape="square" useType="pure" />
+                            <div class="form-control items-center w-full col-span-2">
+                                <FillControl v-model="backgroundFill" label="Background" />
                             </div>
-                            <div class="form-control items-center">
-                                <label class="label self-start"><span class="label-text text-[10px] uppercase">Text Color</span></label>
-                                <ColorPicker v-model:pureColor="textColor" format="rgb" shape="square" useType="pure" />
+                            <div class="divider my-0 opacity-10 col-span-2"></div>
+                            <div class="form-control items-center w-full col-span-2">
+                                <FillControl v-model="textFill" label="Text" />
                             </div>
                         </div>
                     </div>
@@ -578,9 +582,8 @@ const removeProject = (idx) => {
                         <div class="divider my-0 opacity-10"></div>
 
                         <div class="grid grid-cols-1">
-                            <div class="form-control items-center">
-                                <label class="label self-start"><span class="label-text text-[10px] uppercase">Border Color</span></label>
-                                <ColorPicker v-model:pureColor="borderColor" format="rgb" shape="square" useType="pure" />
+                            <div class="form-control w-full">
+                                <FillControl v-model="borderFill" label="Border" />
                             </div>
                         </div>
                     </div>

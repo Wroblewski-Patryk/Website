@@ -43,14 +43,57 @@ const styleObj = computed(() => {
     const s = props.block.settings || {};
     const l = s.layout || {};
     const st = s.style || {};
+
+    let fillStyles = {};
+
+    // 1. Background Fill
+    if (st.backgroundFill) {
+        if (st.backgroundFill.type === 'color') {
+            fillStyles.backgroundColor = st.backgroundFill.color;
+            fillStyles.backgroundImage = 'none';
+        } else if (st.backgroundFill.type === 'gradient') {
+            fillStyles.backgroundImage = st.backgroundFill.gradient;
+            fillStyles.backgroundColor = 'transparent';
+        } else if (st.backgroundFill.type === 'image') {
+            fillStyles.backgroundImage = `url(${st.backgroundFill.image})`;
+            fillStyles.backgroundSize = 'cover';
+            fillStyles.backgroundPosition = 'center';
+            fillStyles.backgroundColor = 'transparent';
+        } else {
+            fillStyles.backgroundColor = 'transparent';
+            if (!st.textFill || !['gradient', 'image'].includes(st.textFill.type)) fillStyles.backgroundImage = 'none';
+        }
+    } else {
+        fillStyles.backgroundColor = st.backgroundColor || (s.colors && s.colors.background) || undefined;
+    }
+
+    // 3. Border Fill
+    if (st.borderFill) {
+        if (st.borderFill.type === 'color') {
+            fillStyles.borderColor = st.borderFill.color;
+            fillStyles.borderImageSource = 'none';
+        } else if (st.borderFill.type === 'gradient') {
+            fillStyles.borderImageSource = st.borderFill.gradient;
+            fillStyles.borderImageSlice = 1;
+            fillStyles.borderColor = 'transparent';
+        } else if (st.borderFill.type === 'image') {
+            fillStyles.borderImageSource = `url(${st.borderFill.image})`;
+            fillStyles.borderImageSlice = 1;
+            fillStyles.borderColor = 'transparent';
+        } else {
+            fillStyles.borderColor = 'transparent';
+            fillStyles.borderImageSource = 'none';
+        }
+    } else {
+        fillStyles.borderColor = st.borderColor || undefined;
+    }
     
     return {
+        ...fillStyles,
         minHeight: l.fullHeight ? '100vh' : st.height,
         height: st.height,
         width: st.width,
         backgroundAttachment: l.fixedBg ? 'fixed' : undefined,
-        backgroundColor: st.backgroundColor || (s.colors && s.colors.background),
-        color: st.textColor || (s.colors && s.colors.text),
         
         // Spacing
         marginTop: st.marginTop,
@@ -80,7 +123,6 @@ const styleObj = computed(() => {
         borderBottomWidth: st.borderBottomWidth,
         borderLeftWidth: st.borderLeftWidth,
         
-        borderColor: st.borderColor,
         borderStyle: (st.borderTopWidth || st.borderRightWidth || st.borderBottomWidth || st.borderLeftWidth) ? 'solid' : undefined,
         
         // Typography
@@ -90,6 +132,40 @@ const styleObj = computed(() => {
         fontSize: st.fontSize,
         letterSpacing: st.letterSpacing,
     };
+});
+
+const textStyleObj = computed(() => {
+    const s = props.block.settings || {};
+    const st = s.style || {};
+    let textStyles = {};
+
+    if (st.textFill) {
+        if (st.textFill.type === 'color') {
+            textStyles.color = st.textFill.color;
+        } else if (st.textFill.type === 'gradient') {
+            textStyles.backgroundImage = st.textFill.gradient;
+            textStyles.WebkitBackgroundClip = 'text';
+            textStyles.backgroundClip = 'text';
+            textStyles.color = 'transparent';
+            textStyles.display = 'inline-block';
+            textStyles.width = 'fit-content';
+            textStyles.paddingRight = '0.2em';
+        } else if (st.textFill.type === 'image') {
+            textStyles.backgroundImage = `url(${st.textFill.image})`;
+            textStyles.backgroundSize = 'cover';
+            textStyles.backgroundPosition = 'center';
+            textStyles.WebkitBackgroundClip = 'text';
+            textStyles.backgroundClip = 'text';
+            textStyles.color = 'transparent';
+            textStyles.display = 'inline-block';
+            textStyles.width = 'fit-content';
+            textStyles.paddingRight = '0.2em';
+        }
+    } else {
+        textStyles.color = st.textColor || (s.colors && s.colors.text) || undefined;
+    }
+
+    return textStyles;
 });
 
 const submitContact = () => {
@@ -121,12 +197,13 @@ const contactForm = useForm({
         </div>
 
         <!-- Content Blocks -->
-        <div v-else-if="block.type === 'paragraph'" class="prose prose-lg opacity-80" v-html="block.content.text"></div>
+        <div v-else-if="block.type === 'paragraph'" class="prose prose-lg opacity-80" :style="textStyleObj" v-html="block.content.text"></div>
         
         <div v-else-if="block.type === 'heading'">
             <component :is="'h' + (block.content.level || 2)" 
+                       :style="textStyleObj"
                        :class="[
-                           'font-black italic uppercase tracking-tighter', 
+                           'font-black italic uppercase tracking-tighter pr-[0.2em]', 
                            block.content.level === 1 ? 'text-6xl md:text-8xl' : 'text-4xl md:text-6xl',
                            block.content.align === 'center' ? 'text-center' : ''
                        ]">
@@ -175,8 +252,8 @@ const contactForm = useForm({
                  <div class="absolute inset-0 bg-gradient-to-b from-base-100 via-transparent to-base-100"></div>
              </div>
              <div class="max-w-4xl relative z-10">
-                <h1 class="text-7xl md:text-9xl font-black italic uppercase tracking-tighter mb-6">{{ block.content.headline }}</h1>
-                <p class="text-xl md:text-2xl opacity-60 mb-12">{{ block.content.subheadline }}</p>
+                <h1 class="text-7xl md:text-9xl font-black italic uppercase tracking-tighter mb-6 pr-[0.2em]" :style="textStyleObj">{{ block.content.headline }}</h1>
+                <p class="text-xl md:text-2xl opacity-60 mb-12" :style="textStyleObj">{{ block.content.subheadline }}</p>
                 <div v-if="block.content.primaryLabel" class="flex gap-4 justify-center">
                     <button class="btn btn-primary rounded-full px-8">{{ block.content.primaryLabel }}</button>
                     <button v-if="block.content.secondaryLabel" class="btn btn-outline rounded-full px-8">{{ block.content.secondaryLabel }}</button>
