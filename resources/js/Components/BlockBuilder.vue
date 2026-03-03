@@ -158,11 +158,17 @@
                             <template #item="{ element }">
                                 <div class="group/block relative w-full"
                                      @click="store.activeBlockId = element.id"
+                                     @mouseover.stop="store.hoveredBlockId = element.id"
+                                     @mouseout.stop="store.hoveredBlockId = null"
                                      :class="{ 'ring-2 ring-primary ring-inset': store.activeBlockId === element.id }">
                                     
-                                    <div class="absolute right-2 top-2 z-40 opacity-0 group-hover/block:opacity-100 transition-opacity flex gap-1">
-                                        <div class="drag-handle btn btn-square btn-xs btn-ghost bg-white/90 border border-black/10 backdrop-blur cursor-move text-black/60 shadow-lg rounded-full"><i class="fas fa-grip-vertical"></i></div>
-                                        <button @click.stop="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-error btn-ghost bg-red-500/90 border border-red-500/20 backdrop-blur text-white shadow-lg rounded-full"><i class="fas fa-trash"></i></button>
+                                    <div class="absolute left-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
+                                         :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
+                                        <div class="drag-handle btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur cursor-move text-base-content/60 hover:text-primary hover:bg-base-200 shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-arrows-alt"></i></div>
+                                    </div>
+                                    <div class="absolute right-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
+                                         :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
+                                        <button type="button" @click.stop.prevent="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-error/80 hover:bg-error hover:text-error-content shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-trash"></i></button>
                                     </div>
 
                                     <DynamicBlock :block="element" />
@@ -321,12 +327,6 @@ const cloneBlock = (block) => {
 
 .editor-dashed-frame-sub {
     border-color: color-mix(in srgb, var(--admin-p) 15%, transparent) !important;
-}
-
-.group\/block:hover > .editor-label,
-.group:hover > .editor-label {
-    color: var(--admin-p) !important;
-    opacity: 1 !important;
 }
 
 /* Global styles for drag-and-drop placeholders */

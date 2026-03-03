@@ -208,10 +208,16 @@ const contactForm = useForm({
                     <template #item="{ element }">
                         <div class="group/block relative w-full"
                              @click.stop="store.activeBlockId = element.id"
+                             @mouseover.stop="store.hoveredBlockId = element.id"
+                             @mouseout.stop="store.hoveredBlockId = null"
                              :class="{ 'editor-ring': store.activeBlockId === element.id }">
-                            <div class="absolute right-2 top-2 z-40 opacity-0 group-hover/block:opacity-100 transition-opacity flex gap-1">
-                                <div class="drag-handle btn btn-square btn-xs btn-ghost bg-white/90 border border-black/10 backdrop-blur cursor-move text-black/60 shadow-lg rounded-full"><i class="fas fa-grip-vertical"></i></div>
-                                <button @click.stop="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-error btn-ghost bg-red-500/90 border border-red-500/20 backdrop-blur text-white shadow-lg rounded-full"><i class="fas fa-trash"></i></button>
+                            <div class="absolute left-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
+                                 :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
+                                <div class="drag-handle btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur cursor-move text-base-content/60 hover:text-primary hover:bg-base-200 shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-arrows-alt"></i></div>
+                            </div>
+                            <div class="absolute right-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
+                                 :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
+                                <button type="button" @click.stop.prevent="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-error/80 hover:bg-error hover:text-error-content shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-trash"></i></button>
                             </div>
                             <DynamicBlock :block="element" />
                         </div>
@@ -516,7 +522,9 @@ const contactForm = useForm({
         <!-- Layout Blocks -->
         <div v-else-if="block.type === 'columns'" class="max-w-7xl mx-auto px-6 grid gap-8" :class="[`grid-cols-1 md:grid-cols-${block.content.count || 2}`, {'border border-dashed editor-dashed-frame p-4 rounded-xl group relative': isEditor}]">
              <template v-if="isEditor">
-                 <div class="absolute -top-3 left-4 text-[10px] font-black uppercase tracking-widest bg-base-100 px-2 opacity-50 z-10 transition-opacity group-hover:opacity-100 editor-label">Columns Layout</div>
+                 <div class="absolute -top-3 left-4 text-[10px] font-black uppercase tracking-widest bg-base-100 px-2 opacity-50 z-10 transition-opacity"
+                      :class="{'!opacity-100': store.hoveredBlockId === block.id || store.activeBlockId === block.id}"
+                      :style="{ color: store.hoveredBlockId === block.id || store.activeBlockId === block.id ? 'var(--admin-p)' : '' }">Columns Layout</div>
                  <div v-for="i in (block.content.count || 2)" :key="i" class="space-y-4 border border-dashed editor-dashed-frame-sub p-2 rounded-lg relative min-h-[50px]">
                      <div class="absolute -top-2 left-2 text-[8px] font-black uppercase tracking-widest bg-base-100 px-2 opacity-30 z-10">Col {{ i }}</div>
                      <draggable 
@@ -529,10 +537,16 @@ const contactForm = useForm({
                         <template #item="{ element }">
                             <div v-if="element.column === i" class="group/block relative w-full"
                                  @click.stop="store.activeBlockId = element.id"
+                                 @mouseover.stop="store.hoveredBlockId = element.id"
+                                 @mouseout.stop="store.hoveredBlockId = null"
                                  :class="{ 'editor-ring': store.activeBlockId === element.id }">
-                                <div class="absolute right-2 top-2 z-40 opacity-0 group-hover/block:opacity-100 transition-opacity flex gap-1">
-                                    <div class="drag-handle btn btn-square btn-xs btn-ghost bg-white/90 border border-black/10 backdrop-blur cursor-move text-black/60 shadow-lg rounded-full"><i class="fas fa-grip-vertical"></i></div>
-                                    <button @click.stop="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-error btn-ghost bg-red-500/90 border border-red-500/20 backdrop-blur text-white shadow-lg rounded-full"><i class="fas fa-trash"></i></button>
+                                <div class="absolute left-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
+                                     :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
+                                    <div class="drag-handle btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur cursor-move text-base-content/60 hover:text-primary hover:bg-base-200 shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-arrows-alt"></i></div>
+                                </div>
+                                <div class="absolute right-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
+                                     :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
+                                    <button type="button" @click.stop.prevent="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-error/80 hover:bg-error hover:text-error-content shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-trash"></i></button>
                                 </div>
                                 <DynamicBlock :block="element" />
                             </div>
@@ -550,7 +564,9 @@ const contactForm = useForm({
         <div v-else-if="block.type === 'group' || block.type === 'stack'" class="w-full relative transition-colors p-4" 
              :class="[block.type === 'stack' && !isEditor ? 'flex flex-col gap-4' : '', {'min-h-[50px] border border-dashed editor-dashed-frame': isEditor}]">
             <template v-if="isEditor">
-                <div class="absolute -top-3 left-4 text-[10px] font-black uppercase tracking-widest bg-base-100 px-2 opacity-50 z-10 transition-opacity editor-label">{{ block.type }}</div>
+                <div class="absolute -top-3 left-4 text-[10px] font-black uppercase tracking-widest bg-base-100 px-2 opacity-50 z-10 transition-opacity"
+                     :class="{'!opacity-100': store.hoveredBlockId === block.id || store.activeBlockId === block.id}"
+                     :style="{ color: store.hoveredBlockId === block.id || store.activeBlockId === block.id ? 'var(--admin-p)' : '' }">{{ block.type }}</div>
                 <draggable 
                     v-model="block.children" 
                     :group="'blocks'"
@@ -562,10 +578,16 @@ const contactForm = useForm({
                     <template #item="{ element }">
                         <div class="group/block relative w-full"
                              @click.stop="store.activeBlockId = element.id"
+                             @mouseover.stop="store.hoveredBlockId = element.id"
+                             @mouseout.stop="store.hoveredBlockId = null"
                              :class="{ 'editor-ring': store.activeBlockId === element.id }">
-                            <div class="absolute right-2 top-2 z-40 opacity-0 group-hover/block:opacity-100 transition-opacity flex gap-1">
-                                <div class="drag-handle btn btn-square btn-xs btn-ghost bg-white/90 border border-black/10 backdrop-blur cursor-move text-black/60 shadow-lg rounded-full"><i class="fas fa-grip-vertical"></i></div>
-                                <button @click.stop="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-error btn-ghost bg-red-500/90 border border-red-500/20 backdrop-blur text-white shadow-lg rounded-full"><i class="fas fa-trash"></i></button>
+                            <div class="absolute left-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
+                                 :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
+                                <div class="drag-handle btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur cursor-move text-base-content/60 hover:text-primary hover:bg-base-200 shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-arrows-alt"></i></div>
+                            </div>
+                            <div class="absolute right-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
+                                 :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
+                                <button type="button" @click.stop.prevent="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-error/80 hover:bg-error hover:text-error-content shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-trash"></i></button>
                             </div>
                             <DynamicBlock :block="element" />
                         </div>

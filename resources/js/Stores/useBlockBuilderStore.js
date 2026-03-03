@@ -4,6 +4,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
     state: () => ({
         blocks: [],
         activeBlockId: null,
+        hoveredBlockId: null,
         isDirty: false,
         categories: [
             {
