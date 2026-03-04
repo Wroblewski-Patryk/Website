@@ -3,7 +3,7 @@ import ConfiguratorLayout from './ConfiguratorLayout.vue';
 
 const breadcrumbs = [
     { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
-    { label: 'Theme', url: '/admin/theme-configurator/colors' },
+    { label: 'Theme', url: '/admin/theme/colors' },
     { label: 'Sizes & Metrics' }
 ];
 </script>
@@ -14,8 +14,26 @@ const breadcrumbs = [
         description="Configure border radius for UI elements and the maximum width for the website container."
         :breadcrumbs="breadcrumbs">
         <template #default="{ form }">
+            
+            <div class="space-y-6">
+                <!-- Spacing -->
+                <div v-if="form.globals.advanced" class="card bg-base-100 shadow-sm border border-base-200">
+                    <div class="card-body">
+                        <h2 class="card-title text-xl mb-4 border-b border-base-200 pb-2">
+                            <i class="fas fa-ruler-combined text-primary"></i> Base Spacing Scale
+                        </h2>
+                        
+                        <div class="form-control max-w-md">
+                            <label class="label">
+                                <span class="label-text font-bold">--spacing</span>
+                                <span class="label-text-alt opacity-70">Multiplier for all padding/margin</span>
+                            </label>
+                            <input type="text" class="input input-bordered" v-model="form.globals.advanced['spacing']" placeholder="0.25rem" />
+                        </div>
+                    </div>
+                </div>
 
-            <div class="card bg-base-100 shadow-sm border border-base-200">
+                <div class="card bg-base-100 shadow-sm border border-base-200">
                 <div class="card-body">
                     <h2 class="card-title text-xl mb-6 border-b border-base-200 pb-2"><i class="fas fa-shapes text-secondary"></i> Global Shapes & Layout</h2>
                     
@@ -66,6 +84,8 @@ const breadcrumbs = [
                         </div>
                     </div>
                 </div>
+            </div>
+
             </div>
 
         </template>

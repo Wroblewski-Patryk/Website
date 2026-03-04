@@ -33,7 +33,7 @@ const savedMessage = ref(false);
 
 const saveConfig = () => {
     isSaving.value = true;
-    form.post('/admin/theme-configurator', {
+    form.post('/admin/theme', {
         preserveScroll: true,
         onSuccess: () => {
             isSaving.value = false;

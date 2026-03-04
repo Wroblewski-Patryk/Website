@@ -4,7 +4,7 @@ import ConfiguratorLayout from './ConfiguratorLayout.vue';
 
 const breadcrumbs = [
     { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
-    { label: 'Theme', url: '/admin/theme-configurator/colors' },
+    { label: 'Theme', url: '/admin/theme/colors' },
     { label: 'Colors' }
 ];
 

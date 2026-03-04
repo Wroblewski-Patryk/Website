@@ -10,9 +10,17 @@
         @php
             $themeConfig = isset($page['props']['theme_config']) ? $page['props']['theme_config'] : null;
             if (is_string($themeConfig)) $themeConfig = json_decode($themeConfig, true);
-            $headingFont = $themeConfig['globals']['fonts']['heading'] ?? 'Inter';
-            $bodyFont = $themeConfig['globals']['fonts']['body'] ?? 'Inter';
-            $fontUrl = "https://fonts.googleapis.com/css2?family=" . str_replace(' ', '+', $headingFont) . ":wght@300;400;500;600;700;800;900&family=" . str_replace(' ', '+', $bodyFont) . ":wght@300;400;500;600;700;800;900&display=swap";
+            $sansFont = $themeConfig['globals']['fonts']['sans'] ?? 'Inter';
+            $serifFont = $themeConfig['globals']['fonts']['serif'] ?? 'Merriweather';
+            $monoFont = $themeConfig['globals']['fonts']['mono'] ?? 'Fira Code';
+            
+            // Build the URL for Google Fonts dynamically
+            $fontsToLoad = array_unique([$sansFont, $serifFont, $monoFont]);
+            $fontFamilies = array_map(function($font) {
+                return "family=" . str_replace(' ', '+', $font) . ":wght@300;400;500;600;700;800;900";
+            }, $fontsToLoad);
+            
+            $fontUrl = "https://fonts.googleapis.com/css2?" . implode('&', $fontFamilies) . "&display=swap";
         @endphp
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

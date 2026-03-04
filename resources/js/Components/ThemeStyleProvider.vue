@@ -46,7 +46,25 @@ const generateCss = (config) => {
     const colors = globals.colors || {};
     const fonts = globals.fonts || {};
     const radius = globals.borderRadius || {};
+    const advanced = globals.advanced || {};
     
+    // Generate advanced CSS vars dynamically
+    let advancedCssVars = '';
+    Object.entries(advanced).forEach(([key, value]) => {
+        if (value) {
+            // If it's one of the core fonts and a Google font is selected, prepend it
+            if (key === 'font-sans' && fonts.sans) {
+                advancedCssVars += `\n            --${key}: '${fonts.sans}', ${value};`;
+            } else if (key === 'font-serif' && fonts.serif) {
+                advancedCssVars += `\n            --${key}: '${fonts.serif}', ${value};`;
+            } else if (key === 'font-mono' && fonts.mono) {
+                advancedCssVars += `\n            --${key}: '${fonts.mono}', ${value};`;
+            } else {
+                advancedCssVars += `\n            --${key}: ${value};`;
+            }
+        }
+    });
+
     // We override the :root elements so all themes get affected
     // We might want to target `[data-theme]` specifically if they switch themes, but overriding :root is safer for universal application
     return `
@@ -65,24 +83,54 @@ const generateCss = (config) => {
             ${radius.btn ? `--rounded-btn: ${radius.btn};` : ''}
             ${radius.badge ? `--rounded-badge: ${radius.badge};` : ''}
             
-            --font-primary: '${fonts.heading || 'Inter'}', sans-serif;
-            --font-secondary: '${fonts.body || 'Inter'}', sans-serif;
+            ${advancedCssVars}
         }
 
         /* Apply fonts */
-        body { font-family: var(--font-secondary); }
-        h1, h2, h3, h4, h5, h6, .card-title { font-family: var(--font-primary); }
+        body { font-family: var(--font-sans); }
+        h1, h2, h3, h4, h5, h6, .card-title { font-family: var(--font-sans); }
+        code, pre, .mockup-code, kbd, samp { font-family: var(--font-mono) !important; }
     `;
 };
 
+const loadGoogleFonts = (config) => {
+    if (!config || !config.globals || !config.globals.fonts) return;
+    const fonts = config.globals.fonts;
+
+    let linkEl = document.getElementById('theme-google-fonts');
+    if (!linkEl) {
+        // Try to find the existing one from app.blade.php
+        linkEl = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
+        if (linkEl) {
+            linkEl.id = 'theme-google-fonts';
+        } else {
+            linkEl = document.createElement('link');
+            linkEl.id = 'theme-google-fonts';
+            linkEl.rel = 'stylesheet';
+            document.head.appendChild(linkEl);
+        }
+    }
+    
+    const sans = fonts.sans || 'Inter';
+    const serif = fonts.serif || 'Merriweather';
+    const mono = fonts.mono || 'Fira Code';
+    
+    const url = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(sans)}:wght@300;400;500;600;700;800&family=${encodeURIComponent(serif)}:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=${encodeURIComponent(mono)}:wght@300;400;500;600;700&display=swap`;
+    
+    if (linkEl.href !== url) {
+        linkEl.href = url;
+    }
+};
+
 const updateStyles = (config) => {
-    let styleEl = document.getElementById('theme-configurator-styles');
+    let styleEl = document.getElementById('theme-styles');
     if (!styleEl) {
         styleEl = document.createElement('style');
-        styleEl.id = 'theme-configurator-styles';
+        styleEl.id = 'theme-styles';
         document.head.appendChild(styleEl);
     }
     styleEl.innerHTML = generateCss(config);
+    loadGoogleFonts(config);
 };
 
 onMounted(() => {

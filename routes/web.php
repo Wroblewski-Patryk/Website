@@ -43,20 +43,27 @@ Route::name('admin.')->prefix('admin')->group(function () {
                 Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class , 'index'])->name('settings.index');
                 Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class , 'store'])->name('settings.store');
 
-                Route::prefix('theme-configurator')->name('theme.')->group(function () {
+                Route::prefix('theme')->name('theme.')->group(function () {
                     Route::get('/', function () {
-                            return redirect()->route('admin.theme.colors'); }
+                            return redirect()->route('admin.theme.colors');
+                        }
                         )->name('index');
                         Route::get('colors', [\App\Http\Controllers\Admin\ThemeController::class , 'colors'])->name('colors');
                         Route::get('fonts', [\App\Http\Controllers\Admin\ThemeController::class , 'fonts'])->name('fonts');
                         Route::get('sizes', [\App\Http\Controllers\Admin\ThemeController::class , 'sizes'])->name('sizes');
-                        Route::get('blocks', [\App\Http\Controllers\Admin\ThemeController::class , 'blocks'])->name('blocks');
+                        Route::get('typography', [\App\Http\Controllers\Admin\ThemeController::class , 'typography'])->name('typography');
+                        Route::get('effects', [\App\Http\Controllers\Admin\ThemeController::class , 'effects'])->name('effects');
                         Route::post('/', [\App\Http\Controllers\Admin\ThemeController::class , 'store'])->name('store');
                     }
                     );
+
+                    Route::get('blocks', function () {
+                    return Inertia::render('Admin/Blocks');
                 }
-                );
-            });
+                )->name('blocks');
+            }
+            );
+        });
 
 // Public Routes
 Route::get('/', function () {

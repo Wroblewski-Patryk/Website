@@ -127,15 +127,22 @@ function applyTheme(themeName) {
                         
                         <li class="menu-title mt-4"><span>Design</span></li>
                         <li>
-                            <details :open="['/admin/theme-configurator/colors', '/admin/theme-configurator/fonts', '/admin/theme-configurator/sizes', '/admin/theme-configurator/blocks'].includes($page.url)">
+                            <details :open="['/admin/theme/colors', '/admin/theme/fonts', '/admin/theme/typography', '/admin/theme/sizes', '/admin/theme/effects'].includes($page.url)">
                                 <summary><i class="fas fa-paint-roller w-5"></i> Theme</summary>
                                 <ul>
-                                    <li><Link href="/admin/theme-configurator/colors" :class="{ 'active': $page.url === '/admin/theme-configurator/colors' }">Colors</Link></li>
-                                    <li><Link href="/admin/theme-configurator/fonts" :class="{ 'active': $page.url === '/admin/theme-configurator/fonts' }">Fonts</Link></li>
-                                    <li><Link href="/admin/theme-configurator/sizes" :class="{ 'active': $page.url === '/admin/theme-configurator/sizes' }">Sizes / Metrics</Link></li>
-                                    <li><Link href="/admin/theme-configurator/blocks" :class="{ 'active': $page.url === '/admin/theme-configurator/blocks' }">Block Defaults</Link></li>
+                                    <li><Link href="/admin/theme/colors" :class="{ 'active': $page.url === '/admin/theme/colors' }">Colors</Link></li>
+                                    <li><Link href="/admin/theme/fonts" :class="{ 'active': $page.url === '/admin/theme/fonts' }">Fonts</Link></li>
+                                    <li><Link href="/admin/theme/typography" :class="{ 'active': $page.url === '/admin/theme/typography' }">Typography</Link></li>
+                                    <li><Link href="/admin/theme/sizes" :class="{ 'active': $page.url === '/admin/theme/sizes' }">Sizes / Metrics</Link></li>
+                                    <li><Link href="/admin/theme/effects" :class="{ 'active': $page.url === '/admin/theme/effects' }">Effects</Link></li>
                                 </ul>
                             </details>
+                        </li>
+                        <li>
+                            <Link href="/admin/blocks" :class="{ 'active': $page.url === '/admin/blocks' }">
+                                <i class="fas fa-cubes w-5"></i>
+                                Blocks
+                            </Link>
                         </li>
                         <li>
                             <Link href="/admin/templates" :class="{ 'active': $page.url.startsWith('/admin/templates') }">
