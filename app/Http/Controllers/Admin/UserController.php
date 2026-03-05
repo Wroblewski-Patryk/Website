@@ -40,17 +40,34 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(User $user)
     {
-    // To be implemented
+        return Inertia::render('Admin/Users/Edit', [
+            'user' => $user
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, User $user)
     {
-    // To be implemented
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        $user->name = $validatedData['name'];
+        $user->email = $validatedData['email'];
+
+        if (!empty($validatedData['password'])) {
+            $user->password = bcrypt($validatedData['password']);
+        }
+
+        $user->save();
+
+        return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
     }
 
     /**

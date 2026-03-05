@@ -90,15 +90,15 @@ function applyTheme(themeName) {
                 <div class="dropdown dropdown-end">
                     <label tabindex="0" class="btn btn-ghost btn-circle avatar placeholder transition-transform hover:scale-105 ml-1 ring ring-primary ring-offset-base-100 ring-offset-1">
                         <div class="bg-primary text-primary-content rounded-full w-9">
-                            <span class="text-sm">AD</span>
+                            <span class="text-sm">{{ $page.props.auth?.user?.name?.substring(0, 2)?.toUpperCase() || 'AD' }}</span>
                         </div>
                     </label>
                     <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-56 border border-base-200 gap-1">
                         <li class="menu-title flex flex-col items-start gap-0 p-3 border-b border-base-200/50 mb-1 pointer-events-none">
-                            <span class="font-bold text-sm text-base-content w-full whitespace-nowrap overflow-hidden text-ellipsis">Administrator</span>
-                            <span class="text-xs font-normal text-base-content/60 w-full whitespace-nowrap overflow-hidden text-ellipsis mt-1">admin@featherly.com</span>
+                            <span class="font-bold text-sm text-base-content w-full whitespace-nowrap overflow-hidden text-ellipsis">{{ $page.props.auth?.user?.name || 'Administrator' }}</span>
+                            <span class="text-xs font-normal text-base-content/60 w-full whitespace-nowrap overflow-hidden text-ellipsis mt-1">{{ $page.props.auth?.user?.email || 'admin@example.com' }}</span>
                         </li>
-                        <li><Link href="#"><PhUser weight="regular" class="w-4 h-4 text-base-content/70" /> Mój Profil</Link></li>
+                        <li v-if="$page.props.auth?.user?.id"><Link :href="`/admin/users/${$page.props.auth.user.id}/edit`"><PhUser weight="regular" class="w-4 h-4 text-base-content/70" /> Mój Profil</Link></li>
                         <li><Link href="/admin/settings"><PhGearSix weight="regular" class="w-4 h-4 text-base-content/70" /> Ustawienia konta</Link></li>
                         <li><Link href="#"><PhLifebuoy weight="regular" class="w-4 h-4 text-base-content/70" /> Pomoc techniczna</Link></li>
                         <div class="h-[1px] bg-base-200 my-1 mx-2"></div>

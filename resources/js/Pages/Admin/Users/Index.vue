@@ -11,7 +11,7 @@ const deleteForm = useForm({});
 
 const breadcrumbs = [
     { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
-    { label: 'Użytkownicy' }
+    { label: 'Users' }
 ];
 
 const columns = [
@@ -32,10 +32,10 @@ function deleteUser(item) {
 </script>
 
 <template>
-    <Head title="Zarządzaj użytkownikami" />
+    <Head title="Users" />
     <AdminLayout>
         <ResourceTable
-            title="Użytkownicy"
+            title="Users"
             description="Zarządzaj kontami użytkowników z dostępem do panelu."
             :icon="markRaw(PhUsers)"
             :breadcrumbs="breadcrumbs"

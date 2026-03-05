@@ -50,6 +50,9 @@ class HandleInertiaRequests extends Middleware
 
         return [
             ...parent::share($request),
+            'auth' => [
+                'user' => $request->user() ? $request->user()->only('id', 'name', 'email') : null,
+            ],
             'header' => $header ? $header->content : null,
             'footer' => $footer ? $footer->content : null,
             'locale' => app()->getLocale(),
