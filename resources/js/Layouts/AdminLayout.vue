@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue';
-import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGear, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhSignOut, PhLifebuoy } from '@phosphor-icons/vue';
+import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGear, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhUsers, PhSignOut, PhLifebuoy } from '@phosphor-icons/vue';
 
 defineProps({
     fullWidth: {
@@ -215,6 +215,12 @@ function applyTheme(themeName) {
                             <li class="menu-title mt-6 mb-2 border-b border-base-200/50 pb-1 pointer-events-none">
                                 <span class="text-[10px] uppercase font-bold tracking-widest text-base-content/50 whitespace-nowrap overflow-hidden transition-all duration-300" 
                                       v-show="!isSidebarCollapsed">System</span>
+                            </li>
+                            <li>
+                                <Link href="/admin/users" class="group hover:bg-base-content/5 hover:text-base-content transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-base-content': $page.url === '/admin/users' || $page.url.startsWith('/admin/users/') }">
+                                    <PhUsers weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-base-content': $page.url.startsWith('/admin/users'), 'text-base-content/50 group-hover:text-base-content': !$page.url.startsWith('/admin/users')}" />
+                                    <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Użytkownicy</span>
+                                </Link>
                             </li>
                             <li>
                                 <Link href="/admin/languages" class="group hover:bg-base-content/5 hover:text-base-content transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-base-content': $page.url.startsWith('/admin/languages') }">

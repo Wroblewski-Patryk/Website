@@ -39,6 +39,7 @@ Route::name('admin.')->prefix('admin')->group(function () {
                 Route::resource('translations', \App\Http\Controllers\Admin\TranslationController::class)->except(['show']);
                 Route::resource('projects', \App\Http\Controllers\Admin\ProjectController::class)->except(['show']);
                 Route::resource('languages', \App\Http\Controllers\Admin\LanguageController::class)->except(['show']);
+                Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['show']);
 
                 Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class , 'index'])->name('settings.index');
                 Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class , 'store'])->name('settings.store');
