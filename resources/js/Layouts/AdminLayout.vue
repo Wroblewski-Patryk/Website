@@ -12,16 +12,15 @@ defineProps({
 });
 
 // Themes supported in our DaisyUI configuration
-const colorThemes = ['emerald', 'corporate', 'retro', 'cyberpunk', 'dracula'];
+const themesList = ['light', 'dark', 'emerald', 'corporate', 'retro', 'cyberpunk', 'dracula'];
 const currentTheme = ref('light');
 const isSidebarCollapsed = ref(false);
 
 onMounted(() => {
     // Check localStorage for a saved theme
     const savedTheme = localStorage.getItem('admin-theme');
-    const validThemes = ['light', 'dark', ...colorThemes];
     
-    if (savedTheme && validThemes.includes(savedTheme)) {
+    if (savedTheme && themesList.includes(savedTheme)) {
         currentTheme.value = savedTheme;
     } else {
         // Fallback to media query preference if available, else 'light'
@@ -72,48 +71,38 @@ function applyTheme(themeName) {
             </div>
             
             <div class="flex-none gap-2">
-                <!-- Light/Dark Toggle -->
-                <label class="swap swap-rotate btn btn-ghost btn-circle">
-                    <!-- this hidden checkbox controls the state -->
-                    <input type="checkbox" :checked="currentTheme === 'dark'" @change="currentTheme = currentTheme === 'dark' ? 'light' : 'dark'" />
-                    <PhSun weight="bold" class="swap-off fill-current w-5 h-5 text-base-content/70" />
-                    <PhMoon weight="bold" class="swap-on fill-current w-5 h-5 text-base-content/70" />
-                </label>
-
                 <!-- Color Themes Dropdown -->
                 <div class="dropdown dropdown-end">
                     <label tabindex="0" class="btn btn-ghost btn-circle">
                         <PhPalette weight="regular" class="w-5 h-5 text-base-content/70" />
                     </label>
                     <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200">
-                        <li class="menu-title"><span>Motywy Kolorystyczne</span></li>
-                        <li v-for="theme in colorThemes" :key="theme">
+                        <li class="menu-title"><span>Wybierz Motyw</span></li>
+                        <li v-for="theme in themesList" :key="theme">
                             <a :class="{ 'active': currentTheme === theme }" @click="currentTheme = theme">
-                                <span class="capitalize">{{ theme }}</span>
+                                <span class="capitalize w-full">{{ theme }}</span>
                             </a>
                         </li>
                     </ul>
                 </div>
 
                 <!-- Admin Profile/Logout Dropdown -->
-                <div class="dropdown dropdown-end flex items-center">
-                    <label tabindex="0" class="avatar placeholder cursor-pointer transition-transform hover:scale-105 ml-2">
-                        <div class="bg-primary text-primary-content rounded-full w-10 h-10 flex items-center justify-center ring ring-primary ring-offset-base-100 ring-offset-2">
-                            <span class="font-bold text-sm">AD</span>
+                <div class="dropdown dropdown-end">
+                    <label tabindex="0" class="btn btn-ghost btn-circle avatar placeholder transition-transform hover:scale-105 ml-1">
+                        <div class="bg-primary text-primary-content w-9 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                            <span class="font-bold text-sm leading-none mt-1 items-center justify-center flex h-full">AD</span>
                         </div>
                     </label>
                     <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-56 border border-base-200 gap-1">
-                        <li class="px-4 py-3 mb-1 border-b border-base-200">
-                            <div class="flex flex-col gap-1 p-0 cursor-default hover:bg-transparent">
-                                <span class="font-bold text-[15px] leading-tight text-base-content">Administrator</span>
-                                <span class="text-xs text-base-content/60">admin@featherly.com</span>
-                            </div>
+                        <li class="menu-title flex flex-col items-start gap-0 p-3 border-b border-base-200/50 mb-1 pointer-events-none">
+                            <span class="font-bold text-sm text-base-content w-full whitespace-nowrap overflow-hidden text-ellipsis">Administrator</span>
+                            <span class="text-xs font-normal text-base-content/60 w-full whitespace-nowrap overflow-hidden text-ellipsis mt-1">admin@featherly.com</span>
                         </li>
-                        <li><Link href="#"><PhUser weight="regular" class="w-4 h-4 mr-2 text-base-content/70" /> Mój Profil</Link></li>
-                        <li><Link href="/admin/settings"><PhGear weight="regular" class="w-4 h-4 mr-2 text-base-content/70" /> Ustawienia konta</Link></li>
-                        <li><Link href="#"><PhLifebuoy weight="regular" class="w-4 h-4 mr-2 text-base-content/70" /> Pomoc technicza</Link></li>
-                        <div class="divider my-0"></div>
-                        <li><Link href="#" class="text-error hover:bg-error/10 hover:text-error"><PhSignOut weight="regular" class="w-4 h-4 mr-2" /> Wyloguj się</Link></li>
+                        <li><Link href="#"><PhUser weight="regular" class="w-4 h-4 text-base-content/70" /> Mój Profil</Link></li>
+                        <li><Link href="/admin/settings"><PhGear weight="regular" class="w-4 h-4 text-base-content/70" /> Ustawienia konta</Link></li>
+                        <li><Link href="#"><PhLifebuoy weight="regular" class="w-4 h-4 text-base-content/70" /> Pomoc techniczna</Link></li>
+                        <div class="divider my-0 mb-1"></div>
+                        <li><Link href="#" class="text-error hover:bg-error/10 hover:text-error"><PhSignOut weight="regular" class="w-4 h-4" /> Wyloguj się</Link></li>
                     </ul>
                 </div>
             </div>
