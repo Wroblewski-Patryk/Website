@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue';
-import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGear, PhBell, PhCaretLeft, PhCaretRight } from '@phosphor-icons/vue';
+import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGear, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhSignOut, PhLifebuoy } from '@phosphor-icons/vue';
 
 defineProps({
     fullWidth: {
@@ -12,14 +12,16 @@ defineProps({
 });
 
 // Themes supported in our DaisyUI configuration
-const themes = ['light', 'dark', 'luxury', 'cyberpunk'];
+const colorThemes = ['emerald', 'corporate', 'retro', 'cyberpunk', 'dracula'];
 const currentTheme = ref('light');
 const isSidebarCollapsed = ref(false);
 
 onMounted(() => {
     // Check localStorage for a saved theme
     const savedTheme = localStorage.getItem('admin-theme');
-    if (savedTheme && themes.includes(savedTheme)) {
+    const validThemes = ['light', 'dark', ...colorThemes];
+    
+    if (savedTheme && validThemes.includes(savedTheme)) {
         currentTheme.value = savedTheme;
     } else {
         // Fallback to media query preference if available, else 'light'
@@ -70,14 +72,22 @@ function applyTheme(themeName) {
             </div>
             
             <div class="flex-none gap-2">
-                <!-- Theme Switcher Dropdown -->
+                <!-- Light/Dark Toggle -->
+                <label class="swap swap-rotate btn btn-ghost btn-circle">
+                    <!-- this hidden checkbox controls the state -->
+                    <input type="checkbox" :checked="currentTheme === 'dark'" @change="currentTheme = currentTheme === 'dark' ? 'light' : 'dark'" />
+                    <PhSun weight="bold" class="swap-off fill-current w-5 h-5 text-base-content/70" />
+                    <PhMoon weight="bold" class="swap-on fill-current w-5 h-5 text-base-content/70" />
+                </label>
+
+                <!-- Color Themes Dropdown -->
                 <div class="dropdown dropdown-end">
                     <label tabindex="0" class="btn btn-ghost btn-circle">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>
+                        <PhPalette weight="regular" class="w-5 h-5 text-base-content/70" />
                     </label>
                     <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200">
-                        <li class="menu-title"><span>Select Theme</span></li>
-                        <li v-for="theme in themes" :key="theme">
+                        <li class="menu-title"><span>Motywy Kolorystyczne</span></li>
+                        <li v-for="theme in colorThemes" :key="theme">
                             <a :class="{ 'active': currentTheme === theme }" @click="currentTheme = theme">
                                 <span class="capitalize">{{ theme }}</span>
                             </a>
@@ -85,16 +95,25 @@ function applyTheme(themeName) {
                     </ul>
                 </div>
 
-                <!-- Admin Profile/Logout Dropdown Placeholder -->
+                <!-- Admin Profile/Logout Dropdown -->
                 <div class="dropdown dropdown-end">
-                    <label tabindex="0" class="btn btn-ghost btn-circle avatar placeholder">
-                        <div class="bg-neutral text-neutral-content rounded-full w-10">
-                            <span>AD</span>
+                    <label tabindex="0" class="btn btn-ghost btn-circle avatar placeholder transition-transform hover:scale-105 ml-1">
+                        <div class="bg-primary text-primary-content rounded-full w-9 ring ring-primary ring-offset-base-100 ring-offset-2">
+                            <span class="font-bold text-sm">AD</span>
                         </div>
                     </label>
-                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200">
-                        <li><a>Settings</a></li>
-                        <li><a>Logout</a></li>
+                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-56 border border-base-200 gap-1">
+                        <li class="px-4 py-3 mb-1 border-b border-base-200">
+                            <div class="flex flex-col gap-1 p-0 cursor-default hover:bg-transparent">
+                                <span class="font-bold text-[15px] leading-tight text-base-content">Administrator</span>
+                                <span class="text-xs text-base-content/60">admin@featherly.com</span>
+                            </div>
+                        </li>
+                        <li><Link href="#"><PhUser weight="regular" class="w-4 h-4 mr-2 text-base-content/70" /> Mój Profil</Link></li>
+                        <li><Link href="/admin/settings"><PhGear weight="regular" class="w-4 h-4 mr-2 text-base-content/70" /> Ustawienia konta</Link></li>
+                        <li><Link href="#"><PhLifebuoy weight="regular" class="w-4 h-4 mr-2 text-base-content/70" /> Pomoc technicza</Link></li>
+                        <div class="divider my-0"></div>
+                        <li><Link href="#" class="text-error hover:bg-error/10 hover:text-error"><PhSignOut weight="regular" class="w-4 h-4 mr-2" /> Wyloguj się</Link></li>
                     </ul>
                 </div>
             </div>
