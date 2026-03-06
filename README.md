@@ -1,59 +1,77 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Custom Block Builder CMS
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern, high-performance Content Management System built with a custom visual block builder. This project eschews generic admin panels (like Filament) in favor of a 100% bespoke, WordPress-like administrative experience tailored for maximum flexibility and performance.
 
-## About Laravel
+## 🚀 Tech Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Backend
+- **Framework:** Laravel 12 (PHP 8.2+)
+- **Database:** Relational database for structured content and JSON fields (`content`, `settings`) for dynamic block configurations.
+- **Routing & State:** Ziggy & Inertia.js (Server-Side Rendered approach without heavy standalone APIs).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Frontend (Admin & Public)
+- **Framework:** Vue.js 3 (Composition API `<script setup>`)
+- **State Management:** Pinia (e.g., `useBlockBuilderStore`) managing complex UI states without props-drilling.
+- **Styling:** Tailwind CSS v4 (Utility-first) + DaisyUI. 
+- **Theming:** Dynamic theme switching (`cyberpunk`, `light`, `dark`, etc.) seamlessly applied across both the admin tools and the public-facing site.
+- **Animations & Interactivity:** 
+  - [GSAP](https://gsap.com/) for complex, timeline-based block animations and z-index 3D spatial visualizations.
+  - `vuedraggable` for intuitive drag-and-drop block management.
+  - `@phosphor-icons/vue` and FontAwesome for UI iconography.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🏗️ Core Architecture & Philosophy
 
-## Learning Laravel
+1. **Custom Visual Editor:** 
+   The heart of the application is the Block Builder. Users construct pages and posts by dragging and dropping blocks. Block layouts, padding, margins, and 3D z-index configurations are saved as structured JSON objects.
+   
+2. **Performance First (Inertia.js):** 
+   We limit standard AJAX/API requests. Instead, data is injected directly into components via Laravel controllers and Inertia, ensuring extremely fast load times and a SPA-like feel while maintaining the benefits of a backend-driven application.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+3. **DRY & Component-Based:** 
+   Vue components are created with reusability in mind. Repeated UI chunks are extracted into standalone `<template>` files to maintain a clean and manageable codebase.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+4. **Living Documentation:**
+   Core architectural decisions and systemic contexts are documented in the `docs/` directory. **Always consult and update `docs/*.md` files when making significant architectural changes.**
 
-## Laravel Sponsors
+## 💻 Local Development
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Requirements
+- PHP 8.2 or higher
+- Composer
+- Node.js & NPM
 
-### Premium Partners
+### Setup
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1. **Clone the repository and install PHP dependencies:**
+   ```bash
+   composer install
+   ```
 
-## Contributing
+2. **Install frontend dependencies:**
+   ```bash
+   npm install
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. **Environment Setup:**
+   Copy the example `.env` file and generate an application key:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-## Code of Conduct
+4. **Database Migration:**
+   Ensure your database is configured in `.env`, then run:
+   ```bash
+   php artisan migrate
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+5. **Start Dev Servers:**
+   Run the Laravel queue/serve and Vite concurrently:
+   ```bash
+   npm run dev
+   ```
+   *(Alternatively, run `php artisan serve` and `npm run dev` in separate terminal windows).*
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+*This application prioritizes premium user experience with micro-animations and polished aesthetics. When contributing, ensure all UI updates comply with the cohesive DaisyUI theme structure and utility-driven Tailwind principles.*
