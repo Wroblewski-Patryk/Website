@@ -12,7 +12,7 @@ const props = defineProps(['menus']);
 
 const store = useBlockBuilderStore();
 const activeSidebarTab = ref('content');
-const activeInspectorTab = ref('layers'); // For Document Inspector State
+const activeInspectorTab = ref('layers'); // New default: Layers
 
 const createFillProxy = (newProp, legacyProp) => computed({
     get: () => {
@@ -780,7 +780,7 @@ const toggleOffset = (direction) => {
 
         <!-- Inspector Tabs -->
         <div class="flex border-b border-base-content/10 bg-base-200/50">
-            <button v-for="tab in ['layers', 'info', 'history']" :key="tab"
+            <button v-for="tab in ['layers', 'seo', 'info', 'history']" :key="tab"
                     @click="activeInspectorTab = tab"
                     class="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-all relative"
                     :class="activeInspectorTab === tab ? 'text-primary' : 'opacity-40 hover:opacity-100'">
@@ -795,10 +795,9 @@ const toggleOffset = (direction) => {
             <!-- Layers -->
             <div v-if="activeInspectorTab === 'layers'" class="space-y-4 animate-in fade-in">
                 <p class="text-[10px] font-bold uppercase tracking-widest opacity-30 mb-2">Canvas Graph</p>
-                
                 <LayerTreeItem 
                     :blocks="store.blocks" 
-                    @change="store.isDirty = true" 
+                    @select="id => store.activeBlockId = id"
                 />
                 
                 <div v-if="store.blocks.length === 0" class="text-xs opacity-40 italic mt-2 text-center py-8">
@@ -807,16 +806,20 @@ const toggleOffset = (direction) => {
                 </div>
             </div>
 
-            <!-- Global Info Slot -->
+            <!-- SEO -->
+            <div v-if="activeInspectorTab === 'seo'" class="space-y-4 animate-in fade-in">
+                <slot name="seo"></slot>
+            </div>
+
+            <!-- Info -->
             <div v-if="activeInspectorTab === 'info'" class="space-y-4 animate-in fade-in">
                 <slot name="info"></slot>
             </div>
 
-            <!-- History Slot -->
+            <!-- History -->
             <div v-if="activeInspectorTab === 'history'" class="space-y-4 animate-in fade-in">
                 <slot name="history"></slot>
             </div>
-
         </div>
     </div>
 </template>

@@ -1,24 +1,6 @@
 <template>
     <div class="h-full flex flex-col overflow-hidden bg-base-300" style="--admin-p: var(--color-primary, #38bdf8); --admin-radius: var(--radius-box, var(--rounded-box, 1rem));">
-        <!-- Top Bar -->
-        <div class="flex items-center justify-between px-6 py-2 bg-base-100 border-b border-white/5 shadow-md z-20">
-            <div class="flex items-center gap-4">
-                <slot name="back-button">
-                    <button @click="$inertia.visit(backRoute)" class="btn btn-ghost btn-sm">
-                        <i class="fas fa-chevron-left mr-2"></i> {{ backLabel }}
-                    </button>
-                </slot>
-                <slot name="top-bar-start"></slot>
-            </div>
-            
-            <div class="flex items-center gap-3">
-                <slot name="top-bar-end"></slot>
-                <span v-if="store.isDirty" class="text-xs opacity-50 italic mr-2">Unsaved changes...</span>
-                <button @click="$emit('save')" class="btn btn-primary btn-sm px-6 rounded-full shadow-lg shadow-primary/20" :disabled="saving">
-                    <i class="fas fa-save mr-2"></i> {{ saveLabel }}
-                </button>
-            </div>
-        </div>
+
 
         <div class="flex-1 flex overflow-hidden">
             <!-- Left Sidebar: Block Palette -->
@@ -221,6 +203,9 @@
                         <template #info>
                             <slot name="info"></slot>
                         </template>
+                        <template #seo>
+                            <slot name="seo"></slot>
+                        </template>
                         <template #history>
                             <slot name="history"></slot>
                         </template>
@@ -269,10 +254,6 @@ const iconMap = {
 };
 
 const props = defineProps({
-    saveLabel: { type: String, default: 'Save Changes' },
-    backLabel: { type: String, default: 'Back' },
-    backRoute: { type: String, default: '#' },
-    saving: { type: Boolean, default: false },
     categories: { type: Array, required: true },
     menus: { type: Array, default: () => [] }
 });
