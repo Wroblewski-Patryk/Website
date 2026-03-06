@@ -42,34 +42,30 @@
                 <div class="flex-1 overflow-y-auto p-4 custom-scrollbar">
                     <!-- Categories -->
                     <div class="space-y-4">
-                        <div v-for="cat in categories" :key="cat.id" class="collapse collapse-arrow bg-base-200 border border-base-content/10 rounded-box overflow-hidden">
-                            <input type="checkbox" :checked="cat.id === 'content' || cat.id === 'forms'" /> 
-                            <div class="collapse-title text-xs font-bold uppercase tracking-widest flex items-center gap-3 bg-base-300/50">
-                                <div class="w-8 h-8 rounded-lg bg-base-100 flex items-center justify-center text-primary shadow-sm">
-                                    <i :class="cat.icon"></i>
-                                </div>
-                                {{ cat.label || cat.name }}
-                            </div>
-                            <div class="collapse-content p-0">
-                                <div class="bg-base-200 p-3 mt-1 rounded-b-box">
-                                    <draggable 
-                                        :list="cat.blocks" 
-                                        :group="{ name: 'blocks', pull: 'clone', put: false }" 
-                                        :clone="cloneBlock"
-                                        :sort="false"
-                                        item-key="type"
-                                        class="grid grid-cols-2 gap-3">
-                                        <template #item="{ element }">
-                                            <div @click="store.addBlock(element.type)" 
-                                                 class="flex flex-col items-center justify-center gap-2 p-3 bg-base-100 border border-base-content/5 rounded-box hover:border-primary hover:shadow-md hover:text-primary transition-all cursor-grab active:cursor-grabbing group">
-                                                <i :class="[element.icon, 'text-2xl text-base-content/50 group-hover:text-primary transition-colors']"></i>
-                                                <span class="text-[10px] font-bold leading-tight text-center">{{ element.label }}</span>
-                                            </div>
-                                        </template>
-                                    </draggable>
-                                </div>
-                            </div>
-                        </div>
+                        <AdminCollapse 
+                            v-for="cat in categories" 
+                            :key="cat.id" 
+                            :title="cat.label || cat.name" 
+                            :icon="cat.icon" 
+                            :open="cat.id === 'content' || cat.id === 'forms' || cat.id === 'typography'"
+                            contentClass="!p-2 !bg-base-200/50"
+                        >
+                            <draggable 
+                                :list="cat.blocks" 
+                                :group="{ name: 'blocks', pull: 'clone', put: false }" 
+                                :clone="cloneBlock"
+                                :sort="false"
+                                item-key="type"
+                                class="grid grid-cols-2 gap-2">
+                                <template #item="{ element }">
+                                    <div @click="store.addBlock(element.type)" 
+                                         class="flex flex-col items-center justify-center gap-2 p-3 py-4 bg-base-100 border border-base-content/5 rounded-box hover:border-primary hover:bg-primary/5 hover:-translate-y-0.5 hover:shadow-lg transition-all cursor-grab active:cursor-grabbing group">
+                                        <component :is="iconMap[element.icon] || iconMap.PhCube" weight="duotone" class="w-6 h-6 text-base-content/50 group-hover:text-primary transition-colors" />
+                                        <span class="text-[10px] font-bold leading-tight text-center">{{ element.label }}</span>
+                                    </div>
+                                </template>
+                            </draggable>
+                        </AdminCollapse>
                     </div>
                 </div>
             </div>
@@ -224,14 +220,39 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { PhCube } from '@phosphor-icons/vue';
+import { 
+    PhCube, PhTextT, PhTextAa, PhTextHOne, PhListBullets, PhQuotes, PhCode, 
+    PhCursorClick, PhHandPointing, PhCaretDown, PhBrowsers, PhArrowsLeftRight, 
+    PhDesktop, PhListDashes, PhUserCircle, PhCertificate, PhIdentificationCard, 
+    PhSlidersHorizontal, PhChats, PhTimer, PhCircleHalf, PhChartLineUp, PhTable, 
+    PhWarningCircle, PhWarning, PhListChecks, PhCircleNotch, PhPencilSimple, 
+    PhCheckSquare, PhRadioButton, PhToggleRight, PhStarHalf, PhUploadSimple, 
+    PhStack, PhBoundingBox, PhColumns, PhList, PhMinus, PhStar, PhImage, 
+    PhVideoCamera, PhNavigationArrow, PhDotsThree, PhBrowser, PhFootprints, 
+    PhFolder, PhTerminal, PhDeviceMobile, PhAppWindow, PhPlusCircle, PhArticle, 
+    PhBriefcase, PhArrowsClockwise, PhListNumbers 
+} from '@phosphor-icons/vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
 import BlockEditorSidebar from '@/Components/BlockEditorSidebar.vue';
 import LayerTreeItem from '@/Components/LayerTreeItem.vue';
 import GsapTimelineEditor from '@/Components/GsapTimelineEditor.vue';
+import AdminCollapse from '@/Components/AdminCollapse.vue';
 import draggable from 'vuedraggable';
 import gsap from 'gsap';
+
+const iconMap = {
+    PhCube, PhTextT, PhTextAa, PhTextHOne, PhListBullets, PhQuotes, PhCode, 
+    PhCursorClick, PhHandPointing, PhCaretDown, PhBrowsers, PhArrowsLeftRight, 
+    PhDesktop, PhListDashes, PhUserCircle, PhCertificate, PhIdentificationCard, 
+    PhSlidersHorizontal, PhChats, PhTimer, PhCircleHalf, PhChartLineUp, PhTable, 
+    PhWarningCircle, PhWarning, PhListChecks, PhCircleNotch, PhPencilSimple, 
+    PhCheckSquare, PhRadioButton, PhToggleRight, PhStarHalf, PhUploadSimple, 
+    PhStack, PhBoundingBox, PhColumns, PhList, PhMinus, PhStar, PhImage, 
+    PhVideoCamera, PhNavigationArrow, PhDotsThree, PhBrowser, PhFootprints, 
+    PhFolder, PhTerminal, PhDeviceMobile, PhAppWindow, PhPlusCircle, PhArticle, 
+    PhBriefcase, PhArrowsClockwise, PhListNumbers 
+};
 
 const props = defineProps({
     saveLabel: { type: String, default: 'Save Changes' },

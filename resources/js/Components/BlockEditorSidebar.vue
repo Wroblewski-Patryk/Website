@@ -4,6 +4,7 @@ import { computed, ref, watch } from 'vue';
 import { PhTextHOne, PhBriefcase, PhCode, PhBoundingBox, PhCube, PhX, PhTrash, PhPlus, PhTextAlignLeft, PhTextAlignCenter, PhTextAlignRight, PhTextAlignJustify, PhArrowUp, PhArrowDown, PhArrowLeft, PhArrowRight, PhFileText } from '@phosphor-icons/vue';
 import UnitInput from '@/Components/UnitInput.vue';
 import LinkedUnitInput from '@/Components/LinkedUnitInput.vue';
+import AdminCollapse from '@/Components/AdminCollapse.vue';
 import LayerTreeItem from '@/Components/LayerTreeItem.vue';
 import FillControl from '@/Components/FillControl.vue';
 
@@ -104,7 +105,7 @@ const toggleOffset = (direction) => {
 <template>
     <div v-if="store.activeBlock" class="h-full flex flex-col bg-base-100 border-l border-white/5 animate-in slide-in-from-right-4 fade-in duration-300">
         <!-- Sidebar Header -->
-        <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-base-100/80 backdrop-blur-xl z-20">
+        <div class="px-6 py-4 border-b border-base-content/10 flex items-center justify-between sticky top-0 bg-base-100/80 backdrop-blur-xl z-20">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                     <PhTextHOne v-if="store.activeBlock.type === 'heading'" weight="bold" class="w-4 h-4" />
@@ -124,7 +125,7 @@ const toggleOffset = (direction) => {
         </div>
 
         <!-- Sidebar Tabs -->
-        <div class="flex border-b border-white/5 bg-base-200/30">
+        <div class="flex border-b border-base-content/10 bg-base-200/50">
             <button v-for="tab in ['content', 'style', 'animations', 'advanced']" :key="tab"
                     @click="activeSidebarTab = tab"
                     class="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-all relative"
@@ -221,7 +222,7 @@ const toggleOffset = (direction) => {
                     </div>
 
                     <div class="flex flex-col gap-2">
-                        <div v-for="(row, rIdx) in store.activeBlock.content.rows" :key="rIdx" class="flex gap-2 items-center bg-base-200/50 p-2 rounded-xl border border-white/5 overflow-hidden">
+                        <div v-for="(row, rIdx) in store.activeBlock.content.rows" :key="rIdx" class="flex gap-2 items-center bg-base-200 p-2 rounded-box overflow-hidden">
                             <div class="flex gap-2 flex-1 overflow-x-auto custom-scrollbar pb-1">
                                 <input v-for="(cell, cIdx) in row" :key="cIdx" type="text" v-model="store.activeBlock.content.rows[rIdx][cIdx]" class="input input-xs input-bordered min-w-[80px] flex-1" />
                             </div>
@@ -229,7 +230,7 @@ const toggleOffset = (direction) => {
                         </div>
                     </div>
                     
-                    <button @click="store.activeBlock.content.rows.push(new Array(store.activeBlock.content.rows[0].length).fill(''))" class="btn btn-xs btn-outline btn-block border-dashed border-white/20"><PhPlus weight="bold" class="w-3 h-3 mr-2" />Add Row</button>
+                    <button @click="store.activeBlock.content.rows.push(new Array(store.activeBlock.content.rows[0].length).fill(''))" class="btn btn-xs btn-outline btn-block border-dashed border-base-content/20"><PhPlus weight="bold" class="w-3 h-3 mr-2" />Add Row</button>
                 </div>
 
                 <!-- Media Blocks -->
@@ -496,7 +497,7 @@ const toggleOffset = (direction) => {
             <div v-if="activeSidebarTab === 'animations'" class="space-y-6 animate-in fade-in">
                 
                 <div class="form-control">
-                    <label class="label cursor-pointer justify-between bg-base-200/50 p-3 rounded-xl border border-white/5">
+                    <label class="label cursor-pointer justify-between bg-base-200 p-3 rounded-box">
                         <span class="label-text font-bold text-xs uppercase tracking-widest opacity-70">Enable Animations</span>
                         <input type="checkbox" v-model="store.activeBlock.settings.animations.enabled" class="toggle toggle-primary toggle-sm" />
                     </label>
@@ -553,10 +554,8 @@ const toggleOffset = (direction) => {
             <div v-if="activeSidebarTab === 'style'" class="space-y-6 animate-in fade-in">
                 
                 <!-- Colors -->
-                <div class="collapse collapse-arrow bg-base-200/50 border border-white/5 rounded-2xl">
-                    <input type="checkbox" /> 
-                    <div class="collapse-title text-[10px] uppercase font-black tracking-widest opacity-50">Colors</div>
-                    <div class="collapse-content space-y-4">
+                <AdminCollapse title="Colors" icon="PhPalette">
+                    <div class="space-y-4 pt-1">
                         <div class="grid grid-cols-2 gap-4">
                             <div class="form-control items-center w-full col-span-2">
                                 <FillControl v-model="backgroundFill" label="Background" />
@@ -567,13 +566,11 @@ const toggleOffset = (direction) => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </AdminCollapse>
 
                 <!-- Spacing (Margin & Padding) -->
-                <div class="collapse collapse-arrow bg-base-200/50 border border-white/5 rounded-2xl">
-                    <input type="checkbox" /> 
-                    <div class="collapse-title text-[10px] uppercase font-black tracking-widest opacity-50">Spacing</div>
-                    <div class="collapse-content space-y-6">
+                <AdminCollapse title="Spacing" icon="PhFrameCorners">
+                    <div class="space-y-6 pt-1">
                         <LinkedUnitInput 
                             v-model:top="store.activeBlock.settings.style.marginTop"
                             v-model:right="store.activeBlock.settings.style.marginRight"
@@ -590,13 +587,11 @@ const toggleOffset = (direction) => {
                             label="Padding" 
                         />
                     </div>
-                </div>
+                </AdminCollapse>
 
                 <!-- Typography -->
-                <div class="collapse collapse-arrow bg-base-200/50 border border-white/5 rounded-2xl">
-                    <input type="checkbox" checked /> 
-                    <div class="collapse-title text-[10px] uppercase font-black tracking-widest opacity-50">Typography</div>
-                    <div class="collapse-content space-y-4">
+                <AdminCollapse title="Typography" icon="PhTextT" :open="true">
+                    <div class="space-y-4 pt-1">
                         <div class="form-control">
                             <label class="label"><span class="label-text text-[10px] uppercase">Font Family</span></label>
                             <select v-model="store.activeBlock.settings.style.fontFamily" class="select select-bordered select-sm w-full">
@@ -640,13 +635,11 @@ const toggleOffset = (direction) => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </AdminCollapse>
 
                 <!-- Borders -->
-                <div class="collapse collapse-arrow bg-base-200/50 border border-white/5 rounded-2xl">
-                    <input type="checkbox" /> 
-                    <div class="collapse-title text-[10px] uppercase font-black tracking-widest opacity-50">Border & Appearance</div>
-                    <div class="collapse-content space-y-6">
+                <AdminCollapse title="Border & Appearance" icon="PhSquareHalf">
+                    <div class="space-y-6 pt-1">
                         <!-- Border Radius Linked Input -->
                         <LinkedUnitInput 
                             v-model:top="store.activeBlock.settings.style.borderTopLeftRadius"
@@ -675,13 +668,11 @@ const toggleOffset = (direction) => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </AdminCollapse>
 
                 <!-- Layout & Position -->
-                <div class="collapse collapse-arrow bg-base-200/50 border border-white/5 rounded-2xl">
-                    <input type="checkbox" /> 
-                    <div class="collapse-title text-[10px] uppercase font-black tracking-widest opacity-50">Layout & Position</div>
-                    <div class="collapse-content space-y-4">
+                <AdminCollapse title="Layout & Position" icon="PhLayout">
+                    <div class="space-y-4 pt-1">
                         <!-- 1. Z-Index and Position -->
                         <div class="grid grid-cols-2 gap-4">
                             <div class="form-control">
@@ -752,7 +743,7 @@ const toggleOffset = (direction) => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </AdminCollapse>
                 
                 <div class="form-control mt-6">
                     <button @click="store.activeBlock.settings.style = {}" class="btn btn-outline btn-error btn-sm w-full">Reset Styles</button>
@@ -775,7 +766,7 @@ const toggleOffset = (direction) => {
     <!-- Empty State: Document Inspector -->
     <div v-else class="h-full flex flex-col bg-base-100 animate-in fade-in duration-300">
         <!-- Inspector Header -->
-        <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-base-100/80 backdrop-blur-xl z-20">
+        <div class="px-6 py-4 border-b border-base-content/10 flex items-center justify-between sticky top-0 bg-base-100/80 backdrop-blur-xl z-20">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-base-content/5 flex items-center justify-center text-base-content/70 flex-shrink-0">
                     <PhFileText weight="bold" class="w-4 h-4" />
@@ -788,7 +779,7 @@ const toggleOffset = (direction) => {
         </div>
 
         <!-- Inspector Tabs -->
-        <div class="flex border-b border-white/5 bg-base-200/30">
+        <div class="flex border-b border-base-content/10 bg-base-200/50">
             <button v-for="tab in ['layers', 'info', 'history']" :key="tab"
                     @click="activeInspectorTab = tab"
                     class="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-all relative"
