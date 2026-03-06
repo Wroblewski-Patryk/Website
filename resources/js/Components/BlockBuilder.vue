@@ -73,53 +73,66 @@
             <!-- Center: Wrapper -->
             <div class="flex-1 flex flex-col relative overflow-hidden bg-base-300">
                 <!-- Floating Island for Viewport/Zoom Controls -->
-                <div class="absolute top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 bg-base-100/90 backdrop-blur border border-base-content/10 shadow-xl px-2 py-1 rounded-full transition-all">
+                <div class="absolute top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 bg-base-100/80 backdrop-blur-xl border border-base-content/10 shadow-2xl px-2.5 py-1.5 rounded-box transition-all">
                     <!-- Toggles -->
                     <div class="flex items-center gap-1">
-                        <button @click="showLeftSidebar = !showLeftSidebar" class="btn btn-circle btn-xs" :class="showLeftSidebar ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Toggle Block Palette">
-                            <PhCube weight="regular" class="w-4 h-4" />
+                        <button @click="showLeftSidebar = !showLeftSidebar" class="btn btn-square btn-xs border-none transition-colors" :class="showLeftSidebar ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Block Palette">
+                            <PhCube weight="fill" class="w-4 h-4" v-if="showLeftSidebar" />
+                            <PhCube weight="regular" class="w-4 h-4" v-else />
                         </button>
-                        <button @click="showRightSidebar = !showRightSidebar" class="btn btn-circle btn-xs" :class="showRightSidebar ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Toggle Document Inspector">
-                            <i class="fas fa-sliders-h"></i>
+                        <button @click="showRightSidebar = !showRightSidebar" class="btn btn-square btn-xs border-none transition-colors" :class="showRightSidebar ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Document Inspector">
+                            <PhSlidersHorizontal weight="fill" class="w-4 h-4" v-if="showRightSidebar" />
+                            <PhSlidersHorizontal weight="regular" class="w-4 h-4" v-else />
                         </button>
-                        <button @click="toggleTimeline" class="btn btn-circle btn-xs" :class="showTimeline ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Toggle Timeline">
-                            <i class="fas fa-stopwatch"></i>
+                        <button @click="toggleTimeline" class="btn btn-square btn-xs border-none transition-colors" :class="showTimeline ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Timeline">
+                            <PhTimer weight="fill" class="w-4 h-4" v-if="showTimeline" />
+                            <PhTimer weight="regular" class="w-4 h-4" v-else />
                         </button>
                     </div>
 
-                    <div class="h-4 w-[1px] bg-base-content/20 mx-1"></div>
+                    <div class="h-5 w-[1px] bg-base-content/10 mx-1.5"></div>
 
                     <!-- Viewport Controls -->
                     <div class="flex items-center gap-1">
-                        <button @click="viewport = 'desktop'" class="btn btn-circle btn-xs" :class="viewport === 'desktop' ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Desktop (1280px)">
-                            <i class="fas fa-desktop"></i>
+                        <button @click="viewport = 'desktop'" class="btn btn-square btn-xs border-none transition-colors" :class="viewport === 'desktop' ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Desktop (1280px)">
+                            <PhDesktop weight="fill" class="w-4 h-4" v-if="viewport === 'desktop'" />
+                            <PhDesktop weight="regular" class="w-4 h-4" v-else />
                         </button>
-                        <button @click="viewport = 'tablet'" class="btn btn-circle btn-xs" :class="viewport === 'tablet' ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Tablet (768px)">
-                            <i class="fas fa-tablet-alt"></i>
+                        <button @click="viewport = 'tablet'" class="btn btn-square btn-xs border-none transition-colors" :class="viewport === 'tablet' ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Tablet (768px)">
+                            <PhDeviceTablet weight="fill" class="w-4 h-4" v-if="viewport === 'tablet'" />
+                            <PhDeviceTablet weight="regular" class="w-4 h-4" v-else />
                         </button>
-                        <button @click="viewport = 'mobile'" class="btn btn-circle btn-xs" :class="viewport === 'mobile' ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Mobile (375px)">
-                            <i class="fas fa-mobile-alt"></i>
+                        <button @click="viewport = 'mobile'" class="btn btn-square btn-xs border-none transition-colors" :class="viewport === 'mobile' ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Mobile (375px)">
+                            <PhDeviceMobile weight="fill" class="w-4 h-4" v-if="viewport === 'mobile'" />
+                            <PhDeviceMobile weight="regular" class="w-4 h-4" v-else />
                         </button>
-                        <button @click="viewport = 'custom'" class="btn btn-circle btn-xs" :class="viewport === 'custom' ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Custom Width">
-                            <i class="fas fa-expand"></i>
+                        <button @click="viewport = 'custom'" class="btn btn-square btn-xs border-none transition-colors" :class="viewport === 'custom' ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Custom Width">
+                            <PhArrowsOut weight="fill" class="w-4 h-4" v-if="viewport === 'custom'" />
+                            <PhArrowsOut weight="regular" class="w-4 h-4" v-else />
                         </button>
                     </div>
 
-                    <div v-if="viewport === 'custom'" class="flex items-center gap-1 px-2 border-l border-base-content/10 ml-1">
-                        <input type="number" v-model="customWidth" class="input input-xs input-bordered w-16 px-1 text-center font-mono" title="Width" />
-                        <span class="text-[10px] opacity-40 text-base-content font-bold">x</span>
-                        <input type="number" v-model="customHeight" class="input input-xs input-bordered w-16 px-1 text-center font-mono" title="Height" />
-                        <span class="text-[10px] opacity-40 text-base-content font-bold">px</span>
+                    <div v-if="viewport === 'custom'" class="flex items-center gap-1.5 px-3 border-l border-base-content/10 ml-1 bg-base-200/50 rounded-box py-0.5">
+                        <input type="number" v-model="customWidth" class="input input-xs input-ghost hover:bg-base-100 focus:bg-base-100 w-14 px-1 text-center font-mono focus:outline-none" title="Width" />
+                        <span class="text-[9px] opacity-40 text-base-content font-bold">x</span>
+                        <input type="number" v-model="customHeight" class="input input-xs input-ghost hover:bg-base-100 focus:bg-base-100 w-14 px-1 text-center font-mono focus:outline-none" title="Height" />
+                        <span class="text-[9px] opacity-40 text-base-content font-bold">px</span>
                     </div>
 
-                    <div class="h-4 w-[1px] bg-base-content/20 mx-1"></div>
+                    <div class="h-5 w-[1px] bg-base-content/10 mx-1.5"></div>
 
                     <!-- Zoom Controls -->
-                    <div class="flex items-center gap-0">
-                        <button @click="zoomOut" class="btn btn-circle btn-xs btn-ghost text-base-content/60" title="Zoom Out"><i class="fas fa-minus"></i></button>
-                        <div class="px-1 text-[10px] font-mono font-bold opacity-70 w-12 text-center text-base-content">{{ Math.round(zoomLevel * 100) }}%</div>
-                        <button @click="zoomIn" class="btn btn-circle btn-xs btn-ghost text-base-content/60" title="Zoom In"><i class="fas fa-plus"></i></button>
-                        <button @click="resetZoom" class="btn btn-circle btn-xs btn-ghost text-base-content/60" title="Reset Zoom"><i class="fas fa-undo"></i></button>
+                    <div class="flex items-center gap-0.5">
+                        <button @click="zoomOut" class="btn btn-square btn-xs bg-transparent border-none text-base-content/50 hover:bg-base-content/10 hover:text-base-content/80 transition-colors" title="Zoom Out">
+                            <PhMinus weight="bold" class="w-3 h-3" />
+                        </button>
+                        <div class="px-1 text-[10px] font-mono font-bold opacity-70 w-10 text-center text-base-content select-none">{{ Math.round(zoomLevel * 100) }}%</div>
+                        <button @click="zoomIn" class="btn btn-square btn-xs bg-transparent border-none text-base-content/50 hover:bg-base-content/10 hover:text-base-content/80 transition-colors" title="Zoom In">
+                            <PhPlus weight="bold" class="w-3 h-3" />
+                        </button>
+                        <button @click="resetZoom" class="btn btn-square btn-xs bg-transparent border-none text-base-content/50 hover:bg-base-content/10 hover:text-base-content/80 transition-colors ml-1" title="Reset Zoom">
+                            <PhArrowUUpLeft weight="bold" class="w-3.5 h-3.5" />
+                        </button>
                     </div>
                 </div>
 
@@ -230,7 +243,8 @@ import {
     PhStack, PhBoundingBox, PhColumns, PhList, PhMinus, PhStar, PhImage, 
     PhVideoCamera, PhNavigationArrow, PhDotsThree, PhBrowser, PhFootprints, 
     PhFolder, PhTerminal, PhDeviceMobile, PhAppWindow, PhPlusCircle, PhArticle, 
-    PhBriefcase, PhArrowsClockwise, PhListNumbers 
+    PhBriefcase, PhArrowsClockwise, PhListNumbers, PhDeviceTablet, PhArrowsOut,
+    PhArrowUUpLeft, PhPlus
 } from '@phosphor-icons/vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
