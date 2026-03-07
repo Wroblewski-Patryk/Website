@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue';
-import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGearSix, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhUsers, PhSignOut, PhLifebuoy } from '@phosphor-icons/vue';
+import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGearSix, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhUsers, PhSignOut, PhLifebuoy, PhPlus, PhCaretDown } from '@phosphor-icons/vue';
 
 defineProps({
     fullWidth: {
@@ -15,6 +15,19 @@ defineProps({
 const themesList = ['light', 'dark', 'emerald', 'corporate', 'retro', 'cyberpunk', 'dracula'];
 const currentTheme = ref('light');
 const isSidebarCollapsed = ref(false);
+
+const menuOpen = ref({
+    posts: false,
+    projects: false,
+    theme: false
+});
+
+// Watch for URL changes to keep submenus open
+watch(() => usePage().url, (url) => {
+    if (url.startsWith('/admin/posts') || url.startsWith('/admin/categories')) menuOpen.value.posts = true;
+    if (url.startsWith('/admin/projects') || url.startsWith('/admin/clients')) menuOpen.value.projects = true;
+    if (url.startsWith('/admin/theme')) menuOpen.value.theme = true;
+}, { immediate: true });
 
 onMounted(() => {
     // Check localStorage for a saved theme
@@ -110,7 +123,7 @@ function applyTheme(themeName) {
 
         <div class="flex h-[calc(100vh-4rem)]">
             <!-- Sidebar Navigation -->
-            <div class="drawer lg:drawer-open w-auto z-40 relative">
+            <div class="drawer lg:drawer-open w-full flex-1 z-40 relative">
                 <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
                 <div class="drawer-side h-full absolute lg:static shadow-xl lg:shadow-none overflow-visible">
                     <label for="admin-drawer" class="drawer-overlay"></label> 
@@ -132,140 +145,246 @@ function applyTheme(themeName) {
                                 <span class="text-[10px] uppercase font-bold tracking-widest text-primary/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
                                       v-show="!isSidebarCollapsed">Content</span>
                             </li>
-                            <li>
-                                <Link href="/admin/pages" class="group hover:bg-primary/5 hover:text-primary transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-primary': $page.url.startsWith('/admin/pages') }">
-                                    <PhFileText weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/pages'), 'text-base-content/50 group-hover:text-primary': !$page.url.startsWith('/admin/pages')}" />
-                                    <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Pages</span>
-                                </Link>
+
+                            <!-- Pages -->
+                            <li class="relative group/menu-item">
+                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
+                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/pages'), 'hover:bg-transparent hover:text-primary': !$page.url.startsWith('/admin/pages')}">
+                                    <Link href="/admin/pages" class="flex items-center flex-1">
+                                        <PhFileText weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/pages')}" />
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Pages</span>
+                                    </Link>
+                                    <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Link href="/admin/pages/create" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
+                                            <PhPlus weight="bold" class="w-3.5 h-3.5" />
+                                        </Link>
+                                    </div>
+                                </div>
                             </li>
-                            <li>
-                                <details :open="['/admin/posts'].some(p => $page.url.startsWith(p))">
-                                    <summary class="group hover:bg-primary/5 hover:text-primary transition-all bg-transparent flex items-center text-nowrap" :class="{'text-primary': $page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories')}">
-                                        <PhFeather weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories'), 'text-base-content/50 group-hover:text-primary': !($page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories'))}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Posts</span>
-                                    </summary>
-                                    <ul v-show="!isSidebarCollapsed">
-                                        <li><Link href="/admin/posts" class="group hover:bg-primary/5 hover:text-primary transition-all bg-transparent text-nowrap" :class="{ 'text-primary': $page.url === '/admin/posts' || $page.url.startsWith('/admin/posts/') }">All Posts</Link></li>
-                                        <li><Link href="#" class="group hover:bg-primary/5 hover:text-primary transition-all bg-transparent text-nowrap" :class="{ 'text-primary': $page.url.startsWith('/admin/categories') }">Categories</Link></li>
-                                    </ul>
-                                </details>
+
+                            <!-- Posts -->
+                            <li class="relative group/menu-item">
+                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
+                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories'), 'hover:bg-transparent hover:text-primary': !($page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories'))}">
+                                    <Link href="/admin/posts" class="flex items-center flex-1">
+                                        <PhFeather weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories')}" />
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Posts</span>
+                                    </Link>
+                                    <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button @click="menuOpen.posts = !menuOpen.posts" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
+                                            <PhCaretDown weight="bold" class="w-3.5 h-3.5 transition-transform duration-300" :class="{'rotate-180': menuOpen.posts}" />
+                                        </button>
+                                        <Link href="/admin/posts/create" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
+                                            <PhPlus weight="bold" class="w-3.5 h-3.5" />
+                                        </Link>
+                                    </div>
+                                </div>
+                                <ul v-show="menuOpen.posts && !isSidebarCollapsed" class="mt-0.5 ml-4 border-l border-base-300 pl-2 space-y-0.5">
+                                    <li><Link href="/admin/categories" class="py-1 px-3 text-xs hover:text-primary hover:bg-transparent transition-colors block" :class="{'text-primary font-medium': $page.url.startsWith('/admin/categories')}">Categories</Link></li>
+                                </ul>
                             </li>
-                            <li>
-                                <Link href="/admin/projects" class="group hover:bg-primary/5 hover:text-primary transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-primary': $page.url.startsWith('/admin/projects') }">
-                                    <PhCards weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/projects'), 'text-base-content/50 group-hover:text-primary': !$page.url.startsWith('/admin/projects')}" />
-                                    <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Projects</span>
-                                </Link>
+
+                            <!-- Projects -->
+                            <li class="relative group/menu-item">
+                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
+                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/projects') || $page.url.startsWith('/admin/clients'), 'hover:bg-transparent hover:text-primary': !($page.url.startsWith('/admin/projects') || $page.url.startsWith('/admin/clients'))}">
+                                    <Link href="/admin/projects" class="flex items-center flex-1">
+                                        <PhCards weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/projects') || $page.url.startsWith('/admin/clients')}" />
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Projects</span>
+                                    </Link>
+                                    <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button @click="menuOpen.projects = !menuOpen.projects" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
+                                            <PhCaretDown weight="bold" class="w-3.5 h-3.5 transition-transform duration-300" :class="{'rotate-180': menuOpen.projects}" />
+                                        </button>
+                                        <Link href="/admin/projects/create" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
+                                            <PhPlus weight="bold" class="w-3.5 h-3.5" />
+                                        </Link>
+                                    </div>
+                                </div>
+                                <ul v-show="menuOpen.projects && !isSidebarCollapsed" class="mt-0.5 ml-4 border-l border-base-300 pl-2 space-y-0.5">
+                                    <li><Link href="/admin/clients" class="py-1 px-3 text-xs hover:text-primary hover:bg-transparent transition-colors block" :class="{'text-primary font-medium': $page.url.startsWith('/admin/clients')}">Clients</Link></li>
+                                </ul>
                             </li>
-                            <li>
-                                <Link href="/admin/forms" class="group hover:bg-primary/5 hover:text-primary transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-primary': $page.url === '/admin/forms' || $page.url.startsWith('/admin/forms/') }">
-                                    <PhTextbox weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/forms'), 'text-base-content/50 group-hover:text-primary': !$page.url.startsWith('/admin/forms')}" />
-                                    <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Forms</span>
-                                </Link>
+
+                            <!-- Forms -->
+                            <li class="relative group/menu-item">
+                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
+                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/forms'), 'hover:bg-transparent hover:text-primary': !$page.url.startsWith('/admin/forms')}">
+                                    <Link href="/admin/forms" class="flex items-center flex-1">
+                                        <PhTextbox weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/forms')}" />
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Forms</span>
+                                    </Link>
+                                    <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Link href="/admin/forms/create" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
+                                            <PhPlus weight="bold" class="w-3.5 h-3.5" />
+                                        </Link>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <!-- Media -->
+                            <li class="relative group/menu-item">
+                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
+                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/media'), 'hover:bg-transparent hover:text-primary': !$page.url.startsWith('/admin/media')}">
+                                    <Link href="/admin/media" class="flex items-center flex-1">
+                                        <PhImageSquare weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/media')}" />
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Media Library</span>
+                                    </Link>
+                                </div>
                             </li>
                             
+                            <!-- Design Title -->
                             <li class="menu-title mt-6 mb-2 border-b border-base-200/50 pb-1 pointer-events-none">
                                 <span class="text-[10px] uppercase font-bold tracking-widest text-secondary/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
                                       v-show="!isSidebarCollapsed">Design</span>
                             </li>
-                            <li>
-                                <details :open="['/admin/theme/colors', '/admin/theme/fonts', '/admin/theme/typography', '/admin/theme/sizes', '/admin/theme/effects'].includes($page.url)">
-                                    <summary class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent flex items-center text-nowrap" :class="{'text-secondary': ['/admin/theme/colors', '/admin/theme/fonts', '/admin/theme/typography', '/admin/theme/sizes', '/admin/theme/effects'].includes($page.url)}">
-                                        <PhPaintRoller weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': ['/admin/theme/colors', '/admin/theme/fonts', '/admin/theme/typography', '/admin/theme/sizes', '/admin/theme/effects'].includes($page.url), 'text-base-content/50 group-hover:text-secondary': !['/admin/theme/colors', '/admin/theme/fonts', '/admin/theme/typography', '/admin/theme/sizes', '/admin/theme/effects'].includes($page.url)}" /> 
-                                        <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Theme</span>
-                                    </summary>
-                                    <ul v-show="!isSidebarCollapsed">
-                                        <li><Link href="/admin/theme/colors" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent text-nowrap" :class="{ 'text-secondary': $page.url === '/admin/theme/colors' }">Colors</Link></li>
-                                        <li><Link href="/admin/theme/fonts" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent text-nowrap" :class="{ 'text-secondary': $page.url === '/admin/theme/fonts' }">Fonts</Link></li>
-                                        <li><Link href="/admin/theme/typography" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent text-nowrap" :class="{ 'text-secondary': $page.url === '/admin/theme/typography' }">Typography</Link></li>
-                                        <li><Link href="/admin/theme/sizes" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent text-nowrap" :class="{ 'text-secondary': $page.url === '/admin/theme/sizes' }">Sizes / Metrics</Link></li>
-                                        <li><Link href="/admin/theme/effects" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent text-nowrap" :class="{ 'text-secondary': $page.url === '/admin/theme/effects' }">Effects</Link></li>
-                                    </ul>
-                                </details>
+
+                            <!-- Theme -->
+                            <li class="relative group/menu-item">
+                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
+                                     :class="{'bg-secondary/5 text-secondary font-medium border-l-2 border-secondary': $page.url.startsWith('/admin/theme'), 'hover:bg-transparent hover:text-secondary': !$page.url.startsWith('/admin/theme')}">
+                                    <Link href="/admin/theme" class="flex items-center flex-1">
+                                        <PhPaintRoller weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/theme')}" />
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Theme</span>
+                                    </Link>
+                                    <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button @click="menuOpen.theme = !menuOpen.theme" class="p-1.5 hover:bg-secondary/10 hover:text-secondary transition-all">
+                                            <PhCaretDown weight="bold" class="w-3.5 h-3.5 transition-transform duration-300" :class="{'rotate-180': menuOpen.theme}" />
+                                        </button>
+                                    </div>
+                                </div>
+                                <ul v-show="menuOpen.theme && !isSidebarCollapsed" class="mt-0.5 ml-4 border-l border-base-300 pl-2 space-y-0.5">
+                                    <li><Link href="/admin/theme/colors" class="py-1 px-3 text-xs hover:text-secondary hover:bg-transparent transition-colors block" :class="{'text-secondary font-medium': $page.url.startsWith('/admin/theme/colors')}">Colors</Link></li>
+                                    <li><Link href="/admin/theme/fonts" class="py-1 px-3 text-xs hover:text-secondary hover:bg-transparent transition-colors block" :class="{'text-secondary font-medium': $page.url.startsWith('/admin/theme/fonts')}">Fonts</Link></li>
+                                    <li><Link href="/admin/theme/typography" class="py-1 px-3 text-xs hover:text-secondary hover:bg-transparent transition-colors block" :class="{'text-secondary font-medium': $page.url.startsWith('/admin/theme/typography')}">Typography</Link></li>
+                                    <li><Link href="/admin/theme/sizes" class="py-1 px-3 text-xs hover:text-secondary hover:bg-transparent transition-colors block" :class="{'text-secondary font-medium': $page.url.startsWith('/admin/theme/sizes')}">Sizes / Metrics</Link></li>
+                                    <li><Link href="/admin/theme/effects" class="py-1 px-3 text-xs hover:text-secondary hover:bg-transparent transition-colors block" :class="{'text-secondary font-medium': $page.url.startsWith('/admin/theme/effects')}">Shadows / Effects</Link></li>
+                                </ul>
                             </li>
-                            <li>
-                                <Link href="/admin/blocks" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-secondary': $page.url === '/admin/blocks' }">
-                                    <PhCube weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url === '/admin/blocks', 'text-base-content/50 group-hover:text-secondary': $page.url !== '/admin/blocks'}" />
-                                    <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Blocks</span>
-                                </Link>
+
+                            <!-- Blocks -->
+                            <li class="relative group/menu-item">
+                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
+                                     :class="{'bg-secondary/5 text-secondary font-medium border-l-2 border-secondary': $page.url.startsWith('/admin/blocks'), 'hover:bg-transparent hover:text-secondary': !$page.url.startsWith('/admin/blocks')}">
+                                    <Link href="/admin/blocks" class="flex items-center flex-1">
+                                        <PhCube weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/blocks')}" />
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Blocks</span>
+                                    </Link>
+                                </div>
                             </li>
-                            <li>
-                                <Link href="/admin/templates" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-secondary': $page.url.startsWith('/admin/templates') }">
-                                    <PhLayout weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/templates'), 'text-base-content/50 group-hover:text-secondary': !($page.url.startsWith('/admin/templates'))}" />
-                                    <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Templates</span>
-                                </Link>
+
+                            <!-- Templates -->
+                            <li class="relative group/menu-item">
+                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
+                                     :class="{'bg-secondary/5 text-secondary font-medium border-l-2 border-secondary': $page.url.startsWith('/admin/templates'), 'hover:bg-transparent hover:text-secondary': !$page.url.startsWith('/admin/templates')}">
+                                    <Link href="/admin/templates" class="flex items-center flex-1">
+                                        <PhLayout weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/templates')}" />
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Templates</span>
+                                    </Link>
+                                </div>
                             </li>
-                            <li>
-                                <Link href="/admin/menus" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-secondary': $page.url.startsWith('/admin/menus') }">
-                                    <PhList weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/menus'), 'text-base-content/50 group-hover:text-secondary': !($page.url.startsWith('/admin/menus'))}" />
-                                    <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Menus</span>
-                                </Link>
+
+                            <!-- Menus -->
+                            <li class="relative group/menu-item">
+                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
+                                     :class="{'bg-secondary/5 text-secondary font-medium border-l-2 border-secondary': $page.url.startsWith('/admin/menus'), 'hover:bg-transparent hover:text-secondary': !$page.url.startsWith('/admin/menus')}">
+                                    <Link href="/admin/menus" class="flex items-center flex-1">
+                                        <PhList weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/menus')}" />
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Menus</span>
+                                    </Link>
+                                </div>
                             </li>
-                            
+
                             <li class="menu-title mt-6 mb-2 border-b border-base-200/50 pb-1 pointer-events-none">
                                 <span class="text-[10px] uppercase font-bold tracking-widest text-accent/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
-                                      v-show="!isSidebarCollapsed">Library</span>
-                            </li>
-                            <li>
-                                <Link href="/admin/media" class="group hover:bg-accent/5 hover:text-accent transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-accent': $page.url.startsWith('/admin/media') }">
-                                    <PhImageSquare weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-accent': $page.url.startsWith('/admin/media'), 'text-base-content/50 group-hover:text-accent': !($page.url.startsWith('/admin/media'))}" />
-                                    <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Media</span>
-                                </Link>
-                            </li>
-                            
-                            <li class="menu-title mt-6 mb-2 border-b border-base-200/50 pb-1 pointer-events-none">
-                                <span class="text-[10px] uppercase font-bold tracking-widest text-base-content/50 whitespace-nowrap overflow-hidden transition-all duration-300" 
                                       v-show="!isSidebarCollapsed">System</span>
                             </li>
-                            <li>
-                                <Link href="/admin/users" class="group hover:bg-base-content/5 hover:text-base-content transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-base-content': $page.url === '/admin/users' || $page.url.startsWith('/admin/users/') }">
-                                    <PhUsers weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-base-content': $page.url.startsWith('/admin/users'), 'text-base-content/50 group-hover:text-base-content': !$page.url.startsWith('/admin/users')}" />
-                                    <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Users</span>
-                                </Link>
+                            <!-- Translations -->
+                            <li class="relative group/menu-item">
+                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
+                                     :class="{'bg-accent/5 text-accent font-medium border-l-2 border-accent': $page.url === '/admin/translations' || $page.url.startsWith('/admin/translations/'), 'hover:bg-transparent hover:text-accent': !($page.url === '/admin/translations' || $page.url.startsWith('/admin/translations/'))}">
+                                    <Link href="/admin/translations" class="flex items-center flex-1">
+                                        <PhTranslate weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-accent': $page.url.startsWith('/admin/translations')}" />
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Translations</span>
+                                    </Link>
+                                </div>
                             </li>
-                            <li>
-                                <Link href="/admin/languages" class="group hover:bg-base-content/5 hover:text-base-content transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-base-content': $page.url.startsWith('/admin/languages') }">
-                                    <PhGlobe weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-base-content': $page.url.startsWith('/admin/languages'), 'text-base-content/50 group-hover:text-base-content': !($page.url.startsWith('/admin/languages'))}" />
-                                    <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Languages</span>
-                                </Link>
+
+                            <!-- Languages -->
+                            <li class="relative group/menu-item">
+                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
+                                     :class="{'bg-accent/5 text-accent font-medium border-l-2 border-accent': $page.url === '/admin/languages' || $page.url.startsWith('/admin/languages/'), 'hover:bg-transparent hover:text-accent': !($page.url === '/admin/languages' || $page.url.startsWith('/admin/languages/'))}">
+                                    <Link href="/admin/languages" class="flex items-center flex-1">
+                                        <PhGlobe weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-accent': $page.url.startsWith('/admin/languages')}" />
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Languages</span>
+                                    </Link>
+                                </div>
                             </li>
-                            <li>
-                                <Link href="/admin/translations" class="group hover:bg-base-content/5 hover:text-base-content transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-base-content': $page.url.startsWith('/admin/translations') }">
-                                    <PhTranslate weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-base-content': $page.url.startsWith('/admin/translations'), 'text-base-content/50 group-hover:text-base-content': !($page.url.startsWith('/admin/translations'))}" />
-                                    <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Translations</span>
-                                </Link>
+
+                            <!-- Users -->
+                            <li class="relative group/menu-item">
+                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
+                                     :class="{'bg-accent/5 text-accent font-medium border-l-2 border-accent': $page.url === '/admin/users' || $page.url.startsWith('/admin/users/'), 'hover:bg-transparent hover:text-accent': !($page.url === '/admin/users' || $page.url.startsWith('/admin/users/'))}">
+                                    <Link href="/admin/users" class="flex items-center flex-1">
+                                        <PhUsers weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-accent': $page.url.startsWith('/admin/users')}" />
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Users</span>
+                                    </Link>
+                                </div>
                             </li>
-                            <li>
-                                <Link href="/admin/settings" class="group hover:bg-base-content/5 hover:text-base-content transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-base-content': $page.url.startsWith('/admin/settings') }">
-                                    <PhGearSix weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-base-content': $page.url.startsWith('/admin/settings'), 'text-base-content/50 group-hover:text-base-content': !($page.url.startsWith('/admin/settings'))}" />
-                                    <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Settings</span>
-                                </Link>
+
+                            <!-- Settings -->
+                            <li class="relative group/menu-item">
+                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
+                                     :class="{'bg-accent/5 text-accent font-medium border-l-2 border-accent': $page.url === '/admin/settings' || $page.url.startsWith('/admin/settings/'), 'hover:bg-transparent hover:text-accent': !($page.url === '/admin/settings' || $page.url.startsWith('/admin/settings/'))}">
+                                    <Link href="/admin/settings" class="flex items-center flex-1">
+                                        <PhGearSix weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-accent': $page.url === '/admin/settings'}" />
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Settings</span>
+                                    </Link>
+                                </div>
                             </li>
                         </ul>
                     </div>
                 </div>
+
+                <!-- Main Content Area -->
+                <div class="drawer-content flex flex-col min-w-0 flex-1 overflow-x-hidden pt-0 shadow-inner bg-base-200">
+                    <main class="p-4 lg:p-8 flex-grow" :class="{ 'max-w-7xl mx-auto w-full': !fullWidth }">
+                        <!-- Flash Messages (Optional) -->
+                        <div v-if="$page.props.flash?.success" class="alert alert-success shadow-lg mb-6">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span>{{ $page.props.flash.success }}</span>
+                            </div>
+                        </div>
+
+                        <slot />
+                    </main>
+                </div>
             </div>
-
-            <!-- Main Content Area -->
-            <main class="flex-1 overflow-y-auto bg-base-200" :class="{ 'p-6': !fullWidth }">
-                <!-- Mobile drawer toggle -->
-                <div class="lg:hidden" :class="{ 'mb-4': !fullWidth, 'p-4 border-b border-base-300': fullWidth }">
-                    <label for="admin-drawer" class="btn btn-primary drawer-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                        Menu
-                    </label>
-                </div>
-
-                <div :class="{ 'max-w-7xl mx-auto': !fullWidth, 'h-full flex flex-col': fullWidth }">
-                    <!-- Header Section if provided -->
-                    <div v-if="$slots.header" :class="[fullWidth ? 'm-4' : 'mb-6', 'p-6 bg-base-100 rounded-box shadow-sm border border-base-300']">
-                        <slot name="header"></slot>
-                    </div>
-
-                    <div :class="{ 'h-full flex-1': fullWidth }">
-                        <slot></slot>
-                    </div>
-                </div>
-            </main>
         </div>
     </div>
 </template>
+
+<style scoped>
+/* Transposition animations or other specific styles */
+.menu li > a.active {
+    background-color: transparent;
+}
+
+/* Custom scrollbar for sidebar */
+.drawer-side .menu::-webkit-scrollbar {
+    width: 4px;
+}
+.drawer-side .menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+.drawer-side .menu::-webkit-scrollbar-thumb {
+    background: hsl(var(--bc) / 0.1);
+    border-radius: 10px;
+}
+.drawer-side .menu::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--bc) / 0.2);
+}
+
+/* Tooltip replacement for collapsed state icons if needed */
+</style>
