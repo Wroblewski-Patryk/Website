@@ -6,6 +6,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         activeBlockId: null,
         hoveredBlockId: null,
         isDirty: false,
+        isDepthView: false,
         categories: [
             {
                 id: 'typography',
@@ -225,7 +226,6 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                         fullHeight: false,
                         fixedBg: false,
                         padding: 'py-0',
-                        zIndex: 1
                     },
                     style: {
                         textColor: '',

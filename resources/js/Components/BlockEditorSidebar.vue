@@ -57,7 +57,6 @@ watch(() => store.activeBlock, (newBlock) => {
                 fullHeight: false,
                 fixedBg: false,
                 padding: 'py-0',
-                zIndex: 1
             };
         }
     }

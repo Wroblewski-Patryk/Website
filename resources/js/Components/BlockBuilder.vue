@@ -66,6 +66,10 @@
                             <PhSlidersHorizontal weight="fill" class="w-4 h-4" v-if="showRightSidebar" />
                             <PhSlidersHorizontal weight="regular" class="w-4 h-4" v-else />
                         </button>
+                        <button @click="store.isDepthView = !store.isDepthView" class="btn btn-square btn-xs border-none transition-colors" :class="store.isDepthView ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Depth View (3D)">
+                            <PhStack weight="fill" class="w-4 h-4" v-if="store.isDepthView" />
+                            <PhStack weight="regular" class="w-4 h-4" v-else />
+                        </button>
                         <button @click="toggleTimeline" class="btn btn-square btn-xs border-none transition-colors" :class="showTimeline ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Timeline">
                             <PhTimer weight="fill" class="w-4 h-4" v-if="showTimeline" />
                             <PhTimer weight="regular" class="w-4 h-4" v-else />
@@ -119,20 +123,33 @@
                 </div>
 
                 <!-- Center: Canvas Area -->
-                <div class="flex-1 overflow-auto custom-scrollbar text-center whitespace-nowrap pt-18 pb-32 px-4 md:px-8">
-                    <div class="inline-block text-left align-top transition-all duration-300" 
-                         :style="{ width: `${(viewport === 'custom' ? customWidth : (viewport === 'desktop' ? 1280 : (viewport === 'tablet' ? 768 : 375))) * zoomLevel}px` }">
+                <div class="flex-1 overflow-auto custom-scrollbar text-center whitespace-nowrap pb-32 px-4 md:px-8 transition-all duration-500"
+                     :style="{ 
+                        perspective: '1000px', 
+                        transformStyle: 'preserve-3d',
+                        paddingTop: store.isDepthView ? '8rem' : '4.5rem'
+                     }">
+                    <div class="inline-block text-left align-top transition-all duration-500" 
+                         :style="[
+                             { width: `${(viewport === 'custom' ? customWidth : (viewport === 'desktop' ? 1280 : (viewport === 'tablet' ? 768 : 375))) * zoomLevel}px` },
+                             { 
+                                transform: store.isDepthView ? 'rotateY(75deg)' : 'rotateY(0deg)', 
+                                transformOrigin: 'left center', 
+                                transformStyle: 'preserve-3d' 
+                             }
+                         ]">
                         <div :class="[
-                            'bg-base-100 shadow-2xl transition-all duration-300 overflow-x-hidden relative flex flex-col whitespace-normal',
+                            'bg-base-100 shadow-2xl transition-all duration-500 relative flex flex-col whitespace-normal',
                             viewport === 'desktop' ? 'min-h-screen' : '',
                             viewport === 'tablet' ? 'min-h-screen' : '',
                             viewport === 'mobile' ? 'min-h-screen' : ''
                         ]" 
                         :style="[
                             { 
-                                transform: `scale(${zoomLevel})`, 
+                                transform: `scale(${zoomLevel})`,
                                 transformOrigin: 'top left',
-                                width: viewport === 'custom' ? `${customWidth}px` : (viewport === 'desktop' ? '1280px' : (viewport === 'tablet' ? '768px' : '375px'))
+                                width: viewport === 'custom' ? `${customWidth}px` : (viewport === 'desktop' ? '1280px' : (viewport === 'tablet' ? '768px' : '375px')),
+                                transformStyle: 'preserve-3d'
                             },
                             viewport === 'custom' ? { minHeight: `${customHeight}px` } : {}
                         ]"
@@ -145,13 +162,15 @@
                             item-key="id"
                             handle=".drag-handle"
                             ghost-class="ghost-block"
-                            class="flex-1 w-full min-h-[600px] flex flex-col">
+                            class="flex-1 w-full min-h-[600px] flex flex-col"
+                            :style="{ transformStyle: 'preserve-3d' }">
                             <template #item="{ element }">
                                 <div class="group/block relative w-full"
                                      @click="store.activeBlockId = element.id"
                                      @mouseover.stop="store.hoveredBlockId = element.id"
                                      @mouseout.stop="store.hoveredBlockId = null"
-                                     :class="{ 'ring-2 ring-primary ring-inset': store.activeBlockId === element.id }">
+                                     :class="{ 'ring-2 ring-primary ring-inset': store.activeBlockId === element.id }"
+                                     :style="{ transformStyle: 'preserve-3d' }">
                                     
                                     <div class="absolute left-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
                                          :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
@@ -250,7 +269,7 @@ const iconMap = {
     PhStack, PhBoundingBox, PhColumns, PhList, PhMinus, PhStar, PhImage, 
     PhVideoCamera, PhNavigationArrow, PhDotsThree, PhBrowser, PhFootprints, 
     PhFolder, PhTerminal, PhDeviceMobile, PhAppWindow, PhPlusCircle, PhArticle, 
-    PhBriefcase, PhArrowsClockwise, PhListNumbers 
+    PhBriefcase, PhArrowsClockwise, PhListNumbers
 };
 
 const props = defineProps({

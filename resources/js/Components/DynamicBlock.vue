@@ -95,9 +95,15 @@ const styleObj = computed(() => {
         fillStyles.borderColor = st.borderColor || undefined;
     }
     
+    const zValue = Number(
+        st.zIndex !== undefined && st.zIndex !== '' ? st.zIndex : 
+        (l.zIndex !== undefined && l.zIndex !== '' ? l.zIndex : 
+        (s.zIndex !== undefined && s.zIndex !== '' ? s.zIndex : 0))
+    ) || 0;
+
     return {
         ...fillStyles,
-        minHeight: l.fullHeight ? '100vh' : st.height,
+        minHeight: store.isDepthView ? (l.fullHeight ? '100vh' : (st.height ? `max(${st.height}, 60px)` : '60px')) : (l.fullHeight ? '100vh' : (st.height || '0px')),
         height: st.height,
         width: st.width,
         backgroundAttachment: l.fixedBg ? 'fixed' : undefined,
@@ -115,7 +121,7 @@ const styleObj = computed(() => {
         // Position
         position: st.position,
         display: st.display,
-        zIndex: st.zIndex,
+        zIndex: zValue,
         top: st.top,
         bottom: st.bottom,
         left: st.left,
@@ -139,7 +145,18 @@ const styleObj = computed(() => {
         fontFamily: st.fontFamily || themeDefaults.fontFamily,
         fontSize: st.fontSize || themeDefaults.fontSize,
         letterSpacing: st.letterSpacing || themeDefaults.letterSpacing,
-        opacity: themeDefaults.opacity || undefined, // Opacity is not in default style panel yet, but can be set in theme
+        opacity: themeDefaults.opacity || undefined,
+        
+        // 3D Depth View (CUMULATIVE Z Depth)
+        transform: store.isDepthView 
+            ? `translate3d(0, 0, ${zValue * 100}px)` 
+            : `translate3d(0, 0, 0px)`,
+        transformStyle: 'preserve-3d',
+        // Add prominent border in 3D mode for better layer separation
+        outline: store.isDepthView ? '2px solid rgba(255,255,255,0.15)' : undefined,
+        outlineOffset: store.isDepthView ? '-2px' : undefined,
+        // Use a transparent shadow in 3D to allow for smooth CSS transition back to 2D
+        boxShadow: store.isDepthView ? '0 0 0 0 rgba(0,0,0,0)' : st.boxShadow,
     };
 });
 
@@ -200,7 +217,8 @@ const contactForm = useForm({
         
         <!-- Section Block -->
         <div v-if="block.type === 'section'" class="w-full relative transition-colors p-4"
-             :class="{'min-h-[50px] border border-dashed editor-dashed-frame': isEditor}">
+             :class="{'min-h-[50px] border border-dashed editor-dashed-frame': isEditor}"
+             :style="{ transformStyle: 'preserve-3d' }">
             <template v-if="isEditor">
                 <draggable 
                     v-model="block.children" 
@@ -208,13 +226,15 @@ const contactForm = useForm({
                     item-key="id"
                     handle=".drag-handle"
                     ghost-class="ghost-block"
-                    class="min-h-[50px] flex flex-col gap-2 w-full">
+                    class="min-h-[50px] flex flex-col gap-2 w-full"
+                    :style="{ transformStyle: 'preserve-3d' }">
                     <template #item="{ element }">
                         <div class="group/block relative w-full"
                              @click.stop="store.activeBlockId = element.id"
                              @mouseover.stop="store.hoveredBlockId = element.id"
                              @mouseout.stop="store.hoveredBlockId = null"
-                             :class="{ 'editor-ring': store.activeBlockId === element.id }">
+                             :class="{ 'editor-ring': store.activeBlockId === element.id }"
+                             :style="{ transformStyle: 'preserve-3d' }">
                             <div class="absolute left-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
                                  :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
                                 <div class="drag-handle btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur cursor-move text-base-content/60 hover:text-primary hover:bg-base-200 shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-arrows-alt"></i></div>
@@ -231,7 +251,7 @@ const contactForm = useForm({
                 <div v-if="!block.children?.length" class="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none text-xs font-bold uppercase tracking-widest border border-dashed border-base-content/10 m-2 rounded-lg bg-base-100/30 backdrop-blur-sm">Drop blocks here</div>
             </template>
             <template v-else>
-                <div class="flex flex-col gap-2 w-full">
+                <div class="flex flex-col gap-2 w-full" :style="store.isDepthView ? { transformStyle: 'preserve-3d' } : {}">
                     <DynamicBlock v-for="child in block.children" :key="child.id" :block="child" />
                 </div>
             </template>
@@ -596,12 +616,15 @@ const contactForm = useForm({
         </div>
 
         <!-- Layout Blocks -->
-        <div v-else-if="block.type === 'columns'" class="max-w-7xl mx-auto px-6 grid gap-8" :class="[`grid-cols-1 md:grid-cols-${block.content.count || 2}`, {'border border-dashed editor-dashed-frame p-4 rounded-xl group relative': isEditor}]">
+        <div v-else-if="block.type === 'columns'" class="max-w-7xl mx-auto px-6 grid gap-8" 
+             :class="[`grid-cols-1 md:grid-cols-${block.content.count || 2}`, {'border border-dashed editor-dashed-frame p-4 rounded-xl group relative': isEditor}]"
+             :style="store.isDepthView ? { transformStyle: 'preserve-3d' } : {}">
              <template v-if="isEditor">
                  <div class="absolute -top-3 left-4 text-[10px] font-black uppercase tracking-widest bg-base-100 px-2 opacity-50 z-10 transition-opacity"
                       :class="{'!opacity-100': store.hoveredBlockId === block.id || store.activeBlockId === block.id}"
                       :style="{ color: store.hoveredBlockId === block.id || store.activeBlockId === block.id ? 'var(--admin-p)' : '' }">Columns Layout</div>
-                 <div v-for="i in (block.content.count || 2)" :key="i" class="space-y-4 border border-dashed editor-dashed-frame-sub p-2 rounded-lg relative min-h-[50px]">
+                 <div v-for="i in (block.content.count || 2)" :key="i" class="space-y-4 border border-dashed editor-dashed-frame-sub p-2 rounded-lg relative min-h-[50px]"
+                      :style="store.isDepthView ? { transformStyle: 'preserve-3d' } : {}">
                      <div class="absolute -top-2 left-2 text-[8px] font-black uppercase tracking-widest bg-base-100 px-2 opacity-30 z-10">Col {{ i }}</div>
                      <draggable 
                         v-model="block.children" 
@@ -609,13 +632,15 @@ const contactForm = useForm({
                         item-key="id"
                         handle=".drag-handle"
                         ghost-class="ghost-block"
-                        class="min-h-[50px] w-full flex flex-col gap-2">
+                        class="min-h-[50px] w-full flex flex-col gap-2"
+                        :style="store.isDepthView ? { transformStyle: 'preserve-3d' } : {}">
                         <template #item="{ element }">
                             <div v-if="element.column === i" class="group/block relative w-full"
                                  @click.stop="store.activeBlockId = element.id"
                                  @mouseover.stop="store.hoveredBlockId = element.id"
                                  @mouseout.stop="store.hoveredBlockId = null"
-                                 :class="{ 'editor-ring': store.activeBlockId === element.id }">
+                                 :class="{ 'editor-ring': store.activeBlockId === element.id }"
+                                 :style="store.isDepthView ? { transformStyle: 'preserve-3d' } : {}">
                                 <div class="absolute left-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
                                      :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
                                     <div class="drag-handle btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur cursor-move text-base-content/60 hover:text-primary hover:bg-base-200 shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-arrows-alt"></i></div>
@@ -632,14 +657,15 @@ const contactForm = useForm({
                  </div>
              </template>
              <template v-else>
-                 <div v-for="i in (block.content.count || 2)" :key="i" class="space-y-4">
+                  <div v-for="i in (block.content.count || 2)" :key="i" class="space-y-4" :style="{ transformStyle: 'preserve-3d' }">
                      <DynamicBlock v-for="child in block.children?.filter(c => c.column === i)" :key="child.id" :block="child" />
                  </div>
              </template>
         </div>
 
         <div v-else-if="block.type === 'group' || block.type === 'stack'" class="w-full relative transition-colors p-4" 
-             :class="[block.type === 'stack' && !isEditor ? 'flex flex-col gap-4' : '', {'min-h-[50px] border border-dashed editor-dashed-frame': isEditor}]">
+             :class="[block.type === 'stack' && !isEditor ? 'flex flex-col gap-4' : '', {'min-h-[50px] border border-dashed editor-dashed-frame': isEditor}]"
+             :style="{ transformStyle: 'preserve-3d' }">
             <template v-if="isEditor">
                 <div class="absolute -top-3 left-4 text-[10px] font-black uppercase tracking-widest bg-base-100 px-2 opacity-50 z-10 transition-opacity"
                      :class="{'!opacity-100': store.hoveredBlockId === block.id || store.activeBlockId === block.id}"
@@ -648,16 +674,18 @@ const contactForm = useForm({
                     v-model="block.children" 
                     :group="'blocks'"
                     item-key="id"
-                    handle=".drag-handle"
-                    ghost-class="ghost-block"
-                    class="min-h-[50px] w-full"
-                    :class="block.type === 'stack' ? 'flex flex-col gap-4' : ''">
+                        handle=".drag-handle"
+                        ghost-class="ghost-block"
+                        class="min-h-[50px] w-full"
+                        :class="block.type === 'stack' ? 'flex flex-col gap-4' : ''"
+                        :style="{ transformStyle: 'preserve-3d' }">
                     <template #item="{ element }">
                         <div class="group/block relative w-full"
                              @click.stop="store.activeBlockId = element.id"
                              @mouseover.stop="store.hoveredBlockId = element.id"
-                             @mouseout.stop="store.hoveredBlockId = null"
-                             :class="{ 'editor-ring': store.activeBlockId === element.id }">
+                              @mouseout.stop="store.hoveredBlockId = null"
+                             :class="{ 'editor-ring': store.activeBlockId === element.id }"
+                             :style="{ transformStyle: 'preserve-3d' }">
                             <div class="absolute left-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
                                  :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
                                 <div class="drag-handle btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur cursor-move text-base-content/60 hover:text-primary hover:bg-base-200 shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-arrows-alt"></i></div>
@@ -674,7 +702,7 @@ const contactForm = useForm({
                 <div v-if="!block.children?.length" class="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none text-xs font-bold uppercase tracking-widest border border-dashed border-base-content/10 m-2 rounded-lg bg-base-100/30 backdrop-blur-sm">Drop here</div>
             </template>
             <template v-else>
-                <div class="w-full" :class="block.type === 'stack' ? 'flex flex-col gap-4' : ''">
+                <div class="w-full" :class="block.type === 'stack' ? 'flex flex-col gap-4' : ''" :style="{ transformStyle: 'preserve-3d' }">
                     <DynamicBlock v-for="child in block.children" :key="child.id" :block="child" />
                 </div>
             </template>
