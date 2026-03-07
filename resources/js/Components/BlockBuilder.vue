@@ -126,7 +126,11 @@
                 </div>
 
                 <!-- Center: Canvas Area -->
-                <div class="flex-1 overflow-auto custom-scrollbar bg-base-200/50 grid place-items-center"
+                <div ref="scrollerRef" 
+                     :class="[
+                        'flex-1 overflow-auto custom-scrollbar bg-base-200/50 grid place-items-center',
+                        { 'is-initial-load': isInitialLoad }
+                     ]"
                      :style="{ 
                         padding: store.isDepthView ? '10rem' : '6rem',
                         scrollbarGutter: 'stable'
@@ -140,7 +144,7 @@
                                 transformOrigin: 'left center', 
                                 transformStyle: 'preserve-3d',
                                 perspective: '1000px',
-                                transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+                                transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
                              }
                          ]">
                          <div ref="canvasRef"
@@ -245,7 +249,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { 
     PhCube, PhTextT, PhTextAa, PhTextHOne, PhListBullets, PhQuotes, PhCode, 
     PhCursorClick, PhHandPointing, PhCaretDown, PhBrowsers, PhArrowsLeftRight, 
@@ -295,6 +299,7 @@ const store = useBlockBuilderStore();
 const viewport = ref('desktop');
 const customWidth = ref(1920);
 const customHeight = ref(1080);
+const isInitialLoad = ref(true);
 
 const blocks = computed({
     get: () => store.blocks,
@@ -340,6 +345,34 @@ const cloneBlock = (block) => {
     return store.createBlockObject(block.type);
 };
 
+// --- AUTO-FIT ZOOM LOGIC ---
+const scrollerRef = ref(null);
+
+const fitZoom = () => {
+    if (!scrollerRef.value) return;
+    
+    // Get raw width based on viewport
+    const rawWidth = viewport.value === 'custom' ? customWidth.value 
+                   : viewport.value === 'desktop' ? 1280 
+                   : viewport.value === 'tablet' ? 768 
+                   : 375;
+                   
+    const scrollerWidth = scrollerRef.value.clientWidth;
+    const padding = 192; // 6rem (96px) * 2
+    const availableWidth = scrollerWidth - padding;
+    
+    if (availableWidth <= 0) return;
+    
+    // Calculate zoom needed to fit the width
+    let targetZoom = availableWidth / rawWidth;
+    
+    // Clamp zoom: don't zoom in more than 100% (1.0), but allow zooming out to 20% (0.2)
+    zoomLevel.value = Math.min(1.0, Math.max(0.2, parseFloat(targetZoom.toFixed(2))));
+};
+
+// Initial fit on entry is handled in onMounted.
+// No extra watchers here to avoid "refitting" after viewport switch or sidebar toggle as per user request.
+
 // --- FIX: Dynamic Footprint Height ---
 const canvasRef = ref(null);
 const canvasHeight = ref(0);
@@ -354,6 +387,15 @@ onMounted(() => {
         });
         resizeObserver.observe(canvasRef.value);
     }
+    
+    // Initial fit (instant)
+    nextTick(() => {
+        fitZoom();
+        // After layout settles, allow transitions again
+        setTimeout(() => {
+            isInitialLoad.value = false;
+        }, 150);
+    });
 });
 
 onUnmounted(() => {
@@ -364,6 +406,10 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.is-initial-load * {
+    transition: none !important;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
 }
