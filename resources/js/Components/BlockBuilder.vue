@@ -127,18 +127,14 @@
                              }
                          ]">
                          <div ref="canvasRef"
-                         :class="[
-                            'bg-base-100 shadow-2xl transition-all duration-500 relative flex flex-col whitespace-normal',
-                            viewport === 'desktop' ? 'min-h-screen' : '',
-                            viewport === 'tablet' ? 'min-h-screen' : '',
-                            viewport === 'mobile' ? 'min-h-screen' : ''
-                        ]" 
+                        class="bg-base-100 shadow-2xl transition-all duration-500 relative flex flex-col whitespace-normal" 
                         :style="[
                             { 
                                 transform: `scale(${zoomLevel})`,
                                 transformOrigin: 'top left',
                                 width: viewport === 'custom' ? `${customWidth}px` : (viewport === 'desktop' ? '1280px' : (viewport === 'tablet' ? '768px' : '375px')),
-                                transformStyle: 'preserve-3d'
+                                transformStyle: 'preserve-3d',
+                                minHeight: effectiveCanvasMinHeight
                             },
                             viewport === 'custom' ? { minHeight: `${customHeight}px` } : {}
                         ]"
@@ -150,8 +146,8 @@
                             item-key="id"
                             handle=".drag-handle"
                             ghost-class="ghost-block"
-                            class="flex-1 w-full min-h-[600px] flex flex-col gap-4"
-                            :style="{ transformStyle: 'preserve-3d' }">
+                            class="flex-1 w-full flex flex-col gap-4"
+                            :style="{ transformStyle: 'preserve-3d', minHeight: effectiveCanvasMinHeight }">
                             <template #item="{ element }">
                                 <DynamicBlock :block="element" />
                             </template>
@@ -259,7 +255,9 @@ const props = defineProps({
     menus: { type: Array, default: () => [] },
     templates: { type: [Array, Object], default: () => [] },
     previewUrl: { type: String, default: null },
-    saving: { type: Boolean, default: false }
+    saving: { type: Boolean, default: false },
+    canvasMinHeight: { type: String, default: '100px' },
+    useViewportMinHeight: { type: Boolean, default: false }
 });
 
 
@@ -277,6 +275,24 @@ const docTitle = computed({
 const customWidth = ref(1920);
 const customHeight = ref(1080);
 const isInitialLoad = ref(true);
+const MIN_CANVAS_DROPZONE_HEIGHT = 100;
+const VIEWPORT_HEIGHT_RATIO = 9 / 16;
+
+const viewportBaseWidth = computed(() => {
+    if (viewport.value === 'custom') return customWidth.value;
+    if (viewport.value === 'tablet') return 768;
+    if (viewport.value === 'mobile') return 375;
+    return 1280;
+});
+
+const viewportComputedMinHeight = computed(() => {
+    const ratioHeight = Math.round(viewportBaseWidth.value * VIEWPORT_HEIGHT_RATIO);
+    return `${Math.max(MIN_CANVAS_DROPZONE_HEIGHT, ratioHeight)}px`;
+});
+
+const effectiveCanvasMinHeight = computed(() => {
+    return props.useViewportMinHeight ? viewportComputedMinHeight.value : props.canvasMinHeight;
+});
 
 const blocks = computed({
     get: () => store.blocks,

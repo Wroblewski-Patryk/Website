@@ -6,6 +6,7 @@
             :saving="form.processing"
             :templates="templates"
             :preview-url="previewUrl"
+            canvas-min-height="720px"
             @save="save"
         >
             <!-- Info Tab -->
