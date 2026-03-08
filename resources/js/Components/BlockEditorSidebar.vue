@@ -166,7 +166,7 @@ const showAdvanced = computed(() => !!$slots.advanced);
             <div class="flex-1 flex flex-col overflow-hidden bg-base-200/10">
                 <InspectorLayersTab 
                     v-if="activeInspectorTab === 'layers'"
-                    v-model="store.blocks"
+                    :model-value="store.blocks"
                     :active-block-id="store.activeBlockId"
                     @select="store.selectBlock($event)"
                     @delete="store.deleteBlock($event)"

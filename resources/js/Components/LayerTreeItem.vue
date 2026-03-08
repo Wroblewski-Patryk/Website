@@ -5,9 +5,8 @@
         handle=".drag-handle"
         group="blocks"
         ghost-class="layer-ghost"
-        @start="store.isDragging = true"
-        @end="store.isDragging = false"
-        @change="$emit('change', $event)"
+        @start="onDragStart"
+        @end="onDragEnd"
         :class="[
             'space-y-0.5 transition-all duration-300', 
             { 'empty-drop-zone border-2 border-dashed border-primary/40 bg-primary/5 rounded-lg m-1 scale-100 opacity-100 shadow-inner': blocks.length === 0 && store.isDragging },
@@ -113,7 +112,6 @@
                         <LayerTreeItem 
                             :blocks="element.children" 
                             :depth="depth + 1" 
-                            @change="$emit('change', $event)"
                         />
                     </div>
                 </transition>
@@ -165,7 +163,6 @@ const props = defineProps({
     }
 });
 
-defineEmits(['change']);
 
 const store = useBlockBuilderStore();
 
@@ -181,6 +178,15 @@ const isExpanded = (id) => {
 
 const toggleExpand = (id) => {
     store.expandedNodes[id] = !isExpanded(id);
+};
+
+const onDragStart = () => {
+    store.isDragging = true;
+};
+
+const onDragEnd = () => {
+    store.isDragging = false;
+    store.isDirty = true;
 };
 </script>
 

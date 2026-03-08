@@ -2,7 +2,6 @@
     <div class="flex-1 overflow-y-auto px-4 pb-4 custom-scrollbar pt-4">
         <LayerTreeItem 
             :blocks="modelValue" 
-            @change="$emit('update:modelValue', $event)"
         />
     </div>
 </template>
@@ -18,7 +17,7 @@ const props = defineProps({
     activeBlockId: String
 });
 
-const emit = defineEmits(['update:modelValue', 'select', 'delete', 'toggle-visibility']);
+const emit = defineEmits(['select', 'delete', 'toggle-visibility']);
 </script>
 
 <style scoped>
