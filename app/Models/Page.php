@@ -36,6 +36,16 @@ class Page extends Model
         return $this->footer_override_id ?? Template::where('type', 'footer')->where('is_default', true)->value('id');
     }
 
+    public function getResolvedSidebarIdAttribute()
+    {
+        return $this->sidebar_override_id ?? Template::where('type', 'sidebar')->where('is_default', true)->value('id');
+    }
+
+    public function template()
+    {
+        return $this->belongsTo(Template::class , 'template_id');
+    }
+
     public function headerOverride()
     {
         return $this->belongsTo(Template::class , 'header_override_id');
@@ -44,5 +54,10 @@ class Page extends Model
     public function footerOverride()
     {
         return $this->belongsTo(Template::class , 'footer_override_id');
+    }
+
+    public function sidebarOverride()
+    {
+        return $this->belongsTo(Template::class , 'sidebar_override_id');
     }
 }

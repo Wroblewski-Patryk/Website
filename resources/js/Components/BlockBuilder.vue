@@ -212,7 +212,7 @@
                 :class="store.showRightSidebar ? 'w-80' : 'w-0 border-l-0'"
             >
                 <div class="w-80 h-full flex flex-col">
-                    <BlockEditorSidebar :menus="menus">
+                    <BlockEditorSidebar :menus="menus" :templates="templates">
                         <template #info>
                             <slot name="info"></slot>
                         </template>
@@ -268,7 +268,8 @@ const iconMap = {
 
 const props = defineProps({
     categories: { type: Array, required: true },
-    menus: { type: Array, default: () => [] }
+    menus: { type: Array, default: () => [] },
+    templates: { type: Array, default: () => [] }
 });
 
 import { provide } from 'vue';

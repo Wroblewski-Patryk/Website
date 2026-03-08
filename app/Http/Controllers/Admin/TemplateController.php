@@ -37,7 +37,12 @@ class TemplateController extends Controller
     {
         return Inertia::render('Admin/Templates/Edit', [
             'template' => new Template(),
-            'menus' => \App\Models\Menu::all()
+            'templates' => [
+                'header' => \App\Models\Template::where('type', 'header')->get(),
+                'footer' => \App\Models\Template::where('type', 'footer')->get(),
+                'sidebar' => \App\Models\Template::where('type', 'sidebar')->get(),
+                'page' => \App\Models\Template::where('type', 'page')->get(),
+            ],
         ]);
     }
 
@@ -45,7 +50,7 @@ class TemplateController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|in:header,footer',
+            'type' => 'required|in:header,footer,sidebar,page',
             'is_active' => 'boolean',
             'is_default' => 'boolean',
             'content' => 'nullable|array'
@@ -59,7 +64,12 @@ class TemplateController extends Controller
     {
         return Inertia::render('Admin/Templates/Edit', [
             'template' => $template,
-            'menus' => \App\Models\Menu::all()
+            'templates' => [
+                'header' => \App\Models\Template::where('type', 'header')->get(),
+                'footer' => \App\Models\Template::where('type', 'footer')->get(),
+                'sidebar' => \App\Models\Template::where('type', 'sidebar')->get(),
+                'page' => \App\Models\Template::where('type', 'page')->get(),
+            ],
         ]);
     }
 
@@ -67,7 +77,7 @@ class TemplateController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|in:header,footer',
+            'type' => 'required|in:header,footer,sidebar,page',
             'is_active' => 'boolean',
             'is_default' => 'boolean',
             'content' => 'nullable|array'

@@ -4,7 +4,7 @@ import { useGsapRuntime } from '@/Composables/useGsapRuntime';
 import { useForm, usePage } from '@inertiajs/vue3';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
 import draggable from 'vuedraggable';
-import { PhArrowsOut, PhCopy, PhTrash, PhInfo, PhCheckCircle, PhSlidersHorizontal } from '@phosphor-icons/vue';
+import { PhArrowsOut, PhCopy, PhTrash, PhInfo, PhCheckCircle, PhSlidersHorizontal, PhPuzzlePiece, PhSquare, PhCube, PhLayout } from '@phosphor-icons/vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 
 const props = defineProps(['block']);
@@ -681,6 +681,40 @@ const contactForm = useForm({
                     <p class="py-6">{{ block.content.subheadline }}</p>
                     <button class="btn btn-primary" v-if="block.content.primaryLabel">{{ block.content.primaryLabel }}</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- 9. Building -->
+        <div v-else-if="block.type === 'template_reference'" 
+             class="template-reference-block border-2 border-dashed border-primary/30 rounded-3xl p-8 bg-primary/5 group/ref transition-all hover:bg-primary/10 hover:border-primary/50">
+            <div class="flex flex-col items-center justify-center text-center py-4">
+                <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover/ref:scale-110">
+                    <PhPuzzlePiece weight="duotone" class="w-8 h-8 text-primary" />
+                </div>
+                <h4 class="text-xl font-black italic uppercase tracking-tighter text-primary">Template Part</h4>
+                <p class="text-xs opacity-50 mt-1 uppercase tracking-widest font-bold">
+                    {{ block.content.template_id ? 'Template ID: ' + block.content.template_id : 'No Template Selected' }}
+                </p>
+                
+                <!-- If we have template data, we'd render it here in non-editor mode -->
+                <div v-if="!isEditor && block.content.template_content" class="w-full mt-8">
+                     <DynamicBlock v-for="child in block.content.template_content" :key="child.id" :block="child" />
+                </div>
+                
+                <div v-else-if="isEditor" class="mt-4">
+                    <button class="btn btn-sm btn-outline btn-primary rounded-full px-8" @click.stop="store.activeBlockId = block.id; store.isEditingBlock = true">
+                        Select Template
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div v-else-if="block.type === 'content_slot'" 
+             class="content-slot-block border-2 border-dashed border-secondary/30 rounded-3xl p-12 bg-secondary/5 group/slot">
+            <div class="flex flex-col items-center justify-center text-center py-10 opacity-40 group-hover/slot:opacity-60 transition-opacity">
+                <PhSquare weight="duotone" class="w-12 h-12 text-secondary mb-4" />
+                <h4 class="text-2xl font-black italic uppercase tracking-widest text-secondary">{{ block.content.label }}</h4>
+                <p class="text-sm mt-2 font-medium">This is where the unique page content will be injected.</p>
             </div>
         </div>
 

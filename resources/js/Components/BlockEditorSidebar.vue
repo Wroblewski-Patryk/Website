@@ -8,11 +8,22 @@ import AdminCollapse from '@/Components/AdminCollapse.vue';
 import LayerTreeItem from '@/Components/LayerTreeItem.vue';
 import FillControl from '@/Components/FillControl.vue';
 
-const props = defineProps(['menus']);
+const props = defineProps({
+    templates: [Array, Object]
+});
 
 const store = useBlockBuilderStore();
 const activeSidebarTab = ref('content');
 const activeInspectorTab = ref('layers'); // New default: Layers
+
+// Helper to get a flat list of templates for dropdowns
+const flattenedTemplates = computed(() => {
+    if (Array.isArray(props.templates)) return props.templates;
+    if (typeof props.templates === 'object' && props.templates !== null) {
+        return Object.values(props.templates).flat();
+    }
+    return [];
+});
 
 const createFillProxy = (newProp, legacyProp) => computed({
     get: () => {
@@ -450,6 +461,25 @@ const toggleOffset = (direction) => {
                         <input type="text" v-model="store.activeBlock.content.prefix" placeholder="Prefix" class="input input-sm input-bordered w-full" />
                         <textarea v-model="store.activeBlock.content.words" placeholder="Words (one per line)" class="textarea textarea-sm textarea-bordered w-full"></textarea>
                         <input type="text" v-model="store.activeBlock.content.suffix" placeholder="Suffix" class="input input-sm input-bordered w-full" />
+                    </div>
+                </div>
+
+                <!-- Building Blocks -->
+                <div v-if="['template_reference', 'content_slot'].includes(store.activeBlock.type)" class="space-y-4">
+                    <div v-if="store.activeBlock.type === 'template_reference'" class="space-y-3">
+                        <label class="label"><span class="label-text text-xs opacity-50">Select Template Part</span></label>
+                        <select v-model="store.activeBlock.content.template_id" class="select select-bordered select-sm w-full">
+                            <option :value="null">None</option>
+                            <option v-for="t in flattenedTemplates" :key="t.id" :value="t.id">
+                                {{ t.name }} ({{ t.type }})
+                            </option>
+                        </select>
+                        <p class="text-[10px] opacity-40 italic">Note: Only headers, footers, and sidebars should be referenced here.</p>
+                    </div>
+                    
+                    <div v-if="store.activeBlock.type === 'content_slot'" class="space-y-3">
+                        <label class="label"><span class="label-text text-xs opacity-50">Slot Label</span></label>
+                        <input type="text" v-model="store.activeBlock.content.label" placeholder="e.g. Page Content" class="input input-sm input-bordered w-full" />
                     </div>
                 </div>
 

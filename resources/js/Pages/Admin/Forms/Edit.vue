@@ -7,6 +7,7 @@
             :back-route="route('admin.forms.index')"
             :categories="categories"
             :saving="form.processing"
+            :templates="templates"
             @save="save"
         >
             <template #info>
@@ -61,8 +62,8 @@ import { useForm } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 
 const props = defineProps({
-    form_data: Object,
-    menus: Array
+    formModel: Object,
+    templates: Array
 });
 
 const store = useBlockBuilderStore();
@@ -103,21 +104,21 @@ const categories = ref([
 ]);
 
 const form = useForm({
-    title: props.form_data?.title || '',
-    content: props.form_data?.content || [],
-    settings: props.form_data?.settings || { success_message: 'Message sent!', notification_email: '', submit_url: '' },
-    status: props.form_data?.status || 'draft',
-    published_at: props.form_data?.published_at ? props.form_data.published_at.substring(0, 19).replace('T', ' ') : '',
+    title: props.formModel?.title || '',
+    content: props.formModel?.content || [],
+    settings: props.formModel?.settings || { success_message: 'Message sent!', notification_email: '', submit_url: '' },
+    status: props.formModel?.status || 'draft',
+    published_at: props.formModel?.published_at ? props.formModel.published_at.substring(0, 19).replace('T', ' ') : '',
 });
 
 onMounted(() => {
-    store.init(props.form_data?.content || []);
+    store.init(props.formModel?.content || []);
 });
 
 const save = () => {
     form.content = store.blocks;
-    if (props.form_data?.id) {
-        form.put(route('admin.forms.update', props.form_data.id), {
+    if (props.formModel?.id) {
+        form.put(route('admin.forms.update', props.formModel.id), {
             onSuccess: () => store.isDirty = false
         });
     } else {

@@ -115,6 +115,15 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 ]
             },
             {
+                id: 'building',
+                label: 'Building',
+                icon: 'PhCube',
+                blocks: [
+                    { type: 'template_reference', label: 'Template Part', icon: 'PhLayout' },
+                    { type: 'content_slot', label: 'Content Slot', icon: 'PhSquare' },
+                ]
+            },
+            {
                 id: 'extended',
                 label: 'Extended',
                 icon: 'PhPlusCircle',
@@ -206,6 +215,10 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 posts_list: { count: 3, layout: 'grid' },
                 projects_list: { count: 3, layout: 'grid' },
                 text_rotate: { prefix: 'We are ', words: 'Creative\nAwesome\nInnovators', suffix: '!', interval: 2000 },
+
+                // 9. Building
+                template_reference: { template_id: null },
+                content_slot: { label: 'Page Content Placeholder' },
 
             };
 

@@ -3,7 +3,7 @@
         <BlockBuilder 
             :categories="store.categories"
             :saving="form.processing"
-            :menus="menus"
+            :templates="templates"
             @save="save"
         >
             <!-- Info Tab -->
@@ -81,7 +81,15 @@
 
                         <div class="grid grid-cols-1 gap-4">
                             <div class="form-control">
-                                <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Layout Override</span></label>
+                                <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Page Layout (Master Template)</span></label>
+                                <select v-model="form.template_id" class="select select-bordered select-sm text-xs w-full">
+                                    <option :value="null">Default Page Layout</option>
+                                    <option v-for="t in templates.page || []" :key="t.id" :value="t.id">{{ t.name }}</option>
+                                </select>
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Layout Type (Override)</span></label>
                                 <select v-model="form.template" class="select select-bordered select-sm text-xs">
                                     <option value="default">Default Template</option>
                                     <option value="full-width">Full Width Canvas</option>
@@ -94,6 +102,14 @@
                                 <select v-model="form.header_override_id" class="select select-bordered select-sm text-xs w-full">
                                     <option :value="null">System Default Header</option>
                                     <option v-for="t in templates.header || []" :key="t.id" :value="t.id">{{ t.name }}</option>
+                                </select>
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Sidebar Section</span></label>
+                                <select v-model="form.sidebar_override_id" class="select select-bordered select-sm text-xs w-full">
+                                    <option :value="null">System Default Sidebar</option>
+                                    <option v-for="t in templates.sidebar || []" :key="t.id" :value="t.id">{{ t.name }}</option>
                                 </select>
                             </div>
 
@@ -211,6 +227,8 @@ const form = useForm({
     published_at: props.page?.published_at ? props.page.published_at.substring(0, 19).replace('T', ' ') : '',
     header_override_id: props.page?.header_override_id || null,
     footer_override_id: props.page?.footer_override_id || null,
+    sidebar_override_id: props.page?.sidebar_override_id || null,
+    template_id: props.page?.template_id || null,
     template: props.page?.template || 'default',
     // SEO Fields
     meta_title: props.page?.meta_title || '',

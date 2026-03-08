@@ -35,7 +35,6 @@ Route::name('admin.')->prefix('admin')->group(function () {
                 Route::resource('media', \App\Http\Controllers\Admin\MediaController::class)->only(['index', 'store', 'destroy']);
                 Route::resource('templates', \App\Http\Controllers\Admin\TemplateController::class)->except(['show']);
                 Route::resource('forms', \App\Http\Controllers\Admin\FormController::class)->except(['show']);
-                Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class)->except(['show']);
                 Route::resource('translations', \App\Http\Controllers\Admin\TranslationController::class)->except(['show']);
                 Route::resource('projects', \App\Http\Controllers\Admin\ProjectController::class)->except(['show']);
                 Route::resource('languages', \App\Http\Controllers\Admin\LanguageController::class)->except(['show']);
@@ -72,10 +71,10 @@ Route::get('/', function () {
     $homeId = $settings['home_page_id'] ?? null;
 
     if ($homeId) {
-        $page = Page::with(['headerOverride', 'footerOverride'])->find($homeId);
+        $page = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])->find($homeId);
     }
     else {
-        $page = Page::with(['headerOverride', 'footerOverride'])->where('slug->en', 'home')->orWhere('slug->pl', 'home')->first();
+        $page = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])->where('slug->en', 'home')->orWhere('slug->pl', 'home')->first();
     }
 
     if (!$page || ($page->status !== 'published' && !auth()->check())) {
@@ -85,7 +84,6 @@ Route::get('/', function () {
     return Inertia::render('Public/Page', [
     'page' => $page,
     'settings' => $settings,
-    'menus' => \App\Models\Menu::all(),
     'all_projects' => \App\Models\Project::all()
     ]);
 });
@@ -156,7 +154,7 @@ Route::get('/{slug}', function ($slug) {
     if ($slug === 'home')
         return redirect('/');
 
-    $page = Page::with(['headerOverride', 'footerOverride'])
+    $page = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
         ->where('slug->en', $slug)
         ->orWhere('slug->pl', $slug)
         ->firstOrFail();
@@ -166,7 +164,6 @@ Route::get('/{slug}', function ($slug) {
     return Inertia::render('Public/Page', [
     'page' => $page,
     'settings' => $settings,
-    'menus' => \App\Models\Menu::all(),
     'all_projects' => \App\Models\Project::all()
     ]);
 })->where('slug', '^(?!admin|livewire|storage|_debugbar|build|api).*$');

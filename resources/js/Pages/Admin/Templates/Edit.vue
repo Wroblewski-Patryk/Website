@@ -7,7 +7,7 @@
             :back-route="route('admin.templates.index')"
             :categories="store.categories"
             :saving="form.processing"
-            :menus="menus"
+            :templates="templates"
             @save="save"
         >
             <template #info>
@@ -20,6 +20,8 @@
                     <select v-model="form.type" class="select select-bordered select-sm">
                         <option value="header">Header</option>
                         <option value="footer">Footer</option>
+                        <option value="sidebar">Sidebar</option>
+                        <option value="page">Page Template</option>
                     </select>
                 </div>
                 <div class="form-control flex-row items-center gap-3 p-4 bg-base-200 rounded-2xl border border-white/5">
@@ -62,7 +64,7 @@ import { onMounted } from 'vue';
 
 const props = defineProps({
     template: Object,
-    menus: Array
+    templates: [Array, Object],
 });
 
 const store = useBlockBuilderStore();

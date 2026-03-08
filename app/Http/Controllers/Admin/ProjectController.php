@@ -46,7 +46,13 @@ class ProjectController extends Controller
         $project->setAttribute('description', ['pl' => '', 'en' => '']);
 
         return Inertia::render('Admin/Projects/Edit', [
-            'project' => $project
+            'project' => $project,
+            'templates' => [
+                'header' => \App\Models\Template::where('type', 'header')->get(),
+                'footer' => \App\Models\Template::where('type', 'footer')->get(),
+                'sidebar' => \App\Models\Template::where('type', 'sidebar')->get(),
+                'page' => \App\Models\Template::where('type', 'page')->get(),
+            ],
         ]);
     }
 
@@ -78,7 +84,13 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         return Inertia::render('Admin/Projects/Edit', [
-            'project' => $project
+            'project' => $project,
+            'templates' => [
+                'header' => \App\Models\Template::where('type', 'header')->get(),
+                'footer' => \App\Models\Template::where('type', 'footer')->get(),
+                'sidebar' => \App\Models\Template::where('type', 'sidebar')->get(),
+                'page' => \App\Models\Template::where('type', 'page')->get(),
+            ],
         ]);
     }
 

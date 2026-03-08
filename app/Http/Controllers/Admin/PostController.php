@@ -53,8 +53,9 @@ class PostController extends Controller
             'templates' => [
                 'header' => \App\Models\Template::where('type', 'header')->get(),
                 'footer' => \App\Models\Template::where('type', 'footer')->get(),
+                'sidebar' => \App\Models\Template::where('type', 'sidebar')->get(),
+                'page' => \App\Models\Template::where('type', 'page')->get(),
             ],
-            'menus' => \App\Models\Menu::all()
         ]);
     }
 
@@ -82,8 +83,9 @@ class PostController extends Controller
             'templates' => [
                 'header' => \App\Models\Template::where('type', 'header')->get(),
                 'footer' => \App\Models\Template::where('type', 'footer')->get(),
+                'sidebar' => \App\Models\Template::where('type', 'sidebar')->get(),
+                'page' => \App\Models\Template::where('type', 'page')->get(),
             ],
-            'menus' => \App\Models\Menu::all()
         ]);
     }
 

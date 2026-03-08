@@ -3,6 +3,7 @@
         <BlockBuilder 
             :categories="store.categories"
             :saving="form.processing"
+            :templates="templates"
             @save="save"
         >
             <template #info>
@@ -157,7 +158,7 @@ import { onMounted, watch } from 'vue';
 
 const props = defineProps({
     post: Object,
-    menus: Array
+    templates: Array
 });
 
 const store = useBlockBuilderStore();

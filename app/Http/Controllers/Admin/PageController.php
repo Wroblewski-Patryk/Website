@@ -44,10 +44,11 @@ class PageController extends Controller
         return Inertia::render('Admin/Pages/Edit', [
             'page' => (new Page())->setAttribute('revisions', []),
             'templates' => [
+                'page' => \App\Models\Template::where('type', 'page')->get(),
                 'header' => \App\Models\Template::where('type', 'header')->get(),
                 'footer' => \App\Models\Template::where('type', 'footer')->get(),
+                'sidebar' => \App\Models\Template::where('type', 'sidebar')->get(),
             ],
-            'menus' => \App\Models\Menu::all()
         ]);
     }
 
@@ -61,6 +62,8 @@ class PageController extends Controller
             'published_at' => 'nullable|date',
             'header_override_id' => 'nullable|exists:templates,id',
             'footer_override_id' => 'nullable|exists:templates,id',
+            'sidebar_override_id' => 'nullable|exists:templates,id',
+            'template_id' => 'nullable|exists:templates,id',
         ]);
 
         $page = Page::create($validated);
@@ -73,10 +76,11 @@ class PageController extends Controller
         return Inertia::render('Admin/Pages/Edit', [
             'page' => $page->load('revisions'),
             'templates' => [
+                'page' => \App\Models\Template::where('type', 'page')->get(),
                 'header' => \App\Models\Template::where('type', 'header')->get(),
                 'footer' => \App\Models\Template::where('type', 'footer')->get(),
+                'sidebar' => \App\Models\Template::where('type', 'sidebar')->get(),
             ],
-            'menus' => \App\Models\Menu::all()
         ]);
     }
 
@@ -90,6 +94,8 @@ class PageController extends Controller
             'published_at' => 'nullable|date',
             'header_override_id' => 'nullable|exists:templates,id',
             'footer_override_id' => 'nullable|exists:templates,id',
+            'sidebar_override_id' => 'nullable|exists:templates,id',
+            'template_id' => 'nullable|exists:templates,id',
         ]);
 
         // Store revision of OLD content before update

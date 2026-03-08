@@ -33,7 +33,12 @@ class FormController extends Controller
     {
         return Inertia::render('Admin/Forms/Edit', [
             'formModel' => new Form(),
-            'menus' => \App\Models\Menu::all()
+            'templates' => [
+                'header' => \App\Models\Template::where('type', 'header')->get(),
+                'footer' => \App\Models\Template::where('type', 'footer')->get(),
+                'sidebar' => \App\Models\Template::where('type', 'sidebar')->get(),
+                'page' => \App\Models\Template::where('type', 'page')->get(),
+            ],
         ]);
     }
 
@@ -56,7 +61,12 @@ class FormController extends Controller
     {
         return Inertia::render('Admin/Forms/Edit', [
             'formModel' => $form,
-            'menus' => \App\Models\Menu::all()
+            'templates' => [
+                'header' => \App\Models\Template::where('type', 'header')->get(),
+                'footer' => \App\Models\Template::where('type', 'footer')->get(),
+                'sidebar' => \App\Models\Template::where('type', 'sidebar')->get(),
+                'page' => \App\Models\Template::where('type', 'page')->get(),
+            ],
         ]);
     }
 

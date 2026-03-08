@@ -284,17 +284,6 @@ function applyTheme(themeName) {
                                 </div>
                             </li>
 
-                            <!-- Menus -->
-                            <li class="relative group/menu-item">
-                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-secondary/5 text-secondary font-medium border-l-2 border-secondary': $page.url.startsWith('/admin/menus'), 'hover:bg-transparent hover:text-secondary': !$page.url.startsWith('/admin/menus')}">
-                                    <Link href="/admin/menus" class="flex items-center flex-1">
-                                        <PhList weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/menus')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Menus</span>
-                                    </Link>
-                                </div>
-                            </li>
-
                             <li class="menu-title mt-6 mb-2 border-b border-base-200/50 pb-1 pointer-events-none">
                                 <span class="text-[10px] uppercase font-bold tracking-widest text-accent/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
                                       v-show="!isSidebarCollapsed">System</span>

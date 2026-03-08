@@ -9,7 +9,7 @@ import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 
 const props = defineProps({
     project: Object,
-    menus: Array
+    templates: Array
 });
 
 const store = useBlockBuilderStore();
@@ -63,7 +63,7 @@ function submit() {
             :back-route="route('admin.projects.index')"
             :categories="store.categories"
             :saving="form.processing"
-            :menus="menus"
+            :templates="templates"
             @save="submit"
         >
             <template #info>
