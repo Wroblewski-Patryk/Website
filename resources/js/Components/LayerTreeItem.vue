@@ -4,60 +4,93 @@
         item-key="id" 
         handle=".drag-handle"
         group="blocks"
-        ghost-class="opacity-50"
+        ghost-class="layer-ghost"
+        @start="store.isDragging = true"
+        @end="store.isDragging = false"
         @change="$emit('change', $event)"
-        class="space-y-0.5"
+        :class="[
+            'space-y-0.5 transition-all duration-300', 
+            { 'empty-drop-zone border-2 border-dashed border-primary/40 bg-primary/5 rounded-lg m-1 scale-100 opacity-100 shadow-inner': blocks.length === 0 && store.isDragging },
+            { 'h-0 opacity-0 pointer-events-none scale-95 overflow-hidden m-0 p-0': blocks.length === 0 && !store.isDragging }
+        ]"
     >
         <template #item="{ element }">
-            <div>
+            <div class="layer-item-wrapper">
                 <!-- Item Row -->
                 <div 
-                    class="group relative text-[11px] py-1 px-2 flex items-center gap-2 cursor-pointer transition-all border-y border-transparent hover:bg-base-content/5 rounded-md mx-1"
-                    :class="{ 'bg-primary/10 text-primary border-primary/10 shadow-sm': store.activeBlockId === element.id }"
+                    class="group relative text-[11px] py-1 pl-1 pr-2 flex items-center gap-1.5 cursor-pointer transition-all border-l-2 border-transparent hover:bg-base-content/5 rounded-r-md"
+                    :class="{ 
+                        'active-layer bg-primary/10 text-primary border-primary shadow-sm': store.activeBlockId === element.id,
+                        'opacity-50': element.hidden 
+                    }"
                     @click="store.activeBlockId = element.id"
                 >
-                    <!-- Indentation Visuals -->
-                    <div v-if="depth > 0" class="flex h-full items-center" :style="{ width: (depth * 0.75) + 'rem' }">
-                        <div class="h-4 w-px bg-base-content/10 mr-auto"></div>
+                    <!-- Indentation Vertical Lines -->
+                    <div v-if="depth > 0" class="flex h-full items-stretch" :style="{ width: (depth * 0.75) + 'rem' }">
+                        <div v-for="i in depth" :key="i" class="h-full w-px bg-base-content/10 mx-auto"></div>
                     </div>
 
-                    <!-- Drag Handle -->
-                    <PhDotsSixVertical weight="bold" class="w-3 h-3 opacity-0 group-hover:opacity-30 cursor-move drag-handle transition-opacity" />
-                    
-                    <!-- Icon & Name -->
-                    <component :is="iconMap[element.icon] || PhCube" weight="duotone" class="w-3.5 h-3.5 opacity-70" />
-                    <span class="font-bold flex-1 truncate tracking-tight uppercase text-[9px] opacity-80">
-                        {{ element.type.replace('_', ' ') }}
+                    <!-- Expand/Collapse Chevron (for containers or blocks with children) -->
+                    <div class="w-4 h-4 flex items-center justify-center">
+                        <button 
+                            v-if="element.children && element.children.length > 0"
+                            @click.stop="toggleExpand(element.id)"
+                            class="p-0.5 hover:bg-base-content/10 rounded transition-transform duration-200"
+                            :class="{ 'rotate-90': isExpanded(element.id) }"
+                        >
+                            <PhCaretRight weight="bold" class="w-2.5 h-2.5 opacity-40 group-hover:opacity-100" />
+                        </button>
+                    </div>
+
+                    <!-- Icon -->
+                    <div class="shrink-0 w-4 h-4 flex items-center justify-center">
+                        <component 
+                            :is="iconMap[element.icon] || PhCube" 
+                            weight="duotone" 
+                            class="w-3.5 h-3.5 opacity-70" 
+                            :class="{ 'text-primary opacity-100': store.activeBlockId === element.id }"
+                        />
+                    </div>
+
+                    <!-- Name -->
+                    <span class="font-medium flex-1 truncate tracking-tight text-[11px] opacity-90" :class="{ 'font-bold': store.activeBlockId === element.id }">
+                        {{ element.name || element.type.replace('_', ' ') }}
                     </span>
 
-                    <!-- Quick Actions (Visible when hovered or active) -->
-                    <div class="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity" :class="{ 'opacity-100': store.activeBlockId === element.id }">
+                    <!-- Quick Actions (Visible when hovered or if active) -->
+                    <div class="flex items-center gap-0 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                         :class="{ 'opacity-100': store.activeBlockId === element.id }">
+                        <div class="drag-handle btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-primary transition-colors cursor-move" title="Drag to reorder">
+                            <PhDotsSixVertical weight="bold" class="w-3 h-3" />
+                        </div>
                         <button @click.stop="store.isEditingBlock = true; store.showRightSidebar = true; store.activeBlockId = element.id" 
-                                class="btn btn-ghost btn-xs btn-square h-6 w-6 min-h-0 text-base-content/40 hover:text-primary hover:bg-primary/10 transition-colors" 
+                                class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-primary transition-colors" 
                                 title="Settings">
                             <PhSlidersHorizontal weight="bold" class="w-3 h-3" />
                         </button>
                         <button @click.stop="store.duplicateBlock(element.id)" 
-                                class="btn btn-ghost btn-xs btn-square h-6 w-6 min-h-0 text-base-content/40 hover:text-primary hover:bg-primary/10 transition-colors" 
+                                class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-primary transition-colors" 
                                 title="Duplicate">
                             <PhCopy weight="bold" class="w-3 h-3" />
                         </button>
                         <button @click.stop="store.removeBlock(element.id)" 
-                                class="btn btn-ghost btn-xs btn-square h-6 w-6 min-h-0 text-base-content/40 hover:text-error hover:bg-error/10 transition-colors" 
+                                class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-error transition-colors" 
                                 title="Delete">
-                            <PhTrash weight="bold" class="w-3 h-3" />
+                            <PhX weight="bold" class="w-3 h-3" />
                         </button>
                     </div>
                 </div>
                 
                 <!-- Recursive Children Rendering -->
-                <div v-if="element.children && element.children.length > 0" class="mt-1">
-                    <LayerTreeItem 
-                        :blocks="element.children" 
-                        :depth="depth + 1" 
-                        @change="$emit('change', $event)"
-                    />
-                </div>
+                <transition name="fade-slide">
+                    <div v-if="isExpanded(element.id) && element.children && (element.children.length > 0 || element.type === 'container')" class="mt-0.5">
+                        <LayerTreeItem 
+                            :blocks="element.children" 
+                            :depth="depth + 1" 
+                            @change="$emit('change', $event)"
+                        />
+                    </div>
+                </transition>
             </div>
         </template>
     </draggable>
@@ -77,8 +110,10 @@ import {
     PhList, PhMinus, PhStar, PhImage, PhVideoCamera, PhNavigationArrow, PhDotsThree, 
     PhBrowser, PhFootprints, PhFolder, PhTerminal, PhDeviceMobile, PhAppWindow, 
     PhPlusCircle, PhArticle, PhBriefcase, PhArrowsClockwise, PhListNumbers, 
-    PhDeviceTablet, PhArrowsOut, PhArrowUUpLeft, PhPlus, PhX
+    PhDeviceTablet, PhArrowsOut, PhArrowUUpLeft, PhPlus, PhX, PhCaretRight,
+    PhEye, PhEyeSlash, PhLock, PhLockSimpleOpen
 } from '@phosphor-icons/vue';
+import { ref } from 'vue';
 
 const iconMap = {
     PhCube, PhTextT, PhTextAa, PhTextHOne, PhListBullets, PhQuotes, PhCode, 
@@ -107,4 +142,106 @@ const props = defineProps({
 defineEmits(['change']);
 
 const store = useBlockBuilderStore();
+
+// Local state for expanded nodes (persisted in store for pro feel)
+// If store doesn't have it, we use a local ref for now but let's check
+if (!store.expandedNodes) {
+    store.expandedNodes = {}; 
+}
+
+const isExpanded = (id) => {
+    return store.expandedNodes[id] !== false; // Default to expanded
+};
+
+const toggleExpand = (id) => {
+    store.expandedNodes[id] = !isExpanded(id);
+};
 </script>
+
+<style scoped>
+.layer-item-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.active-layer {
+    background: linear-gradient(90deg, rgba(var(--p), 0.15) 0%, rgba(var(--p), 0.05) 100%);
+    backdrop-filter: blur(4px);
+}
+
+.layer-ghost {
+    position: relative !important;
+    opacity: 1 !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    height: 24px !important; /* Match layer item height */
+    margin: 0 !important;
+    overflow: visible !important;
+}
+
+.layer-ghost > * {
+    display: none !important;
+}
+
+.layer-ghost::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 2px;
+    background-color: var(--p);
+    border-radius: 9999px;
+    z-index: 50;
+    box-shadow: 0 0 12px rgba(var(--p), 0.6);
+}
+
+.layer-ghost::after {
+    content: '';
+    position: absolute;
+    left: 0.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0.6rem;
+    height: 0.6rem;
+    background-color: var(--p);
+    border: 2px solid white;
+    border-radius: 9999px;
+    z-index: 50;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Transitions */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+    transition: all 0.2s ease-out;
+    max-height: 500px;
+    overflow: hidden;
+}
+
+.fade-slide-enter-from,
+.fade-slide-leave-to {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-5px);
+}
+
+/* Ensure empty drop zone looks good */
+.empty-drop-zone {
+    height: 24px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-drop-zone::before {
+    content: 'DROP INSIDE';
+    font-size: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.15;
+}
+</style>

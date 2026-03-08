@@ -250,15 +250,20 @@ const contactForm = useForm({
     <div ref="blockRef" 
          :id="block.settings?.id"
          :data-timeline="block.settings?.animations?.timelineId"
-         :class="[
-            block.settings?.class,
-            { 'editor-ring': isEditor && store.activeBlockId === block.id }
-         ]" 
          :style="styleObj"
-          @click.stop="isEditor ? (store.activeBlockId = block.id, store.isEditingBlock = false) : null"
-         @mouseover.stop="isEditor ? (store.hoveredBlockId = block.id) : null"
-         @mouseout.stop="isEditor ? (store.hoveredBlockId = null) : null"
-         class="transition-all duration-500 relative group/block">
+        class="group relative block-wrapper transition-all duration-300"
+        :class="[
+            block.settings?.class,
+            { 'editor-ring': isEditor && store.activeBlockId === block.id },
+            { 'hover-ring': isEditor && !store.isDragging && !block.hidden && !block.locked },
+            { 'active-block shadow-lg z-10': isEditor && store.activeBlockId === block.id },
+            { 'opacity-20 pointer-events-none grayscale': isEditor && block.hidden },
+            { 'pointer-events-none cursor-not-allowed select-none': isEditor && block.locked }
+        ]"
+        @click.stop="isEditor && !block.locked ? (store.activeBlockId = block.id, store.isEditingBlock = false) : null"
+        @mouseenter="isEditor && !block.locked ? (store.hoveredBlockId = block.id) : null"
+        @mouseleave="isEditor ? (store.hoveredBlockId = null) : null"
+    >
         
         <!-- Editor Action Buttons (Only for the currently hovered/active block) -->
         <template v-if="isEditor">

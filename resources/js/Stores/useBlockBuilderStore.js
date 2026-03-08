@@ -7,7 +7,9 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         hoveredBlockId: null,
         isDirty: false,
         isDepthView: false,
+        isDragging: false,
         showRightSidebar: true,
+        expandedNodes: {}, // Persist expanded/collapsed state of layers
         isEditingBlock: false,
         categories: [
             {
