@@ -1,77 +1,29 @@
-# Custom Block Builder CMS
+# Featherly CMS
 
-A modern, high-performance Content Management System built with a custom visual block builder. This project eschews generic admin panels (like Filament) in favor of a 100% bespoke, WordPress-like administrative experience tailored for maximum flexibility and performance.
+Custom CMS oparty o Laravel 12 + Vue 3 + Inertia, z wizualnym edytorem blokowym.
 
-## 🚀 Tech Stack
+## Uruchamianie lokalnie
 
-### Backend
-- **Framework:** Laravel 12 (PHP 8.2+)
-- **Database:** Relational database for structured content and JSON fields (`content`, `settings`) for dynamic block configurations.
-- **Routing & State:** Ziggy & Inertia.js (Server-Side Rendered approach without heavy standalone APIs).
+Mozesz pracowac na dwa sposoby:
 
-### Frontend (Admin & Public)
-- **Framework:** Vue.js 3 (Composition API `<script setup>`)
-- **State Management:** Pinia (e.g., `useBlockBuilderStore`) managing complex UI states without props-drilling.
-- **Styling:** Tailwind CSS v4 (Utility-first) + DaisyUI. 
-- **Theming:** Dynamic theme switching (`cyberpunk`, `light`, `dark`, etc.) seamlessly applied across both the admin tools and the public-facing site.
-- **Animations & Interactivity:** 
-  - [GSAP](https://gsap.com/) for complex, timeline-based block animations and z-index 3D spatial visualizations.
-  - `vuedraggable` for intuitive drag-and-drop block management.
-  - `@phosphor-icons/vue` and FontAwesome for UI iconography.
+1. Dwa terminale:
+- `php artisan serve`
+- `npm run dev`
 
-## 🏗️ Core Architecture & Philosophy
+2. Jeden terminal:
+- `composer run dev`
 
-1. **Custom Visual Editor:** 
-   The heart of the application is the Block Builder. Users construct pages and posts by dragging and dropping blocks. Block layouts, padding, margins, and 3D z-index configurations are saved as structured JSON objects.
-   
-2. **Performance First (Inertia.js):** 
-   We limit standard AJAX/API requests. Instead, data is injected directly into components via Laravel controllers and Inertia, ensuring extremely fast load times and a SPA-like feel while maintaining the benefits of a backend-driven application.
+`composer run dev` uruchamia caly zestaw developerski (server, queue listener, logi i Vite).
 
-3. **DRY & Component-Based:** 
-   Vue components are created with reusability in mind. Repeated UI chunks are extracted into standalone `<template>` files to maintain a clean and manageable codebase.
+## Stan projektu (HEAD)
 
-4. **Living Documentation:**
-   Core architectural decisions and systemic contexts are documented in the `docs/` directory. **Always consult and update `docs/*.md` files when making significant architectural changes.**
+- Dziala panel admina: pages, posts, projects, forms, templates, media, settings, translations, languages, users, theme.
+- Dziala publiczny routing dla stron, bloga, projektow i preview formularzy.
+- Dziala SEO (`sitemap.xml`, `robots.txt`, SEO meta per model).
+- Czesci i18n sa w trakcie dalszych prac.
 
-## 💻 Local Development
+## Uwagi
 
-### Requirements
-- PHP 8.2 or higher
-- Composer
-- Node.js & NPM
-
-### Setup
-
-1. **Clone the repository and install PHP dependencies:**
-   ```bash
-   composer install
-   ```
-
-2. **Install frontend dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Environment Setup:**
-   Copy the example `.env` file and generate an application key:
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
-
-4. **Database Migration:**
-   Ensure your database is configured in `.env`, then run:
-   ```bash
-   php artisan migrate
-   ```
-
-5. **Start Dev Servers:**
-   Run the Laravel queue/serve and Vite concurrently:
-   ```bash
-   npm run dev
-   ```
-   *(Alternatively, run `php artisan serve` and `npm run dev` in separate terminal windows).*
-
----
-
-*This application prioritizes premium user experience with micro-animations and polished aesthetics. When contributing, ensure all UI updates comply with the cohesive DaisyUI theme structure and utility-driven Tailwind principles.*
+- Modul menu jako osobna sekcja admina nie jest aktywny.
+- Nawigacja jest budowana przez bloki i szablony.
+- Runtime submit dla dynamicznych formularzy jest do dopiecia w kolejnym etapie.

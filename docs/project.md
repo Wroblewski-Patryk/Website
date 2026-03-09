@@ -8,7 +8,7 @@ Obecna witryna działa jako statyczny HTML z kilkoma elementami JS i prostym f
 
 - **Zarządzanie stronami bez edycji kodu** – administrator może tworzyć, edytować i publikować strony za pomocą edytora blokowego opartego na JSON.
 - **Budowa z bloków** – treści są konstruowane z różnorodnych bloków (tekst, media, układ, komponenty marketingowe, nawigacja itp.) z możliwością konfiguracji ich ustawień.
-- **Animacje GSAP** – każdy blok może posiadać ustawienia animacji (triggery, preset, czas trwania, opóźnienie, ease), a na poziomie strony można tworzyć sekwencje (timeline).  Animacje są traktowane jako progresywne uzupełnienie treści, a strony muszą być czytelne bez JS【923699511808356†L2-L11】.
+- **Animacje GSAP** – każdy blok może posiadać ustawienia animacji (triggery, preset, czas trwania, opóźnienie, ease), a na poziomie strony można tworzyć sekwencje (timeline).  Animacje są traktowane jako progresywne uzupełnienie treści, a strony muszą być czytelne bez JS.
 - **Blog** – możliwość tworzenia i publikacji artykułów, wersjonowanie wpisów oraz wyświetlanie listy i szczegółów wpisu na stronie publicznej.
 - **Portfolio projektów** – moduł do zarządzania projektami/realizacjami z pól typu tytuł, opis, zdjęcia i link, z obsługą sortowania.
 - **Wielojęzyczność** – treści stron, wpisów, projektów i tłumaczeń interfejsu są przechowywane w kilku językach z możliwością przełączania między `pl` i `en`.
