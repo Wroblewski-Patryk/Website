@@ -82,11 +82,11 @@
                                 item-key="type"
                                 class="grid grid-cols-2 gap-2">
                                 <template #item="{ element }">
-                                    <div @click="store.addBlock(element.type)" 
-                                         class="flex flex-col items-center justify-center gap-2 p-3 py-4 bg-base-100 border border-base-content/5 rounded-box hover:border-primary hover:bg-primary/5 hover:-translate-y-0.5 hover:shadow-lg transition-all cursor-grab active:cursor-grabbing group">
-                                        <component :is="iconMap[element.icon] || iconMap.PhCube" weight="duotone" class="w-6 h-6 text-base-content/50 group-hover:text-primary transition-colors" />
-                                        <span class="text-[10px] font-bold leading-tight text-center">{{ element.label }}</span>
-                                    </div>
+                                    <BlockPaletteTile
+                                        :icon-component="iconMap[element.icon] || iconMap.PhCube"
+                                        :label="element.label"
+                                        @add="store.addBlock(element.type)"
+                                    />
                                 </template>
                             </draggable>
                         </AdminCollapse>
@@ -226,6 +226,7 @@ import SidebarPanelHeader from '@/Components/BlockBuilder/Layout/SidebarPanelHea
 import LayerTreeItem from '@/Components/LayerTreeItem.vue';
 import GsapTimelineEditor from '@/Components/GsapTimelineEditor.vue';
 import AdminCollapse from '@/Components/AdminCollapse.vue';
+import BlockPaletteTile from '@/Components/BlockBuilder/Palette/BlockPaletteTile.vue';
 import draggable from 'vuedraggable';
 import gsap from 'gsap';
 

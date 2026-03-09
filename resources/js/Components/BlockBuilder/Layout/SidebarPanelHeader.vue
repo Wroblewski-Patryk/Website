@@ -1,7 +1,7 @@
 <template>
-    <div class="px-4 py-3 border-b border-base-content/10 flex items-center justify-between sticky top-0 bg-base-100/80 backdrop-blur-xl z-20">
-        <div class="flex items-center gap-2 min-w-0 text-base-content/80">
-            <component :is="icon" :weight="iconWeight" :class="[iconClass, 'shrink-0']" />
+    <div class="px-4 py-4 border-b border-base-content/10 flex items-center justify-between sticky top-0 bg-base-100/70 backdrop-blur-md z-20">
+        <div class="flex items-center gap-2.5 min-w-0 text-base-content/80">
+            <component :is="icon" :weight="iconWeight" :class="[iconClass, 'shrink-0', 'text-primary']" />
             <h3 class="text-sm font-medium truncate">{{ title }}</h3>
         </div>
 
@@ -29,3 +29,4 @@ defineProps({
     }
 });
 </script>
+

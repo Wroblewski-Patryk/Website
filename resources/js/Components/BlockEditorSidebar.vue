@@ -2,7 +2,7 @@
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import { computed, ref, watch, useSlots } from 'vue';
 import { 
-    PhX, PhStack, PhClockCounterClockwise, PhSelection, PhInfo, PhCloudArrowUp, PhFloppyDisk, PhGlobe, PhGear
+    PhX, PhStack, PhClockCounterClockwise, PhSelection, PhSlidersHorizontal, PhInfo, PhCloudArrowUp, PhFloppyDisk, PhGlobe, PhGear
 } from '@phosphor-icons/vue';
 
 // New Modular Components
@@ -127,7 +127,7 @@ const showAdvanced = computed(() => !!$slots.advanced);
         <template v-else>
             <!-- Inspector Header -->
             <SidebarPanelHeader
-                :icon="PhStack"
+                :icon="PhSlidersHorizontal"
                 icon-weight="duotone"
                 title="Inspector" />
 
@@ -218,6 +218,5 @@ const showAdvanced = computed(() => !!$slots.advanced);
     background: rgba(255, 255, 255, 0.1);
 }
 </style>
-
 
 
