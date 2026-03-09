@@ -60,6 +60,46 @@ class HandleInertiaRequests extends Middleware
             'theme_config' => isset($settings['theme_config']) ? 
             (is_array($settings['theme_config']) ? $settings['theme_config'] : json_decode($settings['theme_config'], true))
             : null,
+            'seo_settings' => [
+                'site_name' => $settings['site_name'] ?? ['pl' => config('app.name'), 'en' => config('app.name')],
+                'title_separator' => $settings['title_separator'] ?? ' - ',
+                'title_order' => $settings['title_order'] ?? 'brand_first',
+            ],
+            'admin_seo' => $this->getAdminSeoContext($request),
         ];
+    }
+
+    /**
+     * Helper to get admin SEO context from route.
+     */
+    protected function getAdminSeoContext(Request $request): array
+    {
+        $routeName = $request->route() ? $request->route()->getName() : '';
+        $parts = explode('.', (string)$routeName);
+
+        $context = [
+            'module' => null,
+            'action' => null,
+            'module_label' => null,
+            'action_label' => null,
+        ];
+
+        if (count($parts) >= 2 && $parts[0] === 'admin') {
+            $context['module'] = $parts[1];
+            $context['action'] = $parts[2] ?? 'index';
+
+            $seoService = app(\App\Services\SeoService::class);
+            $context['module_label'] = $seoService->getModuleLabel($context['module']);
+
+            $actionMap = [
+                'edit' => 'Edycja',
+                'create' => 'Nowy',
+                'index' => 'Lista',
+                'show' => 'Podgląd',
+            ];
+            $context['action_label'] = $actionMap[strtolower($context['action'])] ?? \Illuminate\Support\Str::ucfirst($context['action']);
+        }
+
+        return $context;
     }
 }

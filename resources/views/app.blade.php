@@ -4,7 +4,15 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        @php
+            $siteNameSetting = \App\Models\Setting::where('key', 'site_name')->first();
+            $appName = 'Laravel';
+            if ($siteNameSetting && isset($siteNameSetting->value)) {
+                $locale = app()->getLocale();
+                $appName = $siteNameSetting->value[$locale] ?? $siteNameSetting->value['pl'] ?? config('app.name', 'Laravel');
+            }
+        @endphp
+        <title inertia>{{ $page['props']['seo']['full_title'] ?? $appName }}</title>
 
         <!-- Fonts -->
         @php

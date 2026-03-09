@@ -13,6 +13,10 @@ Route::redirect('login', 'admin/login')->name('login');
 // Locale Switcher
 Route::get('lang/{locale}', [LocaleController::class , 'switch'])->name('lang.switch');
 
+// SEO Technical Routes
+Route::get('/sitemap.xml', [\App\Http\Controllers\SeoController::class , 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', [\App\Http\Controllers\SeoController::class , 'robots'])->name('robots');
+
 // Admin Routes
 Route::name('admin.')->prefix('admin')->group(function () {
     Route::middleware('guest')->group(function () {

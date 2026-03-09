@@ -2,22 +2,21 @@
 import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
+import SeoHead from '@/Components/SeoHead.vue';
 import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const props = defineProps({
     page: Object,
-    settings: Object
+    settings: Object,
+    seo: Object,
 });
-
-const { t } = useTranslations();
 </script>
 
 <template>
+    <SeoHead v-if="seo" v-bind="seo" />
     <AppLayout :settings="settings">
-        <Head v-if="page">
-            <title>{{ t(page.title) }}</title>
-            <meta name="description" :content="t(page.meta_description)">
-        </Head>
 
         <div v-if="page.content" class="page-content">
             <DynamicBlock 

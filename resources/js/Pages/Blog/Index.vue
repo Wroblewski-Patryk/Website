@@ -6,21 +6,20 @@ import DynamicBlock from '@/Components/DynamicBlock.vue';
 import moment from 'moment';
 import { useTranslations } from '@/Composables/useTranslations';
 
+
 const props = defineProps({
     posts: Object,
-    page: Object, // Added page prop
+    page: Object,
+    seo: Object,
 });
 
 const { t } = useTranslations();
 </script>
 
 <template>
-    <AppLayout :page="page">
-        <SeoHead 
-            :title="page ? t(page.title) : 'Blog'" 
-            :description="page ? t(page.meta_description) : 'Read the latest articles and updates from my blog.'"
-        />
+    <SeoHead v-if="seo" v-bind="seo" />
 
+    <AppLayout :page="page">
         <!-- Render Dynamic Blocks from the Page (if linked) -->
         <div v-if="page && page.content && page.content.length" class="page-blocks">
             <DynamicBlock 
@@ -38,16 +37,16 @@ const { t } = useTranslations();
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 <Link v-for="post in posts.data" :key="post.id" :href="`/blog/${t(post.slug)}`" class="block group">
                     <div class="overflow-hidden rounded-xl mb-6 relative">
-                        <img v-if="post.featured_image" :src="`/storage/${post.featured_image}`" class="w-full h-64 object-cover filter grayscale group-hover:grayscale-0 transition-transform duration-700 group-hover:scale-105" />
+                        <img v-if="t(post.featured_image)" :src="`/storage/${t(post.featured_image)}`" class="w-full h-64 object-cover filter grayscale group-hover:grayscale-0 transition-transform duration-700 group-hover:scale-105" />
                         <div v-else class="w-full h-64 bg-gray-900 border border-white/10 flex items-center justify-center">
                             <span class="text-white/30 uppercase tracking-widest text-sm">No Image</span>
                         </div>
                     </div>
                     <div class="flex items-center text-sm font-bold tracking-widest uppercase text-white/60 mb-3">
-                        <span>{{ moment(post.published_at).format('MMM D, YYYY') }}</span>
+                        <span>{{ post.published_at ? moment(post.published_at).format('MMM D, YYYY') : 'Not Published' }}</span>
                     </div>
                     <h2 class="text-2xl font-bold mb-3 group-hover:text-gray-300 transition-colors">{{ t(post.title) }}</h2>
-                    <p class="text-gray-400 line-clamp-3 leading-relaxed">{{ t(post.excerpt) || (post.content ? String(post.content).substring(0, 150) + '...' : '') }}</p>
+                    <p class="text-gray-400 line-clamp-3 leading-relaxed">{{ t(post.excerpt) || (post.content ? 'Content available' : '') }}</p>
                 </Link>
             </div>
 

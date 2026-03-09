@@ -35,11 +35,18 @@ import { usePage } from '@inertiajs/vue3'
 import DynamicBlock from '@/Components/DynamicBlock.vue'
 import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue'
+import { useTranslations } from '@/Composables/useTranslations'
+
+const { t } = useTranslations();
 
 const props = defineProps({
   settings: {
     type: Object,
     default: () => ({})
+  },
+  page: {
+    type: Object,
+    default: () => null
   }
 });
 

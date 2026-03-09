@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed, markRaw } from 'vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
+import { useTranslations } from '@/Composables/useTranslations';
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue';
 import ToastContainer from '@/Components/ToastContainer.vue';
 import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGearSix, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhUsers, PhSignOut, PhLifebuoy, PhPlus, PhCaretDown } from '@phosphor-icons/vue';
@@ -77,9 +78,41 @@ watch(() => page.props.flash, (flash) => {
 function applyTheme(themeName) {
     document.documentElement.setAttribute('data-theme', themeName);
 }
+
+const { t } = useTranslations();
+const adminTitle = computed(() => {
+    const brand = t(page.props.seo_settings?.site_name) || 'Featherly';
+    const separator = (page.props.seo_settings?.title_separator || ' - ').trim();
+    const sep = ` ${separator} `;
+    
+    const adminSeo = page.props.admin_seo || {};
+    const moduleLabel = adminSeo.module_label;
+    const actionLabel = adminSeo.action_label;
+    
+    // Try to find entity name in props (many edit pages pass the object)
+    let entityName = null;
+    const entity = page.props.post || page.props.page || page.props.project || page.props.template || page.props.user || page.props.client;
+    if (entity) {
+        // Handle translatable title or simple title/name/label
+        entityName = (entity.title && typeof entity.title === 'object' ? t(entity.title) : entity.title) 
+                    || entity.name 
+                    || entity.label 
+                    || (entity.id && !isNaN(entity.id) ? null : entity.id);
+    }
+
+    const parts = [];
+    if (entityName) parts.push(entityName);
+    if (actionLabel) parts.push(actionLabel);
+    if (moduleLabel) parts.push(moduleLabel);
+    parts.push('Panel Administracyjny');
+    parts.push(brand);
+
+    return parts.filter(Boolean).join(sep);
+});
 </script>
 
 <template>
+    <Head :title="adminTitle" />
     <ThemeStyleProvider />
     <ToastContainer />
     <div class="min-h-screen bg-base-200 text-base-content font-sans">

@@ -16,7 +16,9 @@ class Project extends Model
         'content' => 'array',
         'published_at' => 'datetime',
         'archived_at' => 'datetime',
+        'seo_index' => 'boolean',
+        'seo_follow' => 'boolean',
     ];
 
-    public $translatable = ['title', 'description'];
+    public $translatable = ['title', 'description', 'meta_title', 'meta_description', 'og_image'];
 }

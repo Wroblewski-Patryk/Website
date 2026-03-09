@@ -71,7 +71,21 @@ class ProjectController extends Controller
             'content' => 'nullable|array',
             'status' => 'nullable|string',
             'published_at' => 'nullable|date',
+            // SEO Fields
+            'meta_title' => 'nullable|string',
+            'meta_description' => 'nullable|string',
+            'canonical_url' => 'nullable|string',
+            'og_image' => 'nullable|string',
+            'seo_index' => 'nullable|boolean',
+            'seo_follow' => 'nullable|boolean',
         ]);
+
+        // Map flat strings to translatable arrays (default to pl)
+        foreach (['meta_title', 'meta_description', 'og_image'] as $field) {
+            if (isset($validated[$field])) {
+                $validated[$field] = ['pl' => $validated[$field]];
+            }
+        }
 
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['title']['pl']);
@@ -107,9 +121,22 @@ class ProjectController extends Controller
             'order' => 'integer',
             'content' => 'nullable|array',
             'status' => 'nullable|string',
-            'is_published' => 'boolean',
             'published_at' => 'nullable|date',
+            // SEO Fields
+            'meta_title' => 'nullable|string',
+            'meta_description' => 'nullable|string',
+            'canonical_url' => 'nullable|string',
+            'og_image' => 'nullable|string',
+            'seo_index' => 'nullable|boolean',
+            'seo_follow' => 'nullable|boolean',
         ]);
+
+        // Map flat strings to translatable arrays (default to pl)
+        foreach (['meta_title', 'meta_description', 'og_image'] as $field) {
+            if (isset($validated[$field])) {
+                $validated[$field] = ['pl' => $validated[$field]];
+            }
+        }
 
         $project->update($validated);
         return redirect()->back()->with('message', 'Project updated');

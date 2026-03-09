@@ -1,20 +1,21 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
+import SeoHead from '@/Components/SeoHead.vue';
 import { useTranslations } from '@/Composables/useTranslations';
 
 const props = defineProps({
     project: Object,
-    settings: Object
+    settings: Object,
+    seo: Object,
 });
 
 const { t } = useTranslations();
 </script>
 
 <template>
-    <AppLayout :settings="settings">
-        <Head :title="t(project.title)" />
+    <SeoHead v-if="seo" v-bind="seo" />
+    <AppLayout :settings="settings" :page="project">
         
         <div class="max-w-7xl mx-auto px-6 py-24">
             <div class="mb-12">
@@ -22,7 +23,7 @@ const { t } = useTranslations();
                 <h1 class="text-6xl md:text-8xl font-black italic uppercase tracking-tighter mb-8 leading-none">
                     {{ t(project.title) }}
                 </h1>
-                <p v-if="project.description" class="text-xl opacity-60 max-w-2xl leading-relaxed">
+                <p v-if="t(project.description)" class="text-xl opacity-60 max-w-2xl leading-relaxed">
                     {{ t(project.description) }}
                 </p>
             </div>
@@ -35,8 +36,8 @@ const { t } = useTranslations();
                 />
             </div>
             
-            <div v-if="!project.content && project.image" class="rounded-3xl overflow-hidden shadow-2xl">
-                <img :src="project.image" class="w-full" />
+            <div v-if="!project.content && t(project.image)" class="rounded-3xl overflow-hidden shadow-2xl">
+                <img :src="t(project.image)" class="w-full" />
             </div>
         </div>
     </AppLayout>

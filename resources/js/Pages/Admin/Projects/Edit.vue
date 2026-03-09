@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, computed, watch } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { PhArrowsClockwise, PhArrowSquareOut, PhFingerprint } from '@phosphor-icons/vue';
+import { PhArrowsClockwise, PhArrowSquareOut, PhFingerprint, PhShareNetwork } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import DatePicker from '@/Components/DatePicker.vue';
@@ -29,6 +29,13 @@ const form = useForm({
     order: props.project?.order || 0,
     status: props.project?.status || 'draft',
     published_at: props.project?.published_at ? props.project.published_at.substring(0, 19).replace('T', ' ') : '',
+    // SEO Fields
+    meta_title: props.project?.meta_title?.pl || (typeof props.project?.meta_title === 'string' ? props.project.meta_title : ''),
+    meta_description: props.project?.meta_description?.pl || (typeof props.project?.meta_description === 'string' ? props.project.meta_description : ''),
+    canonical_url: props.project?.canonical_url || '',
+    og_image: props.project?.og_image?.pl || (typeof props.project?.og_image === 'string' ? props.project.og_image : ''),
+    seo_index: props.project?.seo_index ?? true,
+    seo_follow: props.project?.seo_follow ?? true,
 });
 
 const previewUrl = computed(() => form.slug ? `/projects/${form.slug}` : null);
@@ -181,6 +188,54 @@ function submit() {
                                 <span class="opacity-60">Last Edit</span>
                                 <span class="font-mono">{{ project?.updated_at ? new Date(project.updated_at).toLocaleString() : 'N/A' }}</span>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- SEO Tab -->
+            <template #seo>
+                <div class="flex flex-col gap-6">
+                    <div class="space-y-4">
+                         <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">Meta Title</span></label>
+                            <input type="text" v-model="form.meta_title" class="input input-bordered input-sm focus:input-primary transition-all" placeholder="SEO Title" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">Meta Description</span></label>
+                            <textarea v-model="form.meta_description" class="textarea textarea-bordered textarea-sm focus:textarea-primary transition-all h-24" placeholder="SEO Description"></textarea>
+                        </div>
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 transition-colors">Canonical URL</span></label>
+                            <input type="text" v-model="form.canonical_url" class="input input-bordered input-sm focus:input-primary transition-all font-mono text-[10px]" placeholder="https://..." />
+                        </div>
+                    </div>
+
+                    <div class="divider opacity-5 my-0"></div>
+
+                    <!-- Social Sharing (OG) -->
+                    <div class="space-y-4">
+                        <label class="text-[10px] font-bold uppercase tracking-widest opacity-30 flex items-center gap-2">
+                            <PhShareNetwork weight="bold" class="w-3 h-3 text-secondary" /> Social Sharing (OG)
+                        </label>
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">OG Image URL</span></label>
+                            <input type="text" v-model="form.og_image" class="input input-bordered input-sm focus:input-primary transition-all font-mono text-[10px]" placeholder="Image URL for social media" />
+                        </div>
+                    </div>
+
+                    <!-- Robots Settings -->
+                    <div class="space-y-4 bg-base-200/30 p-4 rounded-2xl border border-base-content/5">
+                        <label class="text-[10px] font-bold uppercase tracking-widest opacity-30">Search Engine Visibility</label>
+                        <div class="flex flex-col gap-3">
+                            <label class="flex items-center justify-between cursor-pointer group">
+                                <span class="text-xs group-hover:text-primary transition-colors">Index Page</span>
+                                <input type="checkbox" v-model="form.seo_index" class="toggle toggle-primary toggle-sm" />
+                            </label>
+                            <label class="flex items-center justify-between cursor-pointer group">
+                                <span class="text-xs group-hover:text-primary transition-colors">Follow Links</span>
+                                <input type="checkbox" v-model="form.seo_follow" class="toggle toggle-primary toggle-sm" />
+                            </label>
                         </div>
                     </div>
                 </div>

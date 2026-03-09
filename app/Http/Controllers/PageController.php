@@ -88,9 +88,17 @@ class PageController extends Controller
                 ->get();
         }
 
+        $seoService = app(\App\Services\SeoService::class);
+        $blogId = $settings['blog_page_id'] ?? null;
+        $projectsId = $settings['projects_page_id'] ?? null;
+
+        $blogTitle = $blogId ? $seoService->getEntityTitle(Page::find($blogId)) : 'Blog';
+        $projectsTitle = $projectsId ? $seoService->getEntityTitle(Page::find($projectsId)) : 'Projekty';
+
         return Inertia::render($component, [
             'page' => $page,
             'settings' => $settings,
+            'seo' => $seoService->getMetaData($page),
             'all_projects' => Project::all(),
             ...$extraData
         ]);
@@ -104,6 +112,7 @@ class PageController extends Controller
         $settings = Setting::pluck('value', 'key')->toArray();
         $isAdmin = auth()->check();
         $page404Id = $settings['page_404_id'] ?? null;
+        $seoService = app(\App\Services\SeoService::class);
 
         $post = Post::where('slug->en', $slug)
             ->orWhere('slug->pl', $slug)
@@ -113,9 +122,13 @@ class PageController extends Controller
             return $this->render404($settings, $page404Id);
         }
 
+        $blogId = $settings['blog_page_id'] ?? null;
+        $blogTitle = $blogId ? $seoService->getEntityTitle(Page::find($blogId)) : 'Blog';
+
         return Inertia::render('Blog/Show', [
             'post' => $post,
-            'settings' => $settings
+            'settings' => $settings,
+            'seo' => $seoService->getMetaData($post, $blogTitle),
         ]);
     }
 
@@ -127,6 +140,7 @@ class PageController extends Controller
         $settings = Setting::pluck('value', 'key')->toArray();
         $isAdmin = auth()->check();
         $page404Id = $settings['page_404_id'] ?? null;
+        $seoService = app(\App\Services\SeoService::class);
 
         $project = Project::where('slug', $slug)->first();
 
@@ -134,9 +148,13 @@ class PageController extends Controller
             return $this->render404($settings, $page404Id);
         }
 
+        $projectsId = $settings['projects_page_id'] ?? null;
+        $projectsTitle = $projectsId ? $seoService->getEntityTitle(Page::find($projectsId)) : 'Projekty';
+
         return Inertia::render('Public/Project', [
             'project' => $project,
             'settings' => $settings,
+            'seo' => $seoService->getMetaData($project, $projectsTitle),
         ]);
     }
 
@@ -150,7 +168,8 @@ class PageController extends Controller
             if ($errorPage) {
                 return Inertia::render('Public/Page', [
                     'page' => $errorPage,
-                    'settings' => $settings
+                    'settings' => $settings,
+                    'seo' => app(\App\Services\SeoService::class)->getMetaData($errorPage),
                 ])->toResponse(request())->setStatusCode(404);
             }
         }

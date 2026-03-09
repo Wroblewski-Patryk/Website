@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed, watch, inject } from 'vue';
 import { useGsapRuntime } from '@/Composables/useGsapRuntime';
-import { useForm, usePage } from '@inertiajs/vue3';
+import { useForm, usePage, Link } from '@inertiajs/vue3';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
 import draggable from 'vuedraggable';
 import { PhArrowsOut, PhCopy, PhTrash, PhInfo, PhCheckCircle, PhSlidersHorizontal, PhPuzzlePiece, PhSquare, PhCube, PhLayout, PhCalendarBlank, PhUser } from '@phosphor-icons/vue';
