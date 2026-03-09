@@ -3,7 +3,7 @@
         <component 
             :is="settingsComponent" 
             v-if="settingsComponent"
-            v-model="activeBlock.settings"
+            v-model="activeBlock.content"
             :type="activeBlock.type"
             :templates="templates"
         />
