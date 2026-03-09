@@ -71,7 +71,7 @@
                             :key="cat.id" 
                             :title="cat.label || cat.name" 
                             :icon="cat.icon" 
-                            :open="cat.id === 'content' || cat.id === 'forms' || cat.id === 'typography'"
+                            :persistKey="'palette_cat_' + cat.id"
                             contentClass="!p-2 !bg-base-200/50"
                         >
                             <draggable 

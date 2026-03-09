@@ -31,18 +31,30 @@
 import { ref, watch, computed } from 'vue';
 import { PhCaretDown } from '@phosphor-icons/vue';
 import * as PhosphorIcons from '@phosphor-icons/vue';
+import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 
 const props = defineProps({
     title: { type: String, required: true },
     icon: { type: String, default: null },
     modelValue: { type: Boolean, default: false },
     contentClass: { type: String, default: '' },
-    open: { type: Boolean, default: false }
+    open: { type: Boolean, default: false },
+    persistKey: { type: String, default: null }
 });
 
 const emit = defineEmits(['update:modelValue']);
 
-const isOpen = ref(props.modelValue || props.open);
+const store = useBlockBuilderStore();
+
+// Priority: persistKey from store > modelValue > open prop
+const getInitialState = () => {
+    if (props.persistKey && store.sidebarCollapses[props.persistKey] !== undefined) {
+        return store.sidebarCollapses[props.persistKey];
+    }
+    return props.modelValue || props.open;
+};
+
+const isOpen = ref(getInitialState());
 
 watch(() => props.modelValue, (newVal) => {
     isOpen.value = newVal;
@@ -53,7 +65,17 @@ watch(() => props.open, (newVal) => {
 });
 
 watch(isOpen, (newVal) => {
+    if (props.persistKey) {
+        store.sidebarCollapses[props.persistKey] = newVal;
+    }
     emit('update:modelValue', newVal);
+});
+
+// Update local state if store changes elsewhere
+watch(() => store.sidebarCollapses[props.persistKey], (newVal) => {
+    if (props.persistKey && newVal !== undefined && newVal !== isOpen.value) {
+        isOpen.value = newVal;
+    }
 });
 
 const iconComponent = computed(() => {

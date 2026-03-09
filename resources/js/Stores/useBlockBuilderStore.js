@@ -10,6 +10,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         isDragging: false,
         showRightSidebar: true,
         expandedNodes: {}, // Persist expanded/collapsed state of layers
+        sidebarCollapses: {}, // Persist expanded/collapsed state of sidebar sections
         isEditingBlock: false,
         categories: [
             {

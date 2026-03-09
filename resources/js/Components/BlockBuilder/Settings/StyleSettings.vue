@@ -1,7 +1,7 @@
 <template>
     <div class="space-y-6">
         <!-- 1. Layout -->
-        <AdminCollapse title="Layout" icon="PhLayout" :open="true">
+        <AdminCollapse title="Layout" icon="PhLayout" persistKey="style_layout">
             <div class="space-y-4 pt-1">
                 <!-- Display -->
                 <div class="form-control">
@@ -85,7 +85,7 @@
         </AdminCollapse>
 
         <!-- 2. Sizing & Positioning -->
-        <AdminCollapse title="Sizing & Position" icon="PhBoundingBox">
+        <AdminCollapse title="Sizing & Position" icon="PhBoundingBox" persistKey="style_sizing">
             <div class="space-y-6 pt-1">
                 <div class="form-control mb-4">
                     <label class="label pb-1"><span class="label-text text-[10px] uppercase font-bold opacity-50">Z-Index</span></label>
@@ -197,7 +197,7 @@
         </AdminCollapse>
 
         <!-- 2. Typography -->
-        <AdminCollapse title="Typography" icon="PhTextT" v-if="!['spacer', 'divider', 'image', 'video', 'gallery', 'carousel'].includes(blockType)">
+        <AdminCollapse title="Typography" icon="PhTextT" persistKey="style_typography" v-if="!['spacer', 'divider', 'image', 'video', 'gallery', 'carousel'].includes(blockType)">
             <div class="space-y-4 pt-1">
                 <div class="form-control">
                     <FillControl v-model="textFill" label="Text Color" />
@@ -270,7 +270,7 @@
         </AdminCollapse>
 
         <!-- 3. Background & Effects -->
-        <AdminCollapse title="Background & Effects" icon="PhPalette">
+        <AdminCollapse title="Background & Effects" icon="PhPalette" persistKey="style_background">
             <div class="space-y-6 pt-1">
                 <div class="form-control">
                     <FillControl v-model="backgroundFill" label="Background" />
@@ -321,7 +321,7 @@
         </AdminCollapse>
 
         <!-- 4. Borders -->
-        <AdminCollapse title="Borders" icon="PhSquareHalf">
+        <AdminCollapse title="Borders" icon="PhSquareHalf" persistKey="style_borders">
             <div class="space-y-6 pt-1">
                 <LinkedUnitInput 
                     v-model:top="settings.style.borderTopLeftRadius"
@@ -359,7 +359,7 @@
         </AdminCollapse>
 
         <!-- 5. Spacing -->
-        <AdminCollapse title="Spacing" icon="PhFrameCorners">
+        <AdminCollapse title="Spacing" icon="PhFrameCorners" persistKey="style_spacing">
             <div class="space-y-6 pt-1">
                 <LinkedUnitInput 
                     v-model:top="settings.style.marginTop"
@@ -380,7 +380,7 @@
         </AdminCollapse>
 
         <!-- 6. Advanced -->
-        <AdminCollapse title="Advanced" icon="PhSlidersHorizontal">
+        <AdminCollapse title="Advanced" icon="PhSlidersHorizontal" persistKey="style_advanced">
             <div class="space-y-4 pt-1">
                 <div class="form-control">
                     <label class="label"><span class="label-text text-[10px] uppercase">Overflow</span></label>
