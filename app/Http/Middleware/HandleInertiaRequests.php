@@ -57,12 +57,6 @@ class HandleInertiaRequests extends Middleware
             'footer' => $footer ? $footer->content : null,
             'locale' => app()->getLocale(),
             'all_projects' => \App\Models\Project::orderBy('order')->get(),
-            'site_settings' => [
-                'color_primary' => $settings['brand_primary_color'] ?? '#000000',
-                'color_secondary' => $settings['brand_secondary_color'] ?? '#ffffff',
-                'font_heading' => $settings['brand_font_family'] ?? 'Titillium Web',
-                'font_body' => $settings['brand_font_family'] ?? 'Titillium Web',
-            ],
             'theme_config' => isset($settings['theme_config']) ? 
             (is_array($settings['theme_config']) ? $settings['theme_config'] : json_decode($settings['theme_config'], true))
             : null,

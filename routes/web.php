@@ -5,7 +5,6 @@ use App\Models\Page;
 use Inertia\Inertia;
 
 use App\Http\Controllers\Admin\PageController as AdminPageController;
-use App\Http\Controllers\ContactController;
 use App\Http\Controllers\LocaleController;
 
 // Redirect default login name to Admin login
@@ -52,6 +51,7 @@ Route::name('admin.')->prefix('admin')->group(function () {
                             return redirect()->route('admin.theme.colors');
                         }
                         )->name('index');
+
                         Route::get('colors', [\App\Http\Controllers\Admin\ThemeController::class , 'colors'])->name('colors');
                         Route::get('fonts', [\App\Http\Controllers\Admin\ThemeController::class , 'fonts'])->name('fonts');
                         Route::get('sizes', [\App\Http\Controllers\Admin\ThemeController::class , 'sizes'])->name('sizes');
@@ -70,105 +70,22 @@ Route::name('admin.')->prefix('admin')->group(function () {
         });
 
 // Public Routes
-Route::get('/', function () {
-    $settings = \App\Models\Setting::where('key', 'general')->value('value') ?? [];
-    $homeId = $settings['home_page_id'] ?? null;
+Route::get('/', [App\Http\Controllers\PageController::class , 'show'])->name('home');
 
-    if ($homeId) {
-        $page = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])->find($homeId);
-    }
-    else {
-        $page = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])->where('slug->en', 'home')->orWhere('slug->pl', 'home')->first();
-    }
+// Specific resource routes (if not handled by generic page slug)
+Route::get('/blog/{slug}', [App\Http\Controllers\PageController::class , 'showPost'])->name('blog.post');
+Route::get('/projects/{slug}', [App\Http\Controllers\PageController::class , 'showProject'])->name('projects.show');
 
-    if (!$page || ($page->status !== 'published' && !auth()->check())) {
-        return Inertia::render('Welcome', ['page' => null]);
-    }
-
-    return Inertia::render('Public/Page', [
-    'page' => $page,
-    'settings' => $settings,
-    'all_projects' => \App\Models\Project::all()
-    ]);
-});
-
-Route::post('/contact', [ContactController::class , 'store'])->name('contact.store');
-
-Route::get('/blog', function (\Illuminate\Http\Request $request) {
-    $posts = \App\Models\Post::where('status', 'published')
-        ->latest('published_at')
-        ->paginate(12);
-
-    return Inertia::render('Blog/Index', [
-    'posts' => $posts,
-    'page' => null, // Explicitly decoupled
-    ]);
-});
-
-Route::get('/blog/{slug}', function (string $slug) {
-    $post = \App\Models\Post::where('slug', $slug)
-        ->where('status', 'published')
-        ->firstOrFail();
-
-    return Inertia::render('Blog/Show', [
-    'post' => $post,
-    ]);
-});
-
-Route::get('/projects', function () {
-    $projects = \App\Models\Project::where('status', 'published')
-        ->orderBy('created_at', 'desc')
-        ->get();
-
-    $settings = \App\Models\Setting::where('key', 'general')->value('value') ?? [];
-
-    return Inertia::render('Public/ProjectList', [
-    'projects' => $projects,
-    'settings' => $settings,
-    ]);
-});
-
-Route::get('/projects/{slug}', function (string $slug) {
-    $project = \App\Models\Project::where('slug', $slug)
-        ->where('status', 'published')
-        ->firstOrFail();
-
-    $settings = \App\Models\Setting::where('key', 'general')->value('value') ?? [];
-
-    return Inertia::render('Public/Project', [
-    'project' => $project,
-    'settings' => $settings,
-    ]);
-});
-
+// Special previews
 Route::get('/forms/{id}/preview', function ($id) {
     $form = \App\Models\Form::findOrFail($id);
     return Inertia::render('Public/FormPreview', [
     'form' => $form,
-    'settings' => \App\Models\Setting::where('key', 'general')->value('value') ?? []
+    'settings' => \App\Models\Setting::pluck('value', 'key')->toArray()
     ]);
 })->name('forms.preview');
 
-Route::get('/live-preview', function () {
-    return Inertia::render('Preview', [
-    'page' => new \App\Models\Page()
-    ]);
-})->name('live-preview');
-
-Route::get('/{slug}', function ($slug) {
-    if ($slug === 'home')
-        return redirect('/');
-
-    $page = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
-        ->where('slug->en', $slug)
-        ->orWhere('slug->pl', $slug)
-        ->firstOrFail();
-
-    $settings = \App\Models\Setting::where('key', 'general')->value('value') ?? [];
-
-    return Inertia::render('Public/Page', [
-    'page' => $page,
-    'settings' => $settings,
-    'all_projects' => \App\Models\Project::all()
-    ]);
-})->where('slug', '^(?!admin|livewire|storage|_debugbar|build|api).*$');
+// Generic Catch-all for Pages
+Route::get('/{slug}', [App\Http\Controllers\PageController::class , 'show'])
+    ->name('page.show')
+    ->where('slug', '^(?!admin|livewire|storage|_debugbar|build|api).*$');

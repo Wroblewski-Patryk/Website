@@ -1,14 +1,19 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
-import { computed, markRaw } from 'vue';
-import { PhFloppyDisk, PhHouse, PhGear } from '@phosphor-icons/vue';
+import { markRaw } from 'vue';
+import { 
+    PhFloppyDisk, PhHouse, PhGearSix, PhBrowser, PhBookOpen 
+} from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
+import { useTranslations } from '@/Composables/useTranslations';
 
 const props = defineProps({
     settings: Object,
-    templates: Array
+    pages: Array
 });
+
+const { t } = useTranslations();
 
 const breadcrumbs = [
     { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
@@ -16,117 +21,176 @@ const breadcrumbs = [
 ];
 
 const form = useForm({
-    home_page_slug: props.settings.home_page_slug || 'home',
-    blog_page_slug: props.settings.blog_page_slug || 'blog',
-    default_header_id: props.settings.default_header_id || '',
-    default_footer_id: props.settings.default_footer_id || '',
-    brand_primary_color: props.settings.brand_primary_color || '#000000',
-    brand_secondary_color: props.settings.brand_secondary_color || '#ffffff',
-    brand_font_family: props.settings.brand_font_family || 'sans-serif',
+    home_page_id: props.settings.home_page_id || '',
+    blog_page_id: props.settings.blog_page_id || '',
+    projects_page_id: props.settings.projects_page_id || '',
+    maintenance_mode: props.settings.maintenance_mode === '1' || props.settings.maintenance_mode === true,
+    maintenance_page_id: props.settings.maintenance_page_id || '',
+    coming_soon_page_id: props.settings.coming_soon_page_id || '',
+    page_404_id: props.settings.page_404_id || '',
 });
 
-const headers = computed(() => props.templates.filter(t => t.type === 'header'));
-const footers = computed(() => props.templates.filter(t => t.type === 'footer'));
-
 function saveSettings() {
-    form.post('/admin/settings');
+    form.post('/admin/settings', {
+        preserveScroll: true
+    });
 }
 </script>
 
 <template>
     <Head title="Global Settings" />
     <AdminLayout>
-        <template #header>
-            <ModuleHeader
-                title="Global Settings"
-                description="Configure your website's main parameters."
-                :icon="markRaw(PhGear)"
-                :breadcrumbs="breadcrumbs"
-            >
-                <template #actions>
-                    <button @click="saveSettings" class="btn btn-primary shadow-lg shadow-primary/20" :disabled="form.processing">
-                        <span v-if="form.processing" class="loading loading-spinner loading-sm mr-2"></span>
-                        <PhFloppyDisk weight="regular" class="w-4 h-4 mr-2" /> Save
-                    </button>
-                </template>
-            </ModuleHeader>
-        </template>
+        <div class="space-y-6">
+            <!-- Module Title Section (Matching ResourceTable) -->
+            <div class="bg-base-100 p-6 rounded-box shadow-sm border border-base-300">
+                <ModuleHeader
+                    title="Global Settings"
+                    description="Manage core website behavior and routing configurations."
+                    :icon="markRaw(PhGearSix)"
+                    :breadcrumbs="breadcrumbs"
+                >
+                    <template #actions>
+                        <button 
+                            @click="saveSettings" 
+                            class="btn btn-primary shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 transition-all px-6" 
+                            :disabled="form.processing"
+                        >
+                            <span v-if="form.processing" class="loading loading-spinner loading-sm mr-2"></span>
+                            <PhFloppyDisk weight="bold" class="w-4 h-4 mr-2" />
+                            Save Changes
+                        </button>
+                    </template>
+                </ModuleHeader>
+            </div>
 
-        <div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Routing Settings -->
-                <div class="card bg-base-100 shadow-sm border border-base-200">
-                    <div class="card-body">
-                        <h2 class="card-title text-lg border-b border-base-200 pb-2 mb-4">Routing Setup</h2>
-                        
-                        <div class="form-control mb-4">
-                            <label class="label"><span class="label-text flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg> Home Page Slug</span></label>
-                            <input type="text" v-model="form.home_page_slug" class="input input-bordered" placeholder="e.g. home" />
-                            <label class="label"><span class="label-text-alt text-base-content/60">Which page acts as the root URL?</span></label>
-                        </div>
-                        
-                        <div class="form-control mb-4">
-                            <label class="label"><span class="label-text flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z" clip-rule="evenodd" /><path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z" /></svg> Blog Page Slug</span></label>
-                            <input type="text" v-model="form.blog_page_slug" class="input input-bordered" placeholder="e.g. blog" />
-                            <label class="label"><span class="label-text-alt text-base-content/60">Which page acts as the blog index?</span></label>
-                        </div>
+            <!-- Settings Content Section -->
+            <div class="grid grid-cols-1 gap-6 max-w-5xl">
+                <!-- Routing Section -->
+                <div class="bg-base-100 rounded-box shadow-sm border border-base-300 overflow-hidden">
+                    <div class="p-6 border-b border-base-200 bg-base-200/20">
+                        <h2 class="text-sm font-black uppercase tracking-widest opacity-60 flex items-center gap-2">
+                             <PhGearSix weight="bold" class="w-4 h-4" />
+                             Routing & Navigation
+                        </h2>
                     </div>
-                </div>
-
-                <!-- Global Templates -->
-                <div class="card bg-base-100 shadow-sm border border-base-200">
-                    <div class="card-body">
-                        <h2 class="card-title text-lg border-b border-base-200 pb-2 mb-4">Global Layout Templates</h2>
-                        
-                        <div class="form-control mb-4">
-                            <label class="label"><span class="label-text">Default Header</span></label>
-                            <select v-model="form.default_header_id" class="select select-bordered w-full">
-                                <option value="">None</option>
-                                <option v-for="header in headers" :key="header.id" :value="header.id">{{ header.name }}</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-control mb-4">
-                            <label class="label"><span class="label-text">Default Footer</span></label>
-                            <select v-model="form.default_footer_id" class="select select-bordered w-full">
-                                <option value="">None</option>
-                                <option v-for="footer in footers" :key="footer.id" :value="footer.id">{{ footer.name }}</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Brand Personalization -->
-                <div class="card bg-base-100 shadow-sm border border-base-200 md:col-span-2">
-                    <div class="card-body">
-                        <h2 class="card-title text-lg border-b border-base-200 pb-2 mb-4">Brand Personalization</h2>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <div class="p-8">
+                        <!-- Public Pages Group -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+                            <!-- Home Page -->
                             <div class="form-control">
-                                <label class="label"><span class="label-text">Primary Color</span></label>
-                                <div class="flex gap-2 items-center">
-                                    <input type="color" v-model="form.brand_primary_color" class="input input-bordered p-1 w-16 h-12 rounded cursor-pointer" />
-                                    <input type="text" v-model="form.brand_primary_color" class="input input-bordered w-full font-mono text-sm" />
-                                </div>
-                            </div>
-                            
-                            <div class="form-control">
-                                <label class="label"><span class="label-text">Secondary Color</span></label>
-                                <div class="flex gap-2 items-center">
-                                    <input type="color" v-model="form.brand_secondary_color" class="input input-bordered p-1 w-16 h-12 rounded cursor-pointer" />
-                                    <input type="text" v-model="form.brand_secondary_color" class="input input-bordered w-full font-mono text-sm" />
-                                </div>
-                            </div>
-                            
-                            <div class="form-control">
-                                <label class="label"><span class="label-text">Default Font Family</span></label>
-                                <select v-model="form.brand_font_family" class="select select-bordered w-full font-sans">
-                                    <option value="sans-serif">System Sans-Serif</option>
-                                    <option value="'Titillium Web', sans-serif">Titillium Web (Custom)</option>
-                                    <option value="serif">System Serif</option>
-                                    <option value="monospace">Monospace</option>
+                                <label class="label pt-0">
+                                    <span class="label-text flex items-center gap-2 font-bold text-base-content/70">
+                                        <PhBrowser weight="duotone" class="w-5 h-5 text-primary" />
+                                        Home Page
+                                    </span>
+                                </label>
+                                <select v-model="form.home_page_id" class="select select-bordered w-full focus:select-primary transition-all bg-base-100">
+                                    <option value="">None (Returns 404)</option>
+                                    <option v-for="page in pages" :key="page.id" :value="page.id">
+                                        {{ t(page.title) }}
+                                    </option>
                                 </select>
+                                <label class="label">
+                                    <span class="label-text-alt text-base-content/40 italic">Root URL (/) behavior.</span>
+                                </label>
+                            </div>
+
+                            <!-- Blog Page -->
+                            <div class="form-control">
+                                <label class="label pt-0">
+                                    <span class="label-text flex items-center gap-2 font-bold text-base-content/70">
+                                        <PhBookOpen weight="duotone" class="w-5 h-5 text-primary" />
+                                        Blog Index
+                                    </span>
+                                </label>
+                                <select v-model="form.blog_page_id" class="select select-bordered w-full focus:select-primary transition-all bg-base-100">
+                                    <option value="">None (Static Layout)</option>
+                                    <option v-for="page in pages" :key="page.id" :value="page.id">
+                                        {{ t(page.title) }}
+                                    </option>
+                                </select>
+                                <label class="label">
+                                    <span class="label-text-alt text-base-content/40 italic">Blog listing meta data.</span>
+                                </label>
+                            </div>
+
+                            <!-- Projects Page -->
+                            <div class="form-control">
+                                <label class="label pt-0">
+                                    <span class="label-text flex items-center gap-2 font-bold text-base-content/70">
+                                        <PhLayout weight="duotone" class="w-5 h-5 text-primary" />
+                                        Projects Page
+                                    </span>
+                                </label>
+                                <select v-model="form.projects_page_id" class="select select-bordered w-full focus:select-primary transition-all bg-base-100">
+                                    <option value="">None (Static Projects)</option>
+                                    <option v-for="page in pages" :key="page.id" :value="page.id">
+                                        {{ t(page.title) }}
+                                    </option>
+                                </select>
+                                <label class="label">
+                                    <span class="label-text-alt text-base-content/40 italic">Portfolio listing source.</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- System Behavior Group -->
+                        <div class="bg-base-200/40 p-6 md:p-8 rounded-3xl border border-base-300/50">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                                <div class="flex-1">
+                                    <h3 class="text-xl font-black italic uppercase tracking-tighter text-primary flex items-center gap-3">
+                                        System Behavior & Maintenance
+                                    </h3>
+                                    <p class="text-sm opacity-50 mt-1">Configure global redirects, states, and error handling.</p>
+                                </div>
+                                <div class="form-control bg-base-100 p-4 px-6 rounded-2xl border border-base-300 shadow-sm">
+                                    <label class="label cursor-pointer gap-4 p-0">
+                                        <span class="text-xs font-black uppercase tracking-widest opacity-60">Maintenance Mode</span>
+                                        <input type="checkbox" v-model="form.maintenance_mode" class="toggle toggle-primary toggle-md" />
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div class="form-control w-full">
+                                    <label class="label">
+                                        <span class="label-text font-bold text-base-content/70 text-xs uppercase tracking-widest">Maintenance Page</span>
+                                    </label>
+                                    <select v-model="form.maintenance_page_id" class="select select-bordered w-full bg-base-100">
+                                        <option value="">Default theme page...</option>
+                                        <option v-for="page in pages" :key="page.id" :value="page.id">
+                                            {{ t(page.title) }}
+                                        </option>
+                                    </select>
+                                    <p class="mt-2 text-[10px] opacity-40 italic">Redirect here when mode is ON.</p>
+                                </div>
+
+                                <div class="form-control w-full">
+                                    <label class="label">
+                                        <span class="label-text font-bold text-base-content/70 text-xs uppercase tracking-widest">Coming Soon</span>
+                                    </label>
+                                    <select v-model="form.coming_soon_page_id" class="select select-bordered w-full bg-base-100">
+                                        <option value="">Show regular 404...</option>
+                                        <option v-for="page in pages" :key="page.id" :value="page.id">
+                                            {{ t(page.title) }}
+                                        </option>
+                                    </select>
+                                    <p class="mt-2 text-[10px] opacity-40 italic">For pages with "Planned" status.</p>
+                                </div>
+
+                                <div class="form-control w-full">
+                                    <label class="label">
+                                        <span class="label-text font-bold text-base-content/70 text-xs uppercase tracking-widest">Custom 404</span>
+                                    </label>
+                                    <select v-model="form.page_404_id" class="select select-bordered w-full bg-base-100">
+                                        <option value="">Standard 404...</option>
+                                        <option v-for="page in pages" :key="page.id" :value="page.id">
+                                            {{ t(page.title) }}
+                                        </option>
+                                    </select>
+                                    <p class="mt-2 text-[10px] opacity-40 italic">Global error destination.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -135,3 +199,9 @@ function saveSettings() {
         </div>
     </AdminLayout>
 </template>
+
+<style scoped>
+/* Clean and consistent with administrative UI standards */
+</style>
+
+

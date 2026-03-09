@@ -62,6 +62,18 @@ watch(isSidebarCollapsed, (newVal) => {
     localStorage.setItem('admin-sidebar-collapsed', newVal);
 });
 
+import { useToastStore } from '@/Stores/useToastStore';
+
+const toast = useToastStore();
+const page = usePage();
+
+watch(() => page.props.flash, (flash) => {
+    if (flash?.success) toast.success(flash.success);
+    if (flash?.error) toast.error(flash.error);
+    if (flash?.warning) toast.warning(flash.warning);
+    if (flash?.info) toast.info(flash.info);
+}, { deep: true, immediate: true });
+
 function applyTheme(themeName) {
     document.documentElement.setAttribute('data-theme', themeName);
 }
@@ -340,14 +352,6 @@ function applyTheme(themeName) {
                 <!-- Main Content Area -->
                 <div class="drawer-content flex flex-col min-w-0 flex-1 overflow-x-hidden pt-0 shadow-inner bg-base-200">
                     <main class="p-4 lg:p-8 flex-grow max-h-full" :class="{ 'max-w-7xl mx-auto w-full': !fullWidth }">
-                        <!-- Flash Messages (Optional) -->
-                        <div v-if="$page.props.flash?.success" class="alert alert-success shadow-lg mb-6">
-                            <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                <span>{{ $page.props.flash.success }}</span>
-                            </div>
-                        </div>
-
                         <slot />
                     </main>
                 </div>
