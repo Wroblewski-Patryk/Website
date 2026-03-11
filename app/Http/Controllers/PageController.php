@@ -12,10 +12,21 @@ use Inertia\Inertia;
 class PageController extends Controller
 {
     /**
-     * Show the specified page.
+     * Show the specified page or resolve blog/project routes dynamically.
      */
-    public function show(Request $request, $slug = null)
+    public function show(Request $request, $localeOrPath = null, $path = null)
     {
+        // Dynamiczna obsługa locale i ścieżki (ze względu na opcjonalny prefiks w web.php)
+        if (in_array($localeOrPath, ['pl', 'en'])) {
+            $locale = $localeOrPath;
+            $path = $path;
+            app()->setLocale($locale);
+        }
+        else {
+            $locale = app()->getLocale();
+            $path = $localeOrPath;
+        }
+
         $settings = Setting::pluck('value', 'key')->toArray();
         $isMaintenance = ($settings['maintenance_mode'] ?? '0') === '1';
         $isAdmin = auth()->check();
@@ -41,19 +52,55 @@ class PageController extends Controller
         $page404Id = $settings['page_404_id'] ?? null;
         $comingSoonId = $settings['coming_soon_page_id'] ?? null;
 
-        if (!$slug) {
+        if (!$path) {
             if (!$homeId)
                 abort(404);
             $page = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])->find($homeId);
-        }
-        else {
-            $page = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
-                ->where('slug->en', $slug)
-                ->orWhere('slug->pl', $slug)
-                ->first();
+            return $this->renderPage($page, $settings, $isAdmin, $comingSoonId, $page404Id);
         }
 
-        // 2. Visibility & Status Check
+        $segments = explode('/', $path);
+        $firstSegment = $segments[0];
+
+        // Find page by slug (checking current locale preferred, or any)
+        $firstPage = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
+            ->where('slug->en', $firstSegment)
+            ->orWhere('slug->pl', $firstSegment)
+            ->first();
+
+        if ($firstPage) {
+            // Check if this is a special archive page (Blog)
+            if ($firstPage->id == $blogId && count($segments) > 1) {
+                return $this->showPost($segments[1]); // Assuming single level for now
+            }
+
+            // Check if this is a special archive page (Projects)
+            if ($firstPage->id == $projectsId && count($segments) > 1) {
+                return $this->showProject($segments[1]);
+            }
+
+            // Otherwise, it's just a regular page (or the archive page itself)
+            return $this->renderPage($firstPage, $settings, $isAdmin, $comingSoonId, $page404Id);
+        }
+
+        // If no page found for the first segment, try finding a page by the full path (for nested static pages if any)
+        $fullPage = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
+            ->where('slug->en', $path)
+            ->orWhere('slug->pl', $path)
+            ->first();
+
+        if ($fullPage) {
+            return $this->renderPage($fullPage, $settings, $isAdmin, $comingSoonId, $page404Id);
+        }
+
+        return $this->render404($settings, $page404Id);
+    }
+
+    /**
+     * Helper to render a page with status checks.
+     */
+    private function renderPage($page, $settings, $isAdmin, $comingSoonId, $page404Id)
+    {
         if (!$page || ($page->status === 'draft' && !$isAdmin)) {
             return $this->render404($settings, $page404Id);
         }
@@ -71,10 +118,12 @@ class PageController extends Controller
             return $this->render404($settings, $page404Id);
         }
 
+        $blogId = $settings['blog_page_id'] ?? null;
+        $projectsId = $settings['projects_page_id'] ?? null;
+
         $component = 'Public/Page';
         $extraData = [];
 
-        // Dynamic component and data injection based on Page ID match from Settings
         if ($page->id == $blogId) {
             $component = 'Blog/Index';
             $extraData['posts'] = Post::where('status', 'published')
@@ -89,11 +138,6 @@ class PageController extends Controller
         }
 
         $seoService = app(\App\Services\SeoService::class);
-        $blogId = $settings['blog_page_id'] ?? null;
-        $projectsId = $settings['projects_page_id'] ?? null;
-
-        $blogTitle = $blogId ? $seoService->getEntityTitle(Page::find($blogId)) : 'Blog';
-        $projectsTitle = $projectsId ? $seoService->getEntityTitle(Page::find($projectsId)) : 'Projekty';
 
         return Inertia::render($component, [
             'page' => $page,
@@ -142,7 +186,9 @@ class PageController extends Controller
         $page404Id = $settings['page_404_id'] ?? null;
         $seoService = app(\App\Services\SeoService::class);
 
-        $project = Project::where('slug', $slug)->first();
+        $project = Project::where('slug->pl', $slug)
+            ->orWhere('slug->en', $slug)
+            ->first();
 
         if (!$project || ($project->status !== 'published' && !$isAdmin)) {
             return $this->render404($settings, $page404Id);

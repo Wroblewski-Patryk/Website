@@ -26,9 +26,9 @@ const menuOpen = ref({
 
 // Watch for URL changes to keep submenus open
 watch(() => usePage().url, (url) => {
-    if (url.startsWith('/admin/posts') || url.startsWith('/admin/categories')) menuOpen.value.posts = true;
-    if (url.startsWith('/admin/projects') || url.startsWith('/admin/clients')) menuOpen.value.projects = true;
-    if (url.startsWith('/admin/theme')) menuOpen.value.theme = true;
+    if (url.includes('/dashboard/posts') || url.includes('/dashboard/categories')) menuOpen.value.posts = true;
+    if (url.includes('/dashboard/projects') || url.includes('/dashboard/clients')) menuOpen.value.projects = true;
+    if (url.includes('/dashboard/theme')) menuOpen.value.theme = true;
 }, { immediate: true });
 
 onMounted(() => {
@@ -119,7 +119,7 @@ const adminTitle = computed(() => {
         <!-- Top Navbar -->
         <div class="navbar bg-base-100/80 backdrop-blur-md shadow-lg border-b border-base-300 z-50 sticky top-0 px-4">
             <div class="flex-1">
-                <Link href="/admin/" class="btn btn-ghost normal-case hover:bg-transparent flex items-center gap-1 group w-fit px-2">
+                <Link :href="route('dashboard.index')" class="btn btn-ghost normal-case hover:bg-transparent flex items-center gap-1 group w-fit px-2">
                     <div class="h-8 w-8 bg-gradient-to-r from-primary to-accent" 
                          style="mask: url('/img/featherly-sygnet.svg') no-repeat center / contain; -webkit-mask: url('/img/featherly-sygnet.svg') no-repeat center / contain; background-size: 160px 100%; background-position: left center;">
                     </div>
@@ -158,11 +158,11 @@ const adminTitle = computed(() => {
                             <span class="font-bold text-sm text-base-content w-full whitespace-nowrap overflow-hidden text-ellipsis">{{ $page.props.auth?.user?.name || 'Administrator' }}</span>
                             <span class="text-xs font-normal text-base-content/60 w-full whitespace-nowrap overflow-hidden text-ellipsis mt-1">{{ $page.props.auth?.user?.email || 'admin@example.com' }}</span>
                         </li>
-                        <li v-if="$page.props.auth?.user?.id"><Link :href="`/admin/users/${$page.props.auth.user.id}/edit`"><PhUser weight="regular" class="w-4 h-4 text-base-content/70" /> Mój Profil</Link></li>
-                        <li><Link href="/admin/settings"><PhGearSix weight="regular" class="w-4 h-4 text-base-content/70" /> Ustawienia konta</Link></li>
+                        <li v-if="$page.props.auth?.user?.id"><Link :href="route('dashboard.users.edit', $page.props.auth.user.id)"><PhUser weight="regular" class="w-4 h-4 text-base-content/70" /> Mój Profil</Link></li>
+                        <li><Link :href="route('dashboard.settings.index')"><PhGearSix weight="regular" class="w-4 h-4 text-base-content/70" /> Ustawienia konta</Link></li>
                         <li><Link href="#"><PhLifebuoy weight="regular" class="w-4 h-4 text-base-content/70" /> Pomoc techniczna</Link></li>
                         <div class="h-[1px] bg-base-200 my-1 mx-2"></div>
-                        <li><Link href="#" class="text-error hover:bg-error/10 hover:text-error"><PhSignOut weight="regular" class="w-4 h-4" /> Wyloguj się</Link></li>
+                        <li><Link :href="route('auth.logout')" method="post" as="button" class="w-full text-left text-error hover:bg-error/10 hover:text-error"><PhSignOut weight="regular" class="w-4 h-4" /> Wyloguj się</Link></li>
                     </ul>
                 </div>
             </div>
@@ -196,13 +196,13 @@ const adminTitle = computed(() => {
                             <!-- Pages -->
                             <li class="relative group/menu-item">
                                 <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/pages'), 'hover:bg-transparent hover:text-primary': !$page.url.startsWith('/admin/pages')}">
-                                    <Link href="/admin/pages" class="flex items-center flex-1">
-                                        <PhFileText weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/pages')}" />
+                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/dashboard/pages'), 'hover:bg-transparent hover:text-primary': !$page.url.startsWith('/dashboard/pages')}">
+                                    <Link href="/dashboard/pages" class="flex items-center flex-1">
+                                        <PhFileText weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/dashboard/pages')}" />
                                         <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Pages</span>
                                     </Link>
                                     <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Link href="/admin/pages/create" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
+                                        <Link href="/dashboard/pages/create" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
                                             <PhPlus weight="bold" class="w-3.5 h-3.5" />
                                         </Link>
                                     </div>
@@ -212,57 +212,57 @@ const adminTitle = computed(() => {
                             <!-- Posts -->
                             <li class="relative group/menu-item">
                                 <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories'), 'hover:bg-transparent hover:text-primary': !($page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories'))}">
-                                    <Link href="/admin/posts" class="flex items-center flex-1">
-                                        <PhFeather weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories')}" />
+                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/dashboard/posts') || $page.url.startsWith('/dashboard/categories'), 'hover:bg-transparent hover:text-primary': !($page.url.startsWith('/dashboard/posts') || $page.url.startsWith('/dashboard/categories'))}">
+                                    <Link href="/dashboard/posts" class="flex items-center flex-1">
+                                        <PhFeather weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/dashboard/posts') || $page.url.startsWith('/dashboard/categories')}" />
                                         <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Posts</span>
                                     </Link>
                                     <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button @click="menuOpen.posts = !menuOpen.posts" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
                                             <PhCaretDown weight="bold" class="w-3.5 h-3.5 transition-transform duration-300" :class="{'rotate-180': menuOpen.posts}" />
                                         </button>
-                                        <Link href="/admin/posts/create" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
+                                        <Link href="/dashboard/posts/create" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
                                             <PhPlus weight="bold" class="w-3.5 h-3.5" />
                                         </Link>
                                     </div>
                                 </div>
                                 <ul v-show="menuOpen.posts && !isSidebarCollapsed" class="mt-0.5 ml-4 border-l border-base-300 pl-2 space-y-0.5">
-                                    <li><Link href="/admin/categories" class="py-1 px-3 text-xs hover:text-primary hover:bg-transparent transition-colors block" :class="{'text-primary font-medium': $page.url.startsWith('/admin/categories')}">Categories</Link></li>
+                                    <li><Link href="/dashboard/categories" class="py-1 px-3 text-xs hover:text-primary hover:bg-transparent transition-colors block" :class="{'text-primary font-medium': $page.url.startsWith('/dashboard/categories')}">Categories</Link></li>
                                 </ul>
                             </li>
 
                             <!-- Projects -->
                             <li class="relative group/menu-item">
                                 <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/projects') || $page.url.startsWith('/admin/clients'), 'hover:bg-transparent hover:text-primary': !($page.url.startsWith('/admin/projects') || $page.url.startsWith('/admin/clients'))}">
-                                    <Link href="/admin/projects" class="flex items-center flex-1">
-                                        <PhCards weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/projects') || $page.url.startsWith('/admin/clients')}" />
+                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/dashboard/projects') || $page.url.startsWith('/dashboard/clients'), 'hover:bg-transparent hover:text-primary': !($page.url.startsWith('/dashboard/projects') || $page.url.startsWith('/dashboard/clients'))}">
+                                    <Link href="/dashboard/projects" class="flex items-center flex-1">
+                                        <PhCards weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/dashboard/projects') || $page.url.startsWith('/dashboard/clients')}" />
                                         <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Projects</span>
                                     </Link>
                                     <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button @click="menuOpen.projects = !menuOpen.projects" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
                                             <PhCaretDown weight="bold" class="w-3.5 h-3.5 transition-transform duration-300" :class="{'rotate-180': menuOpen.projects}" />
                                         </button>
-                                        <Link href="/admin/projects/create" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
+                                        <Link href="/dashboard/projects/create" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
                                             <PhPlus weight="bold" class="w-3.5 h-3.5" />
                                         </Link>
                                     </div>
                                 </div>
                                 <ul v-show="menuOpen.projects && !isSidebarCollapsed" class="mt-0.5 ml-4 border-l border-base-300 pl-2 space-y-0.5">
-                                    <li><Link href="/admin/clients" class="py-1 px-3 text-xs hover:text-primary hover:bg-transparent transition-colors block" :class="{'text-primary font-medium': $page.url.startsWith('/admin/clients')}">Clients</Link></li>
+                                    <li><Link href="/dashboard/clients" class="py-1 px-3 text-xs hover:text-primary hover:bg-transparent transition-colors block" :class="{'text-primary font-medium': $page.url.startsWith('/dashboard/clients')}">Clients</Link></li>
                                 </ul>
                             </li>
 
                             <!-- Forms -->
                             <li class="relative group/menu-item">
                                 <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/forms'), 'hover:bg-transparent hover:text-primary': !$page.url.startsWith('/admin/forms')}">
-                                    <Link href="/admin/forms" class="flex items-center flex-1">
-                                        <PhTextbox weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/forms')}" />
+                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/dashboard/forms'), 'hover:bg-transparent hover:text-primary': !$page.url.startsWith('/dashboard/forms')}">
+                                    <Link href="/dashboard/forms" class="flex items-center flex-1">
+                                        <PhTextbox weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/dashboard/forms')}" />
                                         <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Forms</span>
                                     </Link>
                                     <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Link href="/admin/forms/create" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
+                                        <Link href="/dashboard/forms/create" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
                                             <PhPlus weight="bold" class="w-3.5 h-3.5" />
                                         </Link>
                                     </div>
@@ -278,9 +278,9 @@ const adminTitle = computed(() => {
                             <!-- Media -->
                             <li class="relative group/menu-item">
                                 <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-secondary/5 text-secondary font-medium border-l-2 border-secondary': $page.url.startsWith('/admin/media'), 'hover:bg-transparent hover:text-secondary': !$page.url.startsWith('/admin/media')}">
-                                    <Link href="/admin/media" class="flex items-center flex-1">
-                                        <PhImageSquare weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/media')}" />
+                                     :class="{'bg-secondary/5 text-secondary font-medium border-l-2 border-secondary': $page.url.startsWith('/dashboard/media'), 'hover:bg-transparent hover:text-secondary': !$page.url.startsWith('/dashboard/media')}">
+                                    <Link href="/dashboard/media" class="flex items-center flex-1">
+                                        <PhImageSquare weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/dashboard/media')}" />
                                         <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Media</span>
                                     </Link>
                                 </div>
@@ -289,9 +289,9 @@ const adminTitle = computed(() => {
                             <!-- Templates -->
                             <li class="relative group/menu-item">
                                 <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-secondary/5 text-secondary font-medium border-l-2 border-secondary': $page.url.startsWith('/admin/templates'), 'hover:bg-transparent hover:text-secondary': !$page.url.startsWith('/admin/templates')}">
-                                    <Link href="/admin/templates" class="flex items-center flex-1">
-                                        <PhLayout weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/templates')}" />
+                                     :class="{'bg-secondary/5 text-secondary font-medium border-l-2 border-secondary': $page.url.startsWith('/dashboard/templates'), 'hover:bg-transparent hover:text-secondary': !$page.url.startsWith('/dashboard/templates')}">
+                                    <Link href="/dashboard/templates" class="flex items-center flex-1">
+                                        <PhLayout weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/dashboard/templates')}" />
                                         <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Templates</span>
                                     </Link>
                                 </div>
@@ -306,9 +306,9 @@ const adminTitle = computed(() => {
                             <!-- Theme -->
                             <li class="relative group/menu-item">
                                 <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-accent/5 text-accent font-medium border-l-2 border-accent': $page.url.startsWith('/admin/theme'), 'hover:bg-transparent hover:text-accent': !$page.url.startsWith('/admin/theme')}">
-                                    <Link href="/admin/theme" class="flex items-center flex-1">
-                                        <PhPaintRoller weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-accent': $page.url.startsWith('/admin/theme')}" />
+                                     :class="{'bg-accent/5 text-accent font-medium border-l-2 border-accent': $page.url.startsWith('/dashboard/theme'), 'hover:bg-transparent hover:text-accent': !$page.url.startsWith('/dashboard/theme')}">
+                                    <Link href="/dashboard/theme" class="flex items-center flex-1">
+                                        <PhPaintRoller weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-accent': $page.url.startsWith('/dashboard/theme')}" />
                                         <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Theme</span>
                                     </Link>
                                     <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -318,20 +318,20 @@ const adminTitle = computed(() => {
                                     </div>
                                 </div>
                                 <ul v-show="menuOpen.theme && !isSidebarCollapsed" class="mt-0.5 ml-4 border-l border-base-300 pl-2 space-y-0.5">
-                                    <li><Link href="/admin/theme/colors" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/colors')}">Colors</Link></li>
-                                    <li><Link href="/admin/theme/fonts" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/fonts')}">Fonts</Link></li>
-                                    <li><Link href="/admin/theme/typography" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/typography')}">Typography</Link></li>
-                                    <li><Link href="/admin/theme/sizes" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/sizes')}">Sizes / Metrics</Link></li>
-                                    <li><Link href="/admin/theme/effects" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/effects')}">Shadows / Effects</Link></li>
+                                    <li><Link href="/dashboard/theme/colors" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/dashboard/theme/colors')}">Colors</Link></li>
+                                    <li><Link href="/dashboard/theme/fonts" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/dashboard/theme/fonts')}">Fonts</Link></li>
+                                    <li><Link href="/dashboard/theme/typography" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/dashboard/theme/typography')}">Typography</Link></li>
+                                    <li><Link href="/dashboard/theme/sizes" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/dashboard/theme/sizes')}">Sizes / Metrics</Link></li>
+                                    <li><Link href="/dashboard/theme/effects" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/dashboard/theme/effects')}">Shadows / Effects</Link></li>
                                 </ul>
                             </li>
 
                             <!-- Blocks -->
                             <li class="relative group/menu-item">
                                 <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-accent/5 text-accent font-medium border-l-2 border-accent': $page.url.startsWith('/admin/blocks'), 'hover:bg-transparent hover:text-accent': !$page.url.startsWith('/admin/blocks')}">
-                                    <Link href="/admin/blocks" class="flex items-center flex-1">
-                                        <PhCube weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-accent': $page.url.startsWith('/admin/blocks')}" />
+                                     :class="{'bg-accent/5 text-accent font-medium border-l-2 border-accent': $page.url.startsWith('/dashboard/blocks'), 'hover:bg-transparent hover:text-accent': !$page.url.startsWith('/dashboard/blocks')}">
+                                    <Link href="/dashboard/blocks" class="flex items-center flex-1">
+                                        <PhCube weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-accent': $page.url.startsWith('/dashboard/blocks')}" />
                                         <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Blocks</span>
                                     </Link>
                                 </div>
@@ -344,9 +344,9 @@ const adminTitle = computed(() => {
                             <!-- Translations -->
                             <li class="relative group/menu-item">
                                 <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/admin/translations' || $page.url.startsWith('/admin/translations/'), 'hover:bg-transparent hover:text-info': !($page.url === '/admin/translations' || $page.url.startsWith('/admin/translations/'))}">
-                                    <Link href="/admin/translations" class="flex items-center flex-1">
-                                        <PhTranslate weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url.startsWith('/admin/translations')}" />
+                                     :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/dashboard/translations' || $page.url.startsWith('/dashboard/translations/'), 'hover:bg-transparent hover:text-info': !($page.url === '/dashboard/translations' || $page.url.startsWith('/dashboard/translations/'))}">
+                                    <Link href="/dashboard/translations" class="flex items-center flex-1">
+                                        <PhTranslate weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url.startsWith('/dashboard/translations')}" />
                                         <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Translations</span>
                                     </Link>
                                 </div>
@@ -355,9 +355,9 @@ const adminTitle = computed(() => {
                             <!-- Languages -->
                             <li class="relative group/menu-item">
                                 <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/admin/languages' || $page.url.startsWith('/admin/languages/'), 'hover:bg-transparent hover:text-info': !($page.url === '/admin/languages' || $page.url.startsWith('/admin/languages/'))}">
-                                    <Link href="/admin/languages" class="flex items-center flex-1">
-                                        <PhGlobe weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url.startsWith('/admin/languages')}" />
+                                     :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/dashboard/languages' || $page.url.startsWith('/dashboard/languages/'), 'hover:bg-transparent hover:text-info': !($page.url === '/dashboard/languages' || $page.url.startsWith('/dashboard/languages/'))}">
+                                    <Link href="/dashboard/languages" class="flex items-center flex-1">
+                                        <PhGlobe weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url.startsWith('/dashboard/languages')}" />
                                         <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Languages</span>
                                     </Link>
                                 </div>
@@ -366,9 +366,9 @@ const adminTitle = computed(() => {
                             <!-- Users -->
                             <li class="relative group/menu-item">
                                 <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/admin/users' || $page.url.startsWith('/admin/users/'), 'hover:bg-transparent hover:text-info': !($page.url === '/admin/users' || $page.url.startsWith('/admin/users/'))}">
-                                    <Link href="/admin/users" class="flex items-center flex-1">
-                                        <PhUsers weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url.startsWith('/admin/users')}" />
+                                     :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/dashboard/users' || $page.url.startsWith('/dashboard/users/'), 'hover:bg-transparent hover:text-info': !($page.url === '/dashboard/users' || $page.url.startsWith('/dashboard/users/'))}">
+                                    <Link href="/dashboard/users" class="flex items-center flex-1">
+                                        <PhUsers weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url.startsWith('/dashboard/users')}" />
                                         <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Users</span>
                                     </Link>
                                 </div>
@@ -377,9 +377,9 @@ const adminTitle = computed(() => {
                             <!-- Settings -->
                             <li class="relative group/menu-item">
                                 <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/admin/settings' || $page.url.startsWith('/admin/settings/'), 'hover:bg-transparent hover:text-info': !($page.url === '/admin/settings' || $page.url.startsWith('/admin/settings/'))}">
-                                    <Link href="/admin/settings" class="flex items-center flex-1">
-                                        <PhGearSix weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url === '/admin/settings'}" />
+                                     :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/dashboard/settings' || $page.url.startsWith('/dashboard/settings/'), 'hover:bg-transparent hover:text-info': !($page.url === '/dashboard/settings' || $page.url.startsWith('/dashboard/settings/'))}">
+                                    <Link href="/dashboard/settings" class="flex items-center flex-1">
+                                        <PhGearSix weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url === '/dashboard/settings'}" />
                                         <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Settings</span>
                                     </Link>
                                 </div>

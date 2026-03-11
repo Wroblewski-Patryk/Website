@@ -4,8 +4,8 @@ import ConfiguratorLayout from './ConfiguratorLayout.vue';
 import { PhRuler, PhShapes, PhHouse, PhPaintRoller } from '@phosphor-icons/vue';
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
-    { label: 'Theme', url: '/admin/theme/colors' },
+    { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
+    { label: 'Theme', url: route('dashboard.theme.index') },
     { label: 'Sizes & Metrics' }
 ];
 </script>

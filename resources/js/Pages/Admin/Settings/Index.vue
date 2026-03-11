@@ -18,7 +18,7 @@ const { t } = useTranslations();
 const isMediaPickerOpen = ref(false);
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
+    { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
     { label: 'Settings' }
 ];
 
@@ -50,7 +50,7 @@ function selectOgImage(file) {
 }
 
 function saveSettings() {
-    form.post('/admin/settings', {
+    form.post(route('dashboard.settings.update'), {
         preserveScroll: true
     });
 }

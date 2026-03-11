@@ -34,7 +34,8 @@ const savedMessage = ref(false);
 
 const saveConfig = () => {
     isSaving.value = true;
-    form.post('/admin/theme', {
+    form.post(route('dashboard.theme.update'), {
+        preserveScroll: true,
         preserveScroll: true,
         onSuccess: () => {
             isSaving.value = false;

@@ -5,8 +5,8 @@ import FontSelect from '@/Components/ThemeConfigurator/FontSelect.vue';
 import { PhStack, PhTextT, PhHouse, PhPaintRoller } from '@phosphor-icons/vue';
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
-    { label: 'Theme', url: '/admin/theme/colors' },
+    { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
+    { label: 'Theme', url: route('dashboard.theme.index') },
     { label: 'Fonts' }
 ];
 

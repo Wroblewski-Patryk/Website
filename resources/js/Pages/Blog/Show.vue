@@ -21,7 +21,7 @@ const { t } = useTranslations();
     <AppLayout :page="post">
         <article v-if="post" class="relative z-20 max-w-4xl mx-auto px-4 py-32 text-white">
             <!-- Back button -->
-            <Link href="/blog" class="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/50 hover:text-white transition-colors mb-12">
+            <Link :href="`/${$page.props.archive_slugs.blog}`" class="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/50 hover:text-white transition-colors mb-12">
                 <PhArrowLeft weight="bold" class="w-4 h-4 mr-3" /> Back to Blog
             </Link>
 

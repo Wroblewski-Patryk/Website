@@ -19,7 +19,7 @@ const addForm = useForm({
 });
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
+    { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
     { label: 'Translations' }
 ];
 
@@ -31,7 +31,7 @@ const columns = [
 ];
 
 const submitAdd = () => {
-    addForm.post(route('admin.translations.store'), {
+    addForm.post(route('dashboard.settings.translations.store'), {
         onSuccess: () => {
             showAddModal.value = false;
             addForm.reset();
@@ -40,7 +40,7 @@ const submitAdd = () => {
 };
 
 const updateTranslation = (item) => {
-    router.put(route('admin.translations.update', item.id), {
+    router.put(route('dashboard.settings.translations.update', item.id), {
         text: item.text
     }, {
         preserveScroll: true
@@ -48,7 +48,7 @@ const updateTranslation = (item) => {
 };
 
 const deleteTranslation = (item) => {
-    router.delete(route('admin.translations.destroy', item.id));
+    router.delete(route('dashboard.settings.translations.destroy', item.id));
 };
 </script>
 

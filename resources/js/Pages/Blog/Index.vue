@@ -35,7 +35,7 @@ const { t } = useTranslations();
         
         <div class="max-w-7xl mx-auto px-4 pb-32">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                <Link v-for="post in posts.data" :key="post.id" :href="`/blog/${t(post.slug)}`" class="block group">
+                <Link v-for="post in posts.data" :key="post.id" :href="`/${$page.props.archive_slugs.blog}/${t(post.slug)}`" class="block group">
                     <div class="overflow-hidden rounded-xl mb-6 relative">
                         <img v-if="t(post.featured_image)" :src="`/storage/${t(post.featured_image)}`" class="w-full h-64 object-cover filter grayscale group-hover:grayscale-0 transition-transform duration-700 group-hover:scale-105" />
                         <div v-else class="w-full h-64 bg-gray-900 border border-white/10 flex items-center justify-center">

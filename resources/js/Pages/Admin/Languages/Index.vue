@@ -21,7 +21,7 @@ const form = useForm({
 });
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
+    { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
     { label: 'Languages' }
 ];
 
@@ -53,14 +53,14 @@ function openEdit(lang) {
 
 function submit() {
     if (editingLanguage.value) {
-        form.put(`/admin/languages/${editingLanguage.value.id}`, {
+        form.put(route('dashboard.languages.update', editingLanguage.value.id), {
             onSuccess: () => {
                 isCreating.value = false;
                 form.reset();
             }
         });
     } else {
-        form.post('/admin/languages', {
+        form.post(route('dashboard.languages.store'), {
             onSuccess: () => {
                 isCreating.value = false;
                 form.reset();
@@ -70,7 +70,7 @@ function submit() {
 }
 
 function deleteLanguage(item) {
-    router.delete(`/admin/languages/${item.id}`);
+    router.delete(route('dashboard.languages.destroy', item.id));
 }
 </script>
 

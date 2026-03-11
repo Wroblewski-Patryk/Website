@@ -9,7 +9,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post('/admin/login');
+    form.post(route('auth.login'));
 };
 </script>
 

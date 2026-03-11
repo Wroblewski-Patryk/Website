@@ -24,8 +24,8 @@ const uploaderRef = ref(null);
 // Dynamic Breadcrumbs
 const breadcrumbs = computed(() => {
     const crumbs = [
-        { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
-        { label: 'Biblioteka mediów', url: '/admin/media' }
+        { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
+        { label: 'Biblioteka mediów', url: route('dashboard.media.index') }
     ];
 
     if (props.currentFolder) {
@@ -37,7 +37,7 @@ const breadcrumbs = computed(() => {
             curr = props.folders.find(f => f.id === curr.parent_id);
         }
         parents.forEach(p => {
-            crumbs.push({ label: p.name, url: `/admin/media?folder_id=${p.id}` });
+            crumbs.push({ label: p.name, url: route('dashboard.media.index', { folder_id: p.id }) });
         });
     }
 
@@ -112,7 +112,7 @@ const fetchMedia = () => {
 function handleFolderClick(id) {
     selectedMediaIds.value = [];
     selectedFolderIds.value = [];
-    router.get('/admin/media', { folder_id: id });
+    router.get(route('dashboard.media.index'), { folder_id: id });
 }
 
 function toggleSelection(type, id) {
@@ -138,7 +138,7 @@ function handleUpload(payload) {
     uploadForm.alt_text = payload.alt_text;
     uploadForm.folder_id = payload.folder_id;
 
-    uploadForm.post(route('admin.media.store'), {
+    uploadForm.post(route('dashboard.media.store'), {
         preserveScroll: true,
         onSuccess: () => {
             uploadForm.reset();
@@ -152,7 +152,7 @@ function handleUpload(payload) {
 
 function handleFolderSubmit(name) {
     if (editingFolder.value) {
-        router.patch(route('admin.media.folders.update', editingFolder.value.id), { name }, {
+        router.patch(route('dashboard.media.folders.update', editingFolder.value.id), { name }, {
             onSuccess: () => {
                 isFolderModalOpen.value = false;
                 editingFolder.value = null;
@@ -162,7 +162,7 @@ function handleFolderSubmit(name) {
     } else {
         folderForm.name = name;
         folderForm.parent_id = props.currentFolder?.id || null;
-        folderForm.post(route('admin.media.folders.store'), {
+        folderForm.post(route('dashboard.media.folders.store'), {
             onSuccess: () => {
                 isFolderModalOpen.value = false;
                 toastStore.success('Folder created.');
@@ -187,7 +187,7 @@ function openMoveModal(type = null, id = null) {
 function bulkAction(action) {
     if (action === 'delete' && !confirm('Are you sure? This cannot be undone.')) return;
     
-    router.post(route('admin.media.bulk-action'), {
+    router.post(route('dashboard.media.bulk-action'), {
         action,
         media_ids: selectedMediaIds.value,
         folder_ids: selectedFolderIds.value,
@@ -203,13 +203,15 @@ function bulkAction(action) {
 }
 
 function updateMedia(id, data) {
-    router.patch(route('admin.media.update', id), data, { preserveScroll: true });
+    router.patch(route('dashboard.media.update', id), data, { preserveScroll: true });
 }
 
 function deleteSingle(type, id) {
-    if (!confirm('Delete this item?')) return;
-    const url = type === 'media' ? `/admin/media/${id}` : `/admin/media/folders/${id}`;
-    router.delete(url, { onSuccess: () => toastStore.success('Deleted.') });
+    if (type === 'media') {
+        router.delete(route('dashboard.media.destroy', id), { onSuccess: () => toastStore.success('Deleted.') });
+    } else {
+        router.delete(route('dashboard.media.folders.destroy', id), { onSuccess: () => toastStore.success('Deleted.') });
+    }
 }
 
 function copyUrl(path) {

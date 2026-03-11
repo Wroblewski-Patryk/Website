@@ -10,7 +10,7 @@ const tableRef = ref(null);
 const deleteForm = useForm({});
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
+    { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
     { label: 'Forms' }
 ];
 
@@ -25,7 +25,7 @@ const columns = [
 ];
 
 function deleteFormItem(item) {
-    deleteForm.delete(`/admin/forms/${item.id}`);
+    deleteForm.delete(route('dashboard.forms.destroy', item.id));
 }
 </script>
 
@@ -39,14 +39,14 @@ function deleteFormItem(item) {
             :breadcrumbs="breadcrumbs"
             :resources="forms"
             :columns="columns"
-            create-route="/admin/forms/create"
+            :create-route="route('dashboard.forms.create')"
             create-label="Create Form"
             persistence-key="forms"
             ref="tableRef"
             @delete-confirmed="deleteFormItem"
         >
             <template #cell-title="{ item }">
-                <Link :href="`/admin/forms/${item.id}/edit`" class="font-medium hover:text-primary transition-colors">
+                <Link :href="route('dashboard.forms.edit', item.id)" class="font-medium hover:text-primary transition-colors">
                     {{ item.title }}
                 </Link>
             </template>
@@ -82,7 +82,7 @@ function deleteFormItem(item) {
                     <Link :href="route('forms.preview', item.id)" target="_blank" class="btn btn-sm btn-ghost btn-square hover:bg-info/10 hover:text-info transition-all" title="Preview Form">
                         <PhEye weight="bold" class="w-4 h-4" />
                     </Link>
-                    <Link :href="`/admin/forms/${item.id}/edit`" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all">
+                    <Link :href="route('dashboard.forms.edit', item.id)" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all">
                         <PhPencilSimple weight="regular" class="w-4 h-4" />
                     </Link>
                     <button @click="tableRef?.openDeleteModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all">

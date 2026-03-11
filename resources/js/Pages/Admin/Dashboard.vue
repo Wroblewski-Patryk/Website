@@ -31,7 +31,7 @@ import { PhChartLineUp, PhFileText, PhArrowRight, PhFeather } from '@phosphor-ic
                         </div>
                         <p class="text-sm opacity-60">Manage your website pages and utilize the Visual Block Builder.</p>
                         <div class="card-actions justify-end mt-4">
-                            <Link href="/admin/pages" class="btn btn-ghost btn-sm group-hover:btn-primary flex items-center gap-1">Manage Pages <PhArrowRight weight="regular" class="w-4 h-4 ml-1" /></Link>
+                            <Link :href="route('dashboard.pages.index')" class="btn btn-ghost btn-sm group-hover:btn-primary flex items-center gap-1">Manage Pages <PhArrowRight weight="regular" class="w-4 h-4 ml-1" /></Link>
                         </div>
                     </div>
                 </div>
@@ -46,7 +46,7 @@ import { PhChartLineUp, PhFileText, PhArrowRight, PhFeather } from '@phosphor-ic
                         </div>
                         <p class="text-sm opacity-60">Write and publish blog articles with full SEO settings.</p>
                         <div class="card-actions justify-end mt-4">
-                            <Link href="/admin/posts" class="btn btn-ghost btn-sm group-hover:btn-secondary flex items-center gap-1">Manage Posts <PhArrowRight weight="regular" class="w-4 h-4 ml-1" /></Link>
+                            <Link :href="route('dashboard.posts.index')" class="btn btn-ghost btn-sm group-hover:btn-secondary flex items-center gap-1">Manage Posts <PhArrowRight weight="regular" class="w-4 h-4 ml-1" /></Link>
                         </div>
                     </div>
                 </div>

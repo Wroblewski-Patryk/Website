@@ -93,7 +93,7 @@ class SeoController extends Controller
         $lines = ["User-agent: *"];
 
         if ($disallowAdmin) {
-            $lines[] = "Disallow: /admin/";
+            $lines[] = "Disallow: /dashboard/";
         }
 
         if ($sitemapEnabled) {

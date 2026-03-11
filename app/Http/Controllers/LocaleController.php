@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\Session;
 
 class LocaleController extends Controller
 {
-    public function switch ($locale)
+    public function switch ($lang)
     {
-        if (!in_array($locale, ['en', 'pl'])) {
+        if (!in_array($lang, ['en', 'pl'])) {
             abort(400);
         }
 
-        Session::put('locale', $locale);
-        App::setLocale($locale);
+        Session::put('locale', $lang);
+        App::setLocale($lang);
 
         return redirect()->back();
     }

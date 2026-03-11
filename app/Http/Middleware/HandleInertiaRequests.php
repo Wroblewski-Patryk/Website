@@ -84,7 +84,7 @@ class HandleInertiaRequests extends Middleware
             'action_label' => null,
         ];
 
-        if (count($parts) >= 2 && $parts[0] === 'admin') {
+        if (count($parts) >= 2 && $parts[0] === 'dashboard') {
             $context['module'] = $parts[1];
             $context['action'] = $parts[2] ?? 'index';
 

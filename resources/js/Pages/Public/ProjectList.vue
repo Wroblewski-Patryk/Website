@@ -32,7 +32,7 @@ const { t } = useTranslations();
                         <div class="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                             <span class="text-xs font-bold uppercase tracking-widest text-primary mb-2 block">{{ t(project.category) }}</span>
                             <h2 class="text-3xl font-black text-white italic uppercase mb-4">{{ t(project.title) }}</h2>
-                            <Link :href="`/projects/${t(project.slug)}`" class="btn btn-primary rounded-xl">View Details</Link>
+                            <Link :href="`/${$page.props.archive_slugs.projects}/${t(project.slug)}`" class="btn btn-primary rounded-xl">View Details</Link>
                         </div>
                     </div>
                 </div>
