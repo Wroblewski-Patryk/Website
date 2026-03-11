@@ -1,6 +1,9 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
 import { Head } from '@inertiajs/vue3';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const form = useForm({
     email: '',
@@ -9,12 +12,12 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('auth.login'));
+    form.post(route('auth.login.post'));
 };
 </script>
 
 <template>
-    <Head title="Admin Login" />
+    <Head :title="t('admin.login.page_title', 'Admin Login')" />
     
     <div class="min-h-screen bg-base-200 flex items-center justify-center">
         <div class="card w-96 bg-base-100 shadow-xl">
@@ -24,7 +27,7 @@ const submit = () => {
                 <form @submit.prevent="submit">
                     <div class="form-control mb-4">
                         <label class="label">
-                            <span class="label-text">Email</span>
+                            <span class="label-text">{{ t('admin.login.email', 'Email Address') }}</span>
                         </label>
                         <input 
                             type="email" 
@@ -41,7 +44,7 @@ const submit = () => {
                     
                     <div class="form-control mb-6">
                         <label class="label">
-                            <span class="label-text">Password</span>
+                            <span class="label-text">{{ t('admin.login.password', 'Password') }}</span>
                         </label>
                         <input 
                             type="password" 
@@ -55,14 +58,14 @@ const submit = () => {
                     <div class="form-control mb-6">
                         <label class="cursor-pointer label justify-start gap-4">
                             <input type="checkbox" v-model="form.remember" class="checkbox checkbox-primary" />
-                            <span class="label-text">Remember me</span>
+                            <span class="label-text">{{ t('admin.login.remember_me', 'Remember me') }}</span>
                         </label>
                     </div>
 
                     <div class="form-control mt-6">
                         <button class="btn btn-primary w-full" :disabled="form.processing">
                             <span v-if="form.processing" class="loading loading-spinner"></span>
-                            Login
+                            {{ t('admin.login.submit', 'Login') }}
                         </button>
                     </div>
                 </form>

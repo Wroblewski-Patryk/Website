@@ -10,7 +10,7 @@ const tableRef = ref(null);
 const deleteForm = useForm({});
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
+    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
     { label: 'Users' }
 ];
 
@@ -24,7 +24,7 @@ const columns = [
 
 function deleteUser(item) {
     if (confirm('Czy na pewno chcesz usunąć tego użytkownika?')) {
-        deleteForm.delete(route('dashboard.users.destroy', item.id), {
+        deleteForm.delete(route('admin.users.destroy', item.id), {
             preserveScroll: true
         });
     }
@@ -41,7 +41,7 @@ function deleteUser(item) {
             :breadcrumbs="breadcrumbs"
             :resources="users"
             :columns="columns"
-            :create-route="route('dashboard.users.create')"
+            :create-route="route('admin.users.create')"
             create-label="Dodaj użytkownika"
             persistence-key="users"
             ref="tableRef"
@@ -59,7 +59,7 @@ function deleteUser(item) {
 
             <template #cell-actions="{ item }">
                 <div class="flex justify-end gap-2">
-                    <Link :href="route('dashboard.users.edit', item.id)" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all">
+                    <Link :href="route('admin.users.edit', item.id)" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all">
                         <PhPencilSimple weight="regular" class="w-4 h-4" />
                     </Link>
                     <button @click="deleteUser(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all">

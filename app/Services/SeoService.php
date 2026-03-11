@@ -12,7 +12,11 @@ class SeoService
 
     public function __construct()
     {
-        $this->settings = Setting::pluck('value', 'key')->toArray();
+        try {
+            $this->settings = Setting::pluck('value', 'key')->toArray();
+        } catch (\Exception $e) {
+            $this->settings = [];
+        }
     }
 
     /**
@@ -205,8 +209,15 @@ class SeoService
     {
         $value = $this->settings[$key] ?? $default;
 
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $value = $decoded;
+            }
+        }
+
         if (is_array($value)) {
-            return $value[App::getLocale()] ?? $value[config('app.fallback_locale')] ?? $default;
+            return $value[App::getLocale()] ?? $value[config('app.fallback_locale', 'en')] ?? reset($value) ?? $default;
         }
 
         return $value;

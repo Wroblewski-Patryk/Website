@@ -27,22 +27,31 @@ class PageController extends Controller
             $path = $localeOrPath;
         }
 
-        $settings = Setting::pluck('value', 'key')->toArray();
+        $settings = [];
+        try {
+            $settings = Setting::pluck('value', 'key')->toArray();
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning("Database connection failed in PageController: " . $e->getMessage());
+            $settings = [];
+        }
+
         $isMaintenance = ($settings['maintenance_mode'] ?? '0') === '1';
         $isAdmin = auth()->check();
 
         // 1. Maintenance Mode Check
         if ($isMaintenance && !$isAdmin) {
-            $maintPageId = $settings['maintenance_page_id'] ?? null;
-            if ($maintPageId) {
-                $maintPage = Page::find($maintPageId);
-                if ($maintPage) {
-                    return Inertia::render('Public/Page', [
-                        'page' => $maintPage,
-                        'settings' => $settings
-                    ]);
+            try {
+                $maintPageId = $settings['maintenance_page_id'] ?? null;
+                if ($maintPageId) {
+                    $maintPage = Page::find($maintPageId);
+                    if ($maintPage) {
+                        return Inertia::render('Public/Page', [
+                            'page' => $maintPage,
+                            'settings' => $settings
+                        ]);
+                    }
                 }
-            }
+            } catch (\Exception $e) {}
             abort(503, 'Site in maintenance mode.');
         }
 
@@ -55,17 +64,24 @@ class PageController extends Controller
         if (!$path) {
             if (!$homeId)
                 abort(404);
-            $page = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])->find($homeId);
-            return $this->renderPage($page, $settings, $isAdmin, $comingSoonId, $page404Id);
+            
+            try {
+                $page = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])->find($homeId);
+                return $this->renderPage($page, $settings, $isAdmin, $comingSoonId, $page404Id);
+            } catch (\Exception $e) {
+                return $this->render404($settings, $page404Id);
+            }
         }
 
         $segments = explode('/', $path);
         $firstSegment = $segments[0];
 
         // Find page by slug (checking current locale preferred, or any)
+        // Wyszukiwanie priorytetowo w obecnym języku, a następnie w ustawionym fallback config['app.fallback_locale']
+        $fallbackLocale = config('app.fallback_locale');
         $firstPage = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
-            ->where('slug->en', $firstSegment)
-            ->orWhere('slug->pl', $firstSegment)
+            ->where("slug->{$locale}", $firstSegment)
+            ->orWhere("slug->{$fallbackLocale}", $firstSegment)
             ->first();
 
         if ($firstPage) {
@@ -85,8 +101,8 @@ class PageController extends Controller
 
         // If no page found for the first segment, try finding a page by the full path (for nested static pages if any)
         $fullPage = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
-            ->where('slug->en', $path)
-            ->orWhere('slug->pl', $path)
+            ->where("slug->{$locale}", $path)
+            ->orWhere("slug->{$fallbackLocale}", $path)
             ->first();
 
         if ($fullPage) {
@@ -153,27 +169,37 @@ class PageController extends Controller
      */
     public function showPost($slug)
     {
-        $settings = Setting::pluck('value', 'key')->toArray();
+        $settings = [];
+        try {
+            $settings = Setting::pluck('value', 'key')->toArray();
+        } catch (\Exception $e) {}
+        
         $isAdmin = auth()->check();
         $page404Id = $settings['page_404_id'] ?? null;
         $seoService = app(\App\Services\SeoService::class);
 
-        $post = Post::where('slug->en', $slug)
-            ->orWhere('slug->pl', $slug)
-            ->first();
+        $locale = app()->getLocale();
+        $fallbackLocale = config('app.fallback_locale');
+        try {
+            $post = Post::where("slug->{$locale}", $slug)
+                ->orWhere("slug->{$fallbackLocale}", $slug)
+                ->first();
 
-        if (!$post || ($post->status !== 'published' && !$isAdmin)) {
+            if (!$post || ($post->status !== 'published' && !$isAdmin)) {
+                return $this->render404($settings, $page404Id);
+            }
+
+            $blogId = $settings['blog_page_id'] ?? null;
+            $blogTitle = $blogId ? $seoService->getEntityTitle(Page::find($blogId)) : 'Blog';
+
+            return Inertia::render('Blog/Show', [
+                'post' => $post,
+                'settings' => $settings,
+                'seo' => $seoService->getMetaData($post, $blogTitle),
+            ]);
+        } catch (\Exception $e) {
             return $this->render404($settings, $page404Id);
         }
-
-        $blogId = $settings['blog_page_id'] ?? null;
-        $blogTitle = $blogId ? $seoService->getEntityTitle(Page::find($blogId)) : 'Blog';
-
-        return Inertia::render('Blog/Show', [
-            'post' => $post,
-            'settings' => $settings,
-            'seo' => $seoService->getMetaData($post, $blogTitle),
-        ]);
     }
 
     /**
@@ -181,27 +207,37 @@ class PageController extends Controller
      */
     public function showProject($slug)
     {
-        $settings = Setting::pluck('value', 'key')->toArray();
+        $settings = [];
+        try {
+            $settings = Setting::pluck('value', 'key')->toArray();
+        } catch (\Exception $e) {}
+        
         $isAdmin = auth()->check();
         $page404Id = $settings['page_404_id'] ?? null;
         $seoService = app(\App\Services\SeoService::class);
 
-        $project = Project::where('slug->pl', $slug)
-            ->orWhere('slug->en', $slug)
-            ->first();
+        $locale = app()->getLocale();
+        $fallbackLocale = config('app.fallback_locale');
+        try {
+            $project = Project::where("slug->{$locale}", $slug)
+                ->orWhere("slug->{$fallbackLocale}", $slug)
+                ->first();
 
-        if (!$project || ($project->status !== 'published' && !$isAdmin)) {
+            if (!$project || ($project->status !== 'published' && !$isAdmin)) {
+                return $this->render404($settings, $page404Id);
+            }
+
+            $projectsId = $settings['projects_page_id'] ?? null;
+            $projectsTitle = $projectsId ? $seoService->getEntityTitle(Page::find($projectsId)) : 'Projekty';
+
+            return Inertia::render('Public/Project', [
+                'project' => $project,
+                'settings' => $settings,
+                'seo' => $seoService->getMetaData($project, $projectsTitle),
+            ]);
+        } catch (\Exception $e) {
             return $this->render404($settings, $page404Id);
         }
-
-        $projectsId = $settings['projects_page_id'] ?? null;
-        $projectsTitle = $projectsId ? $seoService->getEntityTitle(Page::find($projectsId)) : 'Projekty';
-
-        return Inertia::render('Public/Project', [
-            'project' => $project,
-            'settings' => $settings,
-            'seo' => $seoService->getMetaData($project, $projectsTitle),
-        ]);
     }
 
     /**
@@ -209,15 +245,19 @@ class PageController extends Controller
      */
     private function render404($settings, $page404Id)
     {
-        if ($page404Id) {
-            $errorPage = Page::find($page404Id);
-            if ($errorPage) {
-                return Inertia::render('Public/Page', [
-                    'page' => $errorPage,
-                    'settings' => $settings,
-                    'seo' => app(\App\Services\SeoService::class)->getMetaData($errorPage),
-                ])->toResponse(request())->setStatusCode(404);
+        try {
+            if ($page404Id) {
+                $errorPage = Page::find($page404Id);
+                if ($errorPage) {
+                    return Inertia::render('Public/Page', [
+                        'page' => $errorPage,
+                        'settings' => $settings,
+                        'seo' => app(\App\Services\SeoService::class)->getMetaData($errorPage),
+                    ])->toResponse(request())->setStatusCode(404);
+                }
             }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning("Database connection failed in render404: " . $e->getMessage());
         }
         abort(404);
     }

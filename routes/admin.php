@@ -4,13 +4,13 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 
-Route::name('dashboard.')->prefix('dashboard')->middleware('auth')->group(function () {
+Route::name('dashboard.')->group(function () {
     Route::get('/', function () {
-            return Inertia::render('Admin/Dashboard');
-        }
-        )->name('index');
+        return Inertia::render('Admin/Dashboard');
+    })->name('index');
+});
 
-        // Content Section
+// Content Section
         Route::resource('pages', AdminPageController::class)->except(['show']);
         Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->except(['show']);
 
@@ -54,8 +54,6 @@ Route::name('dashboard.')->prefix('dashboard')->middleware('auth')->group(functi
             }
             );
 
-            Route::get('blocks', function () {
-            return Inertia::render('Admin/Blocks');
-        }
-        )->name('blocks');
-    });
+    Route::get('blocks', function () {
+        return Inertia::render('Admin/Blocks');
+    })->name('blocks');

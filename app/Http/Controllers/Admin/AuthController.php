@@ -24,7 +24,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('dashboard.index'));
+            return redirect()->intended(route('admin.dashboard.index', ['locale' => app()->getLocale()]));
         }
 
         return back()->withErrors([

@@ -10,7 +10,7 @@ const tableRef = ref(null);
 const deleteForm = useForm({});
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
+    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
     { label: 'Templates' }
 ];
 
@@ -23,7 +23,7 @@ const columns = [
 ];
 
 function deleteTemplate(item) {
-    deleteForm.delete(route('dashboard.templates.destroy', item.id));
+    deleteForm.delete(route('admin.templates.destroy', item.id));
 }
 </script>
 
@@ -37,7 +37,7 @@ function deleteTemplate(item) {
             :breadcrumbs="breadcrumbs"
             :resources="templates"
             :columns="columns"
-            :create-route="route('dashboard.templates.create')"
+            :create-route="route('admin.templates.create')"
             create-label="Create Template"
             persistence-key="templates"
             ref="tableRef"
@@ -51,7 +51,7 @@ function deleteTemplate(item) {
 
             <template #cell-actions="{ item }">
                 <div class="flex justify-end gap-2">
-                    <Link :href="route('dashboard.templates.edit', item.id)" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all">
+                    <Link :href="route('admin.templates.edit', item.id)" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all">
                         <PhPencilSimple weight="regular" class="w-4 h-4" />
                     </Link>
                     <button @click="tableRef?.openDeleteModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all">

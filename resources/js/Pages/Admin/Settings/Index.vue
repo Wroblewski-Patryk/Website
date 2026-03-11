@@ -1,6 +1,6 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
-import { markRaw, ref } from 'vue';
+import { Head, useForm, router, usePage } from '@inertiajs/vue3';
+import { markRaw, ref, onMounted } from 'vue';
 import { 
     PhFloppyDisk, PhHouse, PhGearSix, PhBrowser, PhBookOpen, PhMagnifyingGlass, PhGlobe, PhImage, PhCheckCircle, PhXCircle, PhMapTrifold, PhLayout
 } from '@phosphor-icons/vue';
@@ -14,11 +14,13 @@ const props = defineProps({
     pages: Array
 });
 
+const languages = usePage().props.languages || [];
 const { t } = useTranslations();
 const isMediaPickerOpen = ref(false);
+const currentLocale = usePage().props.locale || 'en';
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
+    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
     { label: 'Settings' }
 ];
 
@@ -31,12 +33,18 @@ const form = useForm({
     coming_soon_page_id: props.settings.coming_soon_page_id || '',
     page_404_id: props.settings.page_404_id || '',
     
-    // SEO Settings
-    site_name: props.settings.site_name || { pl: '', en: '' },
+    // SEO Settings (Dynamic)
+    site_name: languages.reduce((acc, lang) => {
+        acc[lang.code] = props.settings.site_name?.[lang.code] || '';
+        return acc;
+    }, {}),
     title_separator: props.settings.title_separator || ' - ',
     homepage_include_page_title: props.settings.homepage_include_page_title === '1' || props.settings.homepage_include_page_title === true,
     title_order: props.settings.title_order || 'brand_first',
-    default_meta_description: props.settings.default_meta_description || { pl: '', en: '' },
+    default_meta_description: languages.reduce((acc, lang) => {
+        acc[lang.code] = props.settings.default_meta_description?.[lang.code] || '';
+        return acc;
+    }, {}),
     default_og_image: props.settings.default_og_image || '',
     admin_noindex: props.settings.admin_noindex !== '0' && props.settings.admin_noindex !== false, // default true
     robots_disallow_admin: props.settings.robots_disallow_admin !== '0' && props.settings.robots_disallow_admin !== false, // default true
@@ -50,7 +58,7 @@ function selectOgImage(file) {
 }
 
 function saveSettings() {
-    form.post(route('dashboard.settings.update'), {
+    form.post(route('admin.settings.store'), {
         preserveScroll: true
     });
 }
@@ -227,14 +235,14 @@ function saveSettings() {
                     <div class="p-8 space-y-10">
                         <!-- Site Name -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div v-for="locale in ['pl', 'en']" :key="locale" class="form-control">
+                            <div class="form-control">
                                 <label class="label">
                                     <span class="label-text flex items-center gap-2 font-bold text-base-content/70">
                                         <PhGlobe weight="duotone" class="w-4 h-4 text-primary" />
-                                        Site Name ({{ locale.toUpperCase() }})
+                                        Site Name ({{ currentLocale.toUpperCase() }})
                                     </span>
                                 </label>
-                                <input type="text" v-model="form.site_name[locale]" class="input input-bordered w-full focus:input-primary transition-all" />
+                                <input type="text" v-model="form.site_name[currentLocale]" class="input input-bordered w-full focus:input-primary transition-all" />
                             </div>
                         </div>
 
@@ -267,13 +275,13 @@ function saveSettings() {
 
                         <!-- Localized Descriptions -->
                         <div class="space-y-6">
-                            <div v-for="locale in ['pl', 'en']" :key="locale" class="form-control">
+                            <div class="form-control">
                                 <label class="label">
                                     <span class="label-text flex items-center gap-2 font-bold text-base-content/70 text-xs uppercase tracking-widest">
-                                        Default Meta Description ({{ locale.toUpperCase() }})
+                                        Default Meta Description ({{ currentLocale.toUpperCase() }})
                                     </span>
                                 </label>
-                                <textarea v-model="form.default_meta_description[locale]" class="textarea textarea-bordered h-24 focus:textarea-primary transition-all" placeholder="Enter meta description for SEO purposes..."></textarea>
+                                <textarea v-model="form.default_meta_description[currentLocale]" class="textarea textarea-bordered h-24 focus:textarea-primary transition-all" placeholder="Enter meta description for SEO purposes..."></textarea>
                             </div>
                         </div>
 

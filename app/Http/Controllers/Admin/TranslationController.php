@@ -15,9 +15,12 @@ class TranslationController extends Controller
 
         $query->when($request->search, function ($q, $search) {
             $q->where('key', 'like', "%{$search}%")
-                ->orWhere('group', 'like', "%{$search}%")
-                ->orWhere('text->pl', 'like', "%{$search}%")
-                ->orWhere('text->en', 'like', "%{$search}%");
+                ->orWhere('group', 'like', "%{$search}%");
+
+            $activeCodes = \App\Models\Language::where('is_active', true)->pluck('code');
+            foreach ($activeCodes as $code) {
+                $q->orWhere("text->{$code}", 'like', "%{$search}%");
+            }
         });
 
         if ($request->has('sort') && $request->has('direction')) {

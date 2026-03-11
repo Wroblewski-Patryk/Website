@@ -5,14 +5,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         @php
-            $siteNameSetting = \App\Models\Setting::where('key', 'site_name')->first();
-            $appName = 'Laravel';
-            if ($siteNameSetting && isset($siteNameSetting->value)) {
-                $locale = app()->getLocale();
-                $appName = $siteNameSetting->value[$locale] ?? $siteNameSetting->value['pl'] ?? config('app.name', 'Laravel');
+            $appName = $page['props']['seo_settings']['site_name'] ?? config('app.name', 'Featherly');
+            if (empty($appName)) {
+                $appName = 'Featherly';
+            }
+            $fullTitle = $page['props']['seo']['full_title'] ?? null;
+
+            // Zapasowy tytuł dla stron panelu (nie ustawiają one właściwości ustrukturyzowanego SEO)
+            if (!$fullTitle && isset($page['props']['admin_seo'])) {
+                $adminSeo = $page['props']['admin_seo'];
+                $parts = [];
+                if (!empty($adminSeo['action_label'])) $parts[] = $adminSeo['action_label'];
+                if (!empty($adminSeo['module_label'])) $parts[] = $adminSeo['module_label'];
+                $parts[] = 'Admin Panel';
+                
+                // Tłumaczenie appName dla języka jeśli istnieje jako tablica
+                if (is_array($appName)) {
+                    $appName = $appName[app()->getLocale()] ?? reset($appName) ?? config('app.name', 'Featherly');
+                }
+                $parts[] = is_string($appName) && !empty($appName) ? $appName : config('app.name', 'Featherly');
+                
+                $fullTitle = implode(' - ', $parts);
             }
         @endphp
-        <title inertia>{{ $page['props']['seo']['full_title'] ?? $appName }}</title>
+        <title inertia>{{ $fullTitle ?? (is_array($appName) ? ($appName[app()->getLocale()] ?? reset($appName)) : $appName) }}</title>
 
         <!-- Fonts -->
         @php

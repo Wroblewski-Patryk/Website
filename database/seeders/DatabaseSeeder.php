@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Page;
 use App\Models\Setting;
+use App\Models\Language;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -13,6 +14,18 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // 0. Create Languages
+        $languages = [
+            ['code' => 'en', 'name' => 'English', 'is_default' => true, 'is_active' => true],
+            ['code' => 'pl', 'name' => 'Polski', 'is_default' => false, 'is_active' => true],
+            ['code' => 'de', 'name' => 'Deutsch', 'is_default' => false, 'is_active' => true],
+            ['code' => 'fr', 'name' => 'Français', 'is_default' => false, 'is_active' => true],
+        ];
+
+        foreach ($languages as $lang) {
+            Language::create($lang);
+        }
+
         // 1. Create Admin User
         User::firstOrCreate(
         ['email' => 'admin@admin.com'],
@@ -28,7 +41,7 @@ class DatabaseSeeder extends Seeder
         [
             'slug' => ['en' => 'home', 'pl' => 'home'],
             'title' => ['en' => 'Home', 'pl' => 'Strona Główna'],
-            'is_published' => true,
+            'status' => 'published',
             'content' => [
                 [
                     'id' => 'block_' . Str::random(9),
@@ -62,25 +75,53 @@ class DatabaseSeeder extends Seeder
         );
 
         // 3. Create Default Settings
-        $settings = Setting::create(
-        [
-            'key' => 'general',
-            'value' => [
-                'home_page_id' => $homePage->id,
-                'blog_page_id' => null,
-                'default_header_id' => null,
-                'default_footer_id' => null,
-                'brand_colors' => [
-                    'primary' => '#4f46e5',
-                    'secondary' => '#10b981',
-                    'accent' => '#f59e0b',
-                ],
-                'brand_fonts' => [
-                    'heading' => 'Titillium Web',
-                    'body' => 'sans-serif',
-                ]
+        $defaultSettings = [
+            'site_name' => [
+                'en' => 'Featherly CMS',
+                'pl' => 'Featherly CMS PL',
+                'de' => 'Featherly CMS DE',
+                'fr' => 'Featherly CMS FR'
+            ],
+            'home_page_id' => $homePage->id,
+            'blog_page_id' => null,
+            'default_header_id' => null,
+            'default_footer_id' => null,
+            'theme_colors' => [
+                'primary' => '#4f46e5',
+                'secondary' => '#10b981',
+                'accent' => '#f59e0b',
+                'base_100' => '#ffffff',
+                'base_200' => '#f3f4f6',
+                'base_300' => '#e5e7eb',
+                'neutral' => '#1f2937',
+                'info' => '#3b82f6',
+                'success' => '#22c55e',
+                'warning' => '#eab308',
+                'error' => '#ef4444'
+            ],
+            'theme_typography' => [
+                'baseTextSize' => '16px',
+                'baseLineHeight' => '1.5',
+                'headingScale' => '1.25'
+            ],
+            'theme_radius' => [
+                'none' => '0px',
+                'sm' => '0.125rem',
+                'md' => '0.375rem',
+                'lg' => '0.5rem',
+                'xl' => '0.75rem',
+                '2xl' => '1rem',
+                '3xl' => '1.5rem',
+                'full' => '9999px',
+                'box' => '1rem'
             ]
-        ]
-        );
+        ];
+
+        foreach ($defaultSettings as $key => $value) {
+            Setting::create([
+                'key' => $key,
+                'value' => $value
+            ]);
+        }
     }
 }

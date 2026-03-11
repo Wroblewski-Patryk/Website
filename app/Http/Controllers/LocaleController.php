@@ -10,7 +10,9 @@ class LocaleController extends Controller
 {
     public function switch ($lang)
     {
-        if (!in_array($lang, ['en', 'pl'])) {
+        $activeLanguages = \App\Models\Language::where('is_active', true)->pluck('code')->toArray();
+
+        if (!in_array($lang, $activeLanguages)) {
             abort(400);
         }
 

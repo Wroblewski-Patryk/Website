@@ -32,16 +32,16 @@ class FormManagementTest extends TestCase
     public function test_admin_can_store_form(): void
     {
         $data = [
-            'name' => 'Contact Us',
+            'title' => 'Contact Us',
             'content' => [['type' => 'text', 'label' => 'Name']],
             'settings' => ['submit_text' => 'Send'],
-            'is_published' => true,
         ];
 
         $response = $this->actingAs($this->admin)->post(route('admin.forms.store'), $data);
 
-        $response->assertRedirect(route('admin.forms.index'));
-        $this->assertDatabaseHas('forms', ['name' => 'Contact Us']);
+        $form = Form::where('title', 'Contact Us')->first();
+        $response->assertRedirect(route('admin.forms.edit', $form));
+        $this->assertDatabaseHas('forms', ['title' => 'Contact Us']);
     }
 
     public function test_admin_can_update_form(): void
@@ -49,16 +49,17 @@ class FormManagementTest extends TestCase
         $form = Form::factory()->create();
 
         $data = [
-            'name' => 'Updated Form',
+            'title' => 'Updated Form',
             'content' => $form->content,
             'settings' => $form->settings,
-            'is_published' => false,
         ];
 
-        $response = $this->actingAs($this->admin)->put(route('admin.forms.update', $form), $data);
+        $response = $this->actingAs($this->admin)
+            ->from(route('admin.forms.edit', $form))
+            ->put(route('admin.forms.update', $form), $data);
 
-        $response->assertRedirect(route('admin.forms.index'));
-        $this->assertDatabaseHas('forms', ['id' => $form->id, 'name' => 'Updated Form']);
+        $response->assertRedirect(route('admin.forms.edit', $form));
+        $this->assertDatabaseHas('forms', ['id' => $form->id, 'title' => 'Updated Form']);
     }
 
     public function test_admin_can_delete_form(): void

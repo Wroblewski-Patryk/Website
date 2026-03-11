@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Models\Translation;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -35,18 +36,45 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
+        $settings = [];
+        $header = null;
+        $footer = null;
+        $languages = collect();
+        $allProjects = collect();
+        $themeConfig = null;
 
-        $headerId = $settings['default_header_id'] ?? null;
-        $footerId = $settings['default_footer_id'] ?? null;
+        try {
+            $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
 
-        $header = $headerId
-            ?\App\Models\Template::find($headerId)
-            : \App\Models\Template::where('type', 'header')->where('is_active', true)->first();
+            $headerId = $settings['default_header_id'] ?? null;
+            $footerId = $settings['default_footer_id'] ?? null;
 
-        $footer = $footerId
-            ?\App\Models\Template::find($footerId)
-            : \App\Models\Template::where('type', 'footer')->where('is_active', true)->first();
+            $header = $headerId
+                ?\App\Models\Template::find($headerId)
+                : \App\Models\Template::where('type', 'header')->where('is_active', true)->first();
+
+            $footer = $footerId
+                ?\App\Models\Template::find($footerId)
+                : \App\Models\Template::where('type', 'footer')->where('is_active', true)->first();
+
+            $languages = \App\Models\Language::where('is_active', true)->orderBy('is_default', 'desc')->get();
+            $allProjects = \App\Models\Project::orderBy('order')->get();
+            
+            $themeConfig = isset($settings['theme_config']) ? 
+                (is_array($settings['theme_config']) ? $settings['theme_config'] : json_decode($settings['theme_config'], true))
+                : null;
+
+            $translations = Translation::all()->reduce(function ($carry, $translation) {
+                $locale = app()->getLocale();
+                $fallback = config('app.fallback_locale', 'en');
+                $text = $translation->getTranslation('text', $locale, false) ?: $translation->getTranslation('text', $fallback, false);
+                $carry[$translation->group . '.' . $translation->key] = $text;
+                return $carry;
+            }, []);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning("Database connection failed in HandleInertiaRequests: " . $e->getMessage());
+        }
 
         return [
             ...parent::share($request),
@@ -56,17 +84,36 @@ class HandleInertiaRequests extends Middleware
             'header' => $header ? $header->content : null,
             'footer' => $footer ? $footer->content : null,
             'locale' => app()->getLocale(),
-            'all_projects' => \App\Models\Project::orderBy('order')->get(),
-            'theme_config' => isset($settings['theme_config']) ? 
-            (is_array($settings['theme_config']) ? $settings['theme_config'] : json_decode($settings['theme_config'], true))
-            : null,
+            'languages' => $languages,
+            'all_projects' => $allProjects,
+            'theme_config' => $themeConfig,
+            'translations' => $translations ?? [],
             'seo_settings' => [
-                'site_name' => $settings['site_name'] ?? ['pl' => config('app.name'), 'en' => config('app.name')],
+                'site_name' => $this->translateValue($settings['site_name'] ?? config('app.name')),
                 'title_separator' => $settings['title_separator'] ?? ' - ',
                 'title_order' => $settings['title_order'] ?? 'brand_first',
             ],
             'admin_seo' => $this->getAdminSeoContext($request),
         ];
+    }
+
+    /**
+     * Helper to translate values shared with Inertia.
+     */
+    protected function translateValue($value)
+    {
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $value = $decoded;
+            }
+        }
+
+        if (is_array($value)) {
+            return $value[app()->getLocale()] ?? $value[config('app.fallback_locale')] ?? reset($value) ?? '';
+        }
+
+        return $value;
     }
 
     /**
@@ -84,9 +131,16 @@ class HandleInertiaRequests extends Middleware
             'action_label' => null,
         ];
 
-        if (count($parts) >= 2 && $parts[0] === 'dashboard') {
-            $context['module'] = $parts[1];
-            $context['action'] = $parts[2] ?? 'index';
+        if (count($parts) >= 2 && $parts[0] === 'admin') {
+            // e.g. admin.pages.index or admin.dashboard.index
+            $context['module'] = $parts[1] === 'dashboard' ? 'dashboard' : $parts[1];
+            
+            // Handle cases where route might be admin.dashboard.index or just admin.something
+            if ($parts[1] === 'dashboard' && isset($parts[2])) {
+                $context['action'] = $parts[2];
+            } else {
+                $context['action'] = $parts[2] ?? 'index';
+            }
 
             $seoService = app(\App\Services\SeoService::class);
             $context['module_label'] = $seoService->getModuleLabel($context['module']);

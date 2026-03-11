@@ -21,7 +21,7 @@ const form = useForm({
 });
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
+    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
     { label: 'Languages' }
 ];
 
@@ -53,14 +53,14 @@ function openEdit(lang) {
 
 function submit() {
     if (editingLanguage.value) {
-        form.put(route('dashboard.languages.update', editingLanguage.value.id), {
+        form.put(route('admin.languages.update', editingLanguage.value.id), {
             onSuccess: () => {
                 isCreating.value = false;
                 form.reset();
             }
         });
     } else {
-        form.post(route('dashboard.languages.store'), {
+        form.post(route('admin.languages.store'), {
             onSuccess: () => {
                 isCreating.value = false;
                 form.reset();
@@ -70,7 +70,7 @@ function submit() {
 }
 
 function deleteLanguage(item) {
-    router.delete(route('dashboard.languages.destroy', item.id));
+    router.delete(route('admin.languages.destroy', item.id));
 }
 </script>
 
@@ -141,8 +141,9 @@ function deleteLanguage(item) {
             </template>
 
             <template #cell-is_active="{ item }">
-                <div class="badge font-bold py-3 px-4 border-none shadow-sm" 
+                <div class="badge font-bold py-3 px-4 border-none shadow-sm transition-all" 
                      :class="item.is_active ? 'bg-success/10 text-success' : 'bg-base-200 text-base-content/40'">
+                    <span class="w-2 h-2 rounded-full mr-2" :class="item.is_active ? 'bg-success' : 'bg-base-content/20'"></span>
                     {{ item.is_active ? 'Active' : 'Inactive' }}
                 </div>
             </template>

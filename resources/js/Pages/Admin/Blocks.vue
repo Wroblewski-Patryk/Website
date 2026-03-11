@@ -6,7 +6,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
+    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
     { label: 'Blocks' }
 ];
 

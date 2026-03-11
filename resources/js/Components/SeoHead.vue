@@ -54,7 +54,7 @@ const finalTitle = computed(() => {
   }
 
   const order = seoSettings.value.title_order || 'brand_first'
-  const pageTitle = props.title
+  const pageTitle = t(props.title)
 
   if (!pageTitle || pageTitle.trim() === '') return brand
 

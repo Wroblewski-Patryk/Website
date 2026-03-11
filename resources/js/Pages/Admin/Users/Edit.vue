@@ -17,7 +17,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.put(route('dashboard.users.update', props.user.id), {
+    form.put(route('admin.users.update', props.user.id), {
         preserveScroll: true,
         onSuccess: () => {
             if (form.password) {
@@ -28,8 +28,8 @@ const submit = () => {
 };
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
-    { label: 'Users', url: route('dashboard.users.index'), icon: markRaw(PhUsers) },
+    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
+    { label: 'Users', url: route('admin.users.index'), icon: markRaw(PhUsers) },
     { label: 'Edit Profile' }
 ];
 </script>
@@ -47,7 +47,7 @@ const breadcrumbs = [
                 >
                     <template #actions>
                         <div class="flex items-center gap-2">
-                            <Link :href="route('dashboard.users.index')" class="btn btn-ghost hover:bg-base-200">
+                            <Link :href="route('admin.users.index')" class="btn btn-ghost hover:bg-base-200">
                                 <PhX weight="bold" class="w-4 h-4" /> Cancel
                             </Link>
                             <button 

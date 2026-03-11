@@ -17,7 +17,7 @@ class FormFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->word() . ' Form',
+            'title' => fake()->word() . ' Form',
             'content' => [
                 ['type' => 'text', 'label' => 'Name', 'required' => true],
                 ['type' => 'email', 'label' => 'Email', 'required' => true],
@@ -26,7 +26,6 @@ class FormFactory extends Factory
                 'submit_text' => 'Send',
                 'success_message' => 'Thank you!',
             ],
-            'is_published' => true,
         ];
     }
 }

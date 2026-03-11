@@ -10,7 +10,7 @@ const tableRef = ref(null);
 const deleteForm = useForm({});
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
+    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
     { label: 'Projects' }
 ];
 
@@ -27,7 +27,7 @@ const columns = [
 ];
 
 function deleteProject(item) {
-    deleteForm.delete(route('dashboard.projects.destroy', item.id));
+    deleteForm.delete(route('admin.projects.destroy', item.id));
 }
 </script>
 
@@ -41,14 +41,14 @@ function deleteProject(item) {
             :breadcrumbs="breadcrumbs"
             :resources="projects"
             :columns="columns"
-            :create-route="route('dashboard.projects.create')"
+            :create-route="route('admin.projects.create')"
             create-label="Add Project"
             persistence-key="projects"
             ref="tableRef"
             @delete-confirmed="deleteProject"
         >
             <template #cell-title="{ item }">
-                <Link :href="route('dashboard.projects.edit', item.id)" class="font-medium hover:text-primary transition-colors">
+                <Link :href="route('admin.projects.edit', item.id)" class="font-medium hover:text-primary transition-colors">
                     {{ item.title?.pl || item.title?.en || item.title }}
                 </Link>
             </template>
@@ -94,7 +94,7 @@ function deleteProject(item) {
                     <a :href="`/projects/${item.slug}`" target="_blank" class="btn btn-sm btn-ghost btn-square hover:bg-info/10 hover:text-info transition-all" title="View Public Project">
                         <PhEye weight="regular" class="w-4 h-4" />
                     </a>
-                    <Link :href="route('dashboard.projects.edit', item.id)" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all">
+                    <Link :href="route('admin.projects.edit', item.id)" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all">
                         <PhPencilSimple weight="regular" class="w-4 h-4" />
                     </Link>
                     <button @click="tableRef?.openDeleteModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all">

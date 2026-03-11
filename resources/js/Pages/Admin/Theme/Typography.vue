@@ -5,8 +5,8 @@ import UnitInput from '../../../Components/UnitInput.vue';
 import { PhTextAa, PhWarning, PhHouse, PhPaintRoller } from '@phosphor-icons/vue';
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('dashboard.index'), icon: markRaw(PhHouse) },
-    { label: 'Theme', url: route('dashboard.theme.index') },
+    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
+    { label: 'Theme', url: route('admin.theme.index') },
     { label: 'Typography' }
 ];
 

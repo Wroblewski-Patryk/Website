@@ -104,7 +104,7 @@ const adminTitle = computed(() => {
     if (entityName) parts.push(entityName);
     if (actionLabel) parts.push(actionLabel);
     if (moduleLabel) parts.push(moduleLabel);
-    parts.push('Panel Administracyjny');
+    parts.push(t('admin.seo.admin_panel', 'Admin Panel'));
     parts.push(brand);
 
     return parts.filter(Boolean).join(sep);
@@ -119,7 +119,7 @@ const adminTitle = computed(() => {
         <!-- Top Navbar -->
         <div class="navbar bg-base-100/80 backdrop-blur-md shadow-lg border-b border-base-300 z-50 sticky top-0 px-4">
             <div class="flex-1">
-                <Link :href="route('dashboard.index')" class="btn btn-ghost normal-case hover:bg-transparent flex items-center gap-1 group w-fit px-2">
+                <Link :href="route('admin.dashboard.index')" class="btn btn-ghost normal-case hover:bg-transparent flex items-center gap-1 group w-fit px-2">
                     <div class="h-8 w-8 bg-gradient-to-r from-primary to-accent" 
                          style="mask: url('/img/featherly-sygnet.svg') no-repeat center / contain; -webkit-mask: url('/img/featherly-sygnet.svg') no-repeat center / contain; background-size: 160px 100%; background-position: left center;">
                     </div>
@@ -137,7 +137,7 @@ const adminTitle = computed(() => {
                         <PhPalette weight="regular" class="w-5 h-5 text-base-content/70" />
                     </label>
                     <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200">
-                        <li class="menu-title"><span>Wybierz Motyw</span></li>
+                        <li class="menu-title"><span>{{ t('admin.theme.select_theme', 'Choose Theme') }}</span></li>
                         <li v-for="theme in themesList" :key="theme">
                             <a :class="{ 'active': currentTheme === theme }" @click="currentTheme = theme">
                                 <span class="capitalize w-full">{{ theme }}</span>
@@ -158,11 +158,11 @@ const adminTitle = computed(() => {
                             <span class="font-bold text-sm text-base-content w-full whitespace-nowrap overflow-hidden text-ellipsis">{{ $page.props.auth?.user?.name || 'Administrator' }}</span>
                             <span class="text-xs font-normal text-base-content/60 w-full whitespace-nowrap overflow-hidden text-ellipsis mt-1">{{ $page.props.auth?.user?.email || 'admin@example.com' }}</span>
                         </li>
-                        <li v-if="$page.props.auth?.user?.id"><Link :href="route('dashboard.users.edit', $page.props.auth.user.id)"><PhUser weight="regular" class="w-4 h-4 text-base-content/70" /> Mój Profil</Link></li>
-                        <li><Link :href="route('dashboard.settings.index')"><PhGearSix weight="regular" class="w-4 h-4 text-base-content/70" /> Ustawienia konta</Link></li>
-                        <li><Link href="#"><PhLifebuoy weight="regular" class="w-4 h-4 text-base-content/70" /> Pomoc techniczna</Link></li>
+                        <li v-if="$page.props.auth?.user?.id"><Link :href="route('admin.users.edit', $page.props.auth.user.id)"><PhUser weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.nav.my_profile', 'My Profile') }}</Link></li>
+                        <li><Link :href="route('admin.settings.index')"><PhGearSix weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.nav.account_settings', 'Account Settings') }}</Link></li>
+                        <li><Link href="#"><PhLifebuoy weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.nav.support', 'Support') }}</Link></li>
                         <div class="h-[1px] bg-base-200 my-1 mx-2"></div>
-                        <li><Link :href="route('auth.logout')" method="post" as="button" class="w-full text-left text-error hover:bg-error/10 hover:text-error"><PhSignOut weight="regular" class="w-4 h-4" /> Wyloguj się</Link></li>
+                        <li><Link :href="route('auth.logout')" method="post" as="button" class="w-full text-left text-error hover:bg-error/10 hover:text-error"><PhSignOut weight="regular" class="w-4 h-4" /> {{ t('admin.nav.logout', 'Logout') }}</Link></li>
                     </ul>
                 </div>
             </div>

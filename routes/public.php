@@ -16,7 +16,4 @@ Route::get('/forms/{id}/preview', function ($id) {
     ]);
 })->name('forms.preview');
 
-// Generic Catch-all for Pages (should be last)
-Route::get('/{path?}', [PageController::class , 'show'])
-    ->name('page.show')
-    ->where('path', '^(?!dashboard|auth|livewire|storage|_debugbar|build|api|lang|sitemap|robots).*$');
+// Przeniesiona naprawa kolejności przez wymuszenie manualnego loadu w boot.php
