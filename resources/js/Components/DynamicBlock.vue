@@ -355,7 +355,7 @@ const contactForm = useForm({
             <template v-if="isEditor">
                 <draggable 
                     v-model="block.children" 
-                    :group="'blocks'"
+                    :group="'admin.blocks'"
                     item-key="id"
                     handle=".drag-handle"
                     ghost-class="ghost-block"

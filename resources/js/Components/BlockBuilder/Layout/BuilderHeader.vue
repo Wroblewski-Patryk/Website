@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div class="h-16 border-b border-base-300 bg-base-100/80 backdrop-blur-md flex items-center justify-between px-6 sticky top-0 z-[100]">
         <!-- Left: Title & Module Icon -->
         <div class="flex items-center gap-3 min-w-0">

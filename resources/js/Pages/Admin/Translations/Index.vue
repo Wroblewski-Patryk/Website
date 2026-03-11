@@ -4,9 +4,12 @@ import ResourceTable from '@/Components/ResourceTable.vue';
 import { Head, useForm, router, usePage } from '@inertiajs/vue3';
 import { PhPlus, PhTrash, PhHouse, PhTranslate, PhPencilSimple } from '@phosphor-icons/vue';
 import { ref, markRaw, computed } from 'vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const props = defineProps({
-    translations: Object // Now paginated
+    translations_list: Object // Changed from translations to avoid collision
 });
 
 const page = usePage();
@@ -25,20 +28,20 @@ const addForm = useForm({
 });
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
-    { label: 'Translations' }
+    { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
+    { label: t('admin.menu.translations', 'Translations') }
 ];
 
 const columns = computed(() => {
     const cols = [
-        { key: 'group', label: 'Group', sortable: true },
-        { key: 'key', label: 'Key', sortable: true },
+        { key: 'group', label: t('admin.translations.group', 'Group'), sortable: true },
+        { key: 'key', label: t('admin.translations.key', 'Key'), sortable: true },
         ...languages.value.map(lang => ({
             key: `text.${lang.code}`,
             label: `${lang.name} (${lang.code.toUpperCase()})`,
             sortable: true
         })),
-        { key: 'actions', label: 'Actions', sortable: false, align: 'right' }
+        { key: 'actions', label: t('admin.common.actions', 'Actions'), sortable: false, align: 'right' }
     ];
     return cols;
 });
@@ -84,24 +87,23 @@ const deleteTranslation = (item) => {
 
 <template>
     <AdminLayout>
-        <Head title="Translations" />
-
-
+        <Head :title="t('admin.menu.translations', 'Translations')" />
 
         <ResourceTable
-            title="Translations"
-            description="Manage multi-language strings for your website UI."
+            :title="t('admin.menu.translations', 'Translations')"
+            :description="t('admin.translations.description', 'Manage multi-language strings for your website UI.')"
             :icon="markRaw(PhTranslate)"
             :breadcrumbs="breadcrumbs"
-            :resources="translations"
+            :resources="translations_list"
             :columns="columns"
+            :search-placeholder="t('admin.common.search_placeholder', 'Search...')"
             persistence-key="translations-v2"
             ref="tableRef"
             @delete-confirmed="deleteTranslation"
         >
             <template #header-actions>
                 <button @click="showAddModal = true" class="btn btn-primary shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                    <PhPlus weight="bold" class="w-3 h-3 mr-1" /> Create
+                    <PhPlus weight="bold" class="w-3 h-3 mr-1" /> {{ t('admin.translations.create', 'Create') }}
                 </button>
             </template>
 
@@ -120,10 +122,10 @@ const deleteTranslation = (item) => {
 
             <template #cell-actions="{ item }">
                 <div class="flex justify-end gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-all">
-                    <button @click="openEditModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all" title="Edytuj">
+                    <button @click="openEditModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all" :title="t('admin.common.edit', 'Edit')">
                         <PhPencilSimple class="w-4 h-4" weight="bold" />
                     </button>
-                    <button @click="tableRef?.openDeleteModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all" title="Usuń">
+                    <button @click="tableRef?.openDeleteModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all" :title="t('admin.common.delete', 'Delete')">
                         <PhTrash weight="bold" class="w-4 h-4" />
                     </button>
                 </div>
@@ -133,10 +135,10 @@ const deleteTranslation = (item) => {
         <!-- Add Modal -->
         <div v-if="showAddModal" class="modal modal-open">
             <div class="modal-box rounded-3xl border border-white/10 shadow-2xl p-8 bg-base-100">
-                <h3 class="font-black text-2xl mb-6">Add New Translation Key</h3>
+                <h3 class="font-black text-2xl mb-6">{{ t('admin.translations.add_new', 'Add New Translation Key') }}</h3>
                 <div class="space-y-4">
                     <div class="form-control">
-                        <label class="label"><span class="label-text font-bold opacity-50">Group</span></label>
+                        <label class="label"><span class="label-text font-bold opacity-50">{{ t('admin.translations.group', 'Group') }}</span></label>
                         <select v-model="addForm.group" class="select select-bordered w-full rounded-xl bg-base-200/50">
                             <option value="frontend">Frontend</option>
                             <option value="admin">Admin</option>
@@ -145,20 +147,20 @@ const deleteTranslation = (item) => {
                         </select>
                     </div>
                     <div class="form-control">
-                        <label class="label"><span class="label-text font-bold opacity-50">Key</span></label>
-                        <input type="text" v-model="addForm.key" class="input input-bordered w-full font-mono rounded-xl bg-base-200/50" placeholder="my_awesome_key" />
+                        <label class="label"><span class="label-text font-bold opacity-50">{{ t('admin.translations.key', 'Key') }}</span></label>
+                        <input type="text" v-model="addForm.key" class="input input-bordered w-full font-mono rounded-xl bg-base-200/50" :placeholder="t('admin.translations.key_placeholder', 'my_awesome_key')" />
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                         <div v-for="lang in languages" :key="lang.code" class="form-control">
-                            <label class="label"><span class="label-text font-bold opacity-50">Value ({{ lang.code.toUpperCase() }})</span></label>
+                            <label class="label"><span class="label-text font-bold opacity-50">{{ t('admin.translations.value', 'Value') }} ({{ lang.code.toUpperCase() }})</span></label>
                             <input type="text" v-model="addForm.text[lang.code]" class="input input-bordered w-full rounded-xl bg-base-200/50" />
                         </div>
                     </div>
                 </div>
                 <div class="modal-action mt-10">
-                    <button @click="showAddModal = false" class="btn btn-ghost rounded-xl px-6">Cancel</button>
+                    <button @click="showAddModal = false" class="btn btn-ghost rounded-xl px-6">{{ t('admin.common.cancel', 'Cancel') }}</button>
                     <button @click="submitAdd" class="btn btn-primary rounded-xl px-8 shadow-lg shadow-primary/20" :disabled="addForm.processing">
-                        Create Translation
+                        {{ t('admin.translations.create_btn', 'Create Translation') }}
                     </button>
                 </div>
             </div>
@@ -168,29 +170,29 @@ const deleteTranslation = (item) => {
         <!-- Edit Modal -->
         <div v-if="showEditModal" class="modal modal-open">
             <div class="modal-box rounded-3xl border border-white/10 shadow-2xl p-8 bg-base-100">
-                <h3 class="font-black text-2xl mb-6">Edit Translation</h3>
+                <h3 class="font-black text-2xl mb-6">{{ t('admin.translations.edit_title', 'Edit Translation') }}</h3>
                 <div class="space-y-4">
                     <div class="grid grid-cols-2 gap-4 opacity-70">
                         <div class="form-control">
-                            <label class="label"><span class="label-text font-bold">Group</span></label>
+                            <label class="label"><span class="label-text font-bold">{{ t('admin.translations.group', 'Group') }}</span></label>
                             <input type="text" :value="editForm.group" readonly class="input input-sm input-bordered w-full rounded-xl bg-base-200/50" />
                         </div>
                         <div class="form-control">
-                            <label class="label"><span class="label-text font-bold">Key</span></label>
+                            <label class="label"><span class="label-text font-bold">{{ t('admin.translations.key', 'Key') }}</span></label>
                             <input type="text" :value="editForm.key" readonly class="input input-sm input-bordered w-full font-mono rounded-xl bg-base-200/50" />
                         </div>
                     </div>
                     <div class="grid grid-cols-1 gap-4 mt-6">
                         <div v-for="lang in languages" :key="lang.code" class="form-control">
-                            <label class="label"><span class="label-text font-bold opacity-50">Value ({{ lang.code.toUpperCase() }})</span></label>
+                            <label class="label"><span class="label-text font-bold opacity-50">{{ t('admin.translations.value', 'Value') }} ({{ lang.code.toUpperCase() }})</span></label>
                             <textarea v-model="editForm.text[lang.code]" class="textarea textarea-bordered w-full rounded-xl bg-base-200/50 focus:bg-base-100 focus:border-primary" rows="2"></textarea>
                         </div>
                     </div>
                 </div>
                 <div class="modal-action mt-10">
-                    <button @click="showEditModal = false" class="btn btn-ghost rounded-xl px-6">Cancel</button>
+                    <button @click="showEditModal = false" class="btn btn-ghost rounded-xl px-6">{{ t('admin.common.cancel', 'Cancel') }}</button>
                     <button @click="submitEdit" class="btn btn-primary rounded-xl px-8 shadow-lg shadow-primary/20" :disabled="editForm.processing">
-                        Save Changes
+                        {{ t('admin.common.save', 'Save Changes') }}
                     </button>
                 </div>
             </div>
@@ -198,3 +200,4 @@ const deleteTranslation = (item) => {
         </div>
     </AdminLayout>
 </template>
+

@@ -26,7 +26,7 @@ class LanguageController extends Controller
         }
 
         return Inertia::render('Admin/Languages/Index', [
-            'languages' => $query->paginate(10)->withQueryString()
+            'languages_list' => $query->paginate(10)->withQueryString()
         ]);
     }
 

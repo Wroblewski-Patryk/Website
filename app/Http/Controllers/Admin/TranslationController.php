@@ -40,7 +40,7 @@ class TranslationController extends Controller
         }
 
         return Inertia::render('Admin/Translations/Index', [
-            'translations' => $query->paginate(20)->withQueryString()
+            'translations_list' => $query->paginate(20)->withQueryString()
         ]);
     }
 

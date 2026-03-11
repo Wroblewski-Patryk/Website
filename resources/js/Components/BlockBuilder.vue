@@ -76,7 +76,7 @@
                         >
                             <draggable 
                                 :list="cat.blocks" 
-                                :group="{ name: 'blocks', pull: 'clone', put: false }" 
+                                :group="{ name: 'admin.blocks', pull: 'clone', put: false }" 
                                 :clone="cloneBlock"
                                 :sort="false"
                                 item-key="type"
@@ -134,7 +134,7 @@
                         <slot name="canvas-header"></slot>
                         <draggable 
                             v-model="blocks" 
-                            :group="'blocks'"
+                            :group="'admin.blocks'"
                             item-key="id"
                             handle=".drag-handle"
                             ghost-class="ghost-block"

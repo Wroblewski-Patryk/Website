@@ -20,7 +20,7 @@
                             <input 
                                 v-model="search" 
                                 type="text" 
-                                :placeholder="searchPlaceholder || 'Search...'" 
+                                :placeholder="searchPlaceholder || t('admin.common.search_placeholder', 'Search...')" 
                                 class="input input-bordered w-full sm:w-[260px] pl-10 pr-12 bg-base-100 focus:bg-base-100 hover:border-base-300 focus:border-primary shadow-sm hover:shadow-md focus:shadow-md focus:ring-4 focus:ring-primary/10 transition-all font-medium"
                             />
                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-40 group-focus-within:opacity-0 transition-opacity duration-300">
@@ -39,8 +39,8 @@
                                         <i class="fas fa-columns text-sm"></i>
                                     </div>
                                     <div>
-                                        <h3 class="font-bold text-sm leading-tight text-base-content">Layout</h3>
-                                        <p class="text-[10px] opacity-50 uppercase tracking-widest font-bold">Toggle Columns</p>
+                                        <h3 class="font-bold text-sm leading-tight text-base-content">{{ t('admin.common.layout', 'Layout') }}</h3>
+                                        <p class="text-[10px] opacity-50 uppercase tracking-widest font-bold">{{ t('admin.common.toggle_columns', 'Toggle Columns') }}</p>
                                     </div>
                                 </div>
                                 <div class="space-y-1">
@@ -60,7 +60,7 @@
                         <slot name="header-actions"></slot>
 
                         <Link v-if="createRoute" :href="createRoute" class="btn btn-primary shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                            <i class="fas fa-plus mr-1"></i> Create
+                            <i class="fas fa-plus mr-1"></i> {{ createLabel || t('admin.common.create', 'Create') }}
                         </Link>
                     </div>
                 </template>
@@ -115,7 +115,7 @@
                             <td :colspan="activeColumns.length" class="py-20 text-center">
                                 <div class="flex flex-col items-center opacity-20">
                                     <i class="fas fa-folder-open text-6xl mb-4"></i>
-                                    <p class="text-xs font-black uppercase tracking-widest">No matching records found</p>
+                                    <p class="text-xs font-black uppercase tracking-widest">{{ t('admin.common.no_records', 'No matching records found') }}</p>
                                 </div>
                             </td>
                         </tr>
@@ -126,7 +126,7 @@
             <!-- Footer / Pagination -->
             <div class="p-4 bg-base-200/30 border-t border-base-300 flex items-center justify-between">
                 <div class="text-xs opacity-40 font-medium">
-                    Showing {{ resources.from || 0 }} to {{ resources.to || 0 }} of {{ resources.total }} entries
+                    {{ t('admin.common.showing', 'Showing') }} {{ resources.from || 0 }} {{ t('admin.common.to', 'to') }} {{ resources.to || 0 }} {{ t('admin.common.of', 'of') }} {{ resources.total }} {{ t('admin.common.entries', 'entries') }}
                 </div>
                 
                 <div class="join shadow-sm rounded-xl overflow-hidden border border-white/5" v-if="resources.links.length > 3">
@@ -148,15 +148,15 @@
                 <div class="w-16 h-16 bg-error/10 text-error rounded-full flex items-center justify-center mx-auto mb-6 text-2xl animate-bounce">
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
-                <h3 class="font-black text-2xl mb-2 text-base-content">Are you sure?</h3>
-                <p class="text-sm opacity-50 mb-8">This action cannot be undone. All data associated with this record will be permanently removed.</p>
+                <h3 class="font-black text-2xl mb-2 text-base-content">{{ t('admin.common.are_you_sure', 'Are you sure?') }}</h3>
+                <p class="text-sm opacity-50 mb-8">{{ t('admin.common.delete_warning', 'This action cannot be undone. All data associated with this record will be permanently removed.') }}</p>
                 
                 <div class="flex flex-col gap-2">
                     <button @click="confirmDelete" class="btn btn-error rounded-xl w-full shadow-lg shadow-error/20" :disabled="deleting">
                         <span v-if="deleting" class="loading loading-spinner loading-xs mr-2"></span>
-                        Yes, Delete Permanently
+                        {{ t('admin.common.confirm_delete', 'Yes, Delete Permanently') }}
                     </button>
-                    <button @click="closeDeleteModal" class="btn btn-ghost rounded-xl w-full">Cancel</button>
+                    <button @click="closeDeleteModal" class="btn btn-ghost rounded-xl w-full">{{ t('admin.common.cancel', 'Cancel') }}</button>
                 </div>
             </div>
             <div class="modal-backdrop bg-black/60 backdrop-blur-sm" @click="closeDeleteModal"></div>
@@ -168,6 +168,9 @@
 import { ref, watch, computed, onMounted } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 // Simple debounce implementation to avoid lodash dependency
 function debounce(fn, delay) {
