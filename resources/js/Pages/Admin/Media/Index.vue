@@ -26,8 +26,8 @@ const uploaderRef = ref(null);
 // Dynamic Breadcrumbs
 const breadcrumbs = computed(() => {
     const crumbs = [
-        { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
-        { label: t('admin.media.title', 'Media Library'), url: route('admin.media.index') }
+        { label: t('admin.dashboard.title', 'Pulpit'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
+        { label: t('admin.media.title', 'Biblioteka mediów'), url: route('admin.media.index') }
     ];
 
     if (props.currentFolder) {
@@ -146,7 +146,7 @@ function handleUpload(payload) {
             uploadForm.reset();
             uploaderRef.value?.clearFiles();
             isUploaderOpen.value = false;
-            toastStore.success(t('admin.media.upload_success', 'Files uploaded! 🚀'));
+            toastStore.success(t('admin.media.upload_success', 'Pliki zostały przesłane! 🚀'));
         },
         onError: (errors) => Object.values(errors).forEach(err => toastStore.error(err))
     });
@@ -158,7 +158,7 @@ function handleFolderSubmit(name) {
             onSuccess: () => {
                 isFolderModalOpen.value = false;
                 editingFolder.value = null;
-                toastStore.success(t('admin.media.folder_renamed', 'Folder renamed.'));
+                toastStore.success(t('admin.media.folder_renamed', 'Nazwa folderu została zmieniona.'));
             }
         });
     } else {
@@ -167,7 +167,7 @@ function handleFolderSubmit(name) {
         folderForm.post(route('admin.media.folders.store'), {
             onSuccess: () => {
                 isFolderModalOpen.value = false;
-                toastStore.success(t('admin.media.folder_created', 'Folder created.'));
+                toastStore.success(t('admin.media.folder_created', 'Folder został utworzony.'));
             }
         });
     }
@@ -187,7 +187,7 @@ function openMoveModal(type = null, id = null) {
 }
 
 function bulkAction(action) {
-    if (action === 'delete' && !confirm(t('admin.common.confirm_delete_permanent', 'Are you sure? This cannot be undone.'))) return;
+    if (action === 'delete' && !confirm(t('admin.common.confirm_delete_permanent', 'Czy na pewno? Tej operacji nie można cofnąć.'))) return;
     
     router.post(route('admin.media.bulk-action'), {
         action,
@@ -199,7 +199,7 @@ function bulkAction(action) {
             selectedMediaIds.value = [];
             selectedFolderIds.value = [];
             isMoveModalOpen.value = false;
-            toastStore.success(t('admin.media.action_processed', 'Action: {action} processed.', { action }));
+            toastStore.success(t('admin.media.action_processed', 'Akcja: {action} została wykonana.', { action }));
         }
     });
 }
@@ -210,16 +210,16 @@ function updateMedia(id, data) {
 
 function deleteSingle(type, id) {
     if (type === 'media') {
-        router.delete(route('admin.media.destroy', id), { onSuccess: () => toastStore.success(t('admin.common.deleted', 'Deleted.')) });
+        router.delete(route('admin.media.destroy', id), { onSuccess: () => toastStore.success(t('admin.common.deleted', 'Usunięto.')) });
     } else {
-        router.delete(route('admin.media.folders.destroy', id), { onSuccess: () => toastStore.success(t('admin.common.deleted', 'Deleted.')) });
+        router.delete(route('admin.media.folders.destroy', id), { onSuccess: () => toastStore.success(t('admin.common.deleted', 'Usunięto.')) });
     }
 }
 
 function copyUrl(path) {
     const url = window.location.origin + '/storage/' + path;
     navigator.clipboard.writeText(url);
-    toastStore.info(t('admin.media.url_copied', 'URL copied to clipboard!'));
+    toastStore.info(t('admin.media.url_copied', 'URL skopiowany do schowka!'));
 }
 
 // Helpers
@@ -256,19 +256,19 @@ const folderTree = computed(() => {
             <!-- Header Section -->
             <div class="bg-base-100 p-6 rounded-box shadow-sm border border-base-300">
                 <ModuleHeader 
-                    :title="t('admin.media.title', 'Media Library')" 
-                    :description="t('admin.media.desc', 'Manage your files and folders.')" 
+                    :title="t('admin.media.title', 'Biblioteka mediów')" 
+                    :description="t('admin.media.desc', 'Zarządzaj swoimi plikami i folderami.')" 
                     :breadcrumbs="breadcrumbs"
                     :icon="markRaw(PhImageSquare)">
                     <template #actions>
                         <div class="flex items-center gap-3">
                             <button @click="editingFolder = null; isFolderModalOpen = true" class="btn btn-ghost gap-2 font-bold group">
                                 <PhFolderPlus weight="regular" class="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                {{ t('admin.media.new_folder', 'New folder') }}
+                                {{ t('admin.media.new_folder', 'Nowy folder') }}
                             </button>
                             <button @click="isUploaderOpen = !isUploaderOpen" class="btn btn-primary px-6 gap-2 font-black shadow-lg shadow-primary/20">
                                 <PhUpload weight="bold" class="w-5 h-5" />
-                                {{ t('admin.media.upload_files', 'Upload files') }}
+                                {{ t('admin.media.upload_files', 'Prześlij pliki') }}
                             </button>
                         </div>
                     </template>

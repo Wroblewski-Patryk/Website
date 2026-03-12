@@ -88,7 +88,7 @@ class PostController extends Controller
 
         $post = Post::create($validated);
 
-        return redirect()->route('admin.posts.edit', $post->id)->with('success', 'Post created successfully.');
+        return redirect()->route('admin.posts.edit', $post->id)->with('success', 'posts.create_success');
     }
 
     public function edit(Post $post)
@@ -149,12 +149,12 @@ class PostController extends Controller
 
         $post->update($validated);
 
-        return redirect()->back()->with('success', 'Post updated successfully.');
+        return redirect()->back()->with('success', 'posts.update_success');
     }
 
     public function destroy(Post $post)
     {
         $post->delete();
-        return redirect()->back()->with('message', 'Post deleted successfully');
+        return redirect()->back()->with('success', 'posts.delete_success');
     }
 }

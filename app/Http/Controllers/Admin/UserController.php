@@ -48,7 +48,7 @@ class UserController extends Controller
             'password' => bcrypt($validatedData['password']),
         ]);
 
-        return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
+        return redirect()->route('admin.users.index')->with('success', 'users.create_success');
     }
 
     /**
@@ -81,7 +81,7 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
+        return redirect()->route('admin.users.index')->with('success', 'users.update_success');
     }
 
     /**
@@ -91,6 +91,6 @@ class UserController extends Controller
     {
         $user->delete();
 
-        return redirect()->back()->with('success', 'User deleted successfully.');
+        return redirect()->back()->with('success', 'users.delete_success');
     }
 }

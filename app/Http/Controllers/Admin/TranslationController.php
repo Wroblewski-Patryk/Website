@@ -55,7 +55,7 @@ class TranslationController extends Controller
 
         Translation::create($validated);
 
-        return redirect()->back()->with('success', 'Translation created.');
+        return redirect()->back()->with('success', 'translations.create_success');
     }
 
     public function update(Request $request, Translation $translation)
@@ -66,12 +66,12 @@ class TranslationController extends Controller
 
         $translation->update($validated);
 
-        return redirect()->back()->with('success', 'Translation updated.');
+        return redirect()->back()->with('success', 'translations.update_success');
     }
 
     public function destroy(Translation $translation)
     {
         $translation->delete();
-        return redirect()->back()->with('success', 'Translation deleted.');
+        return redirect()->back()->with('success', 'translations.delete_success');
     }
 }

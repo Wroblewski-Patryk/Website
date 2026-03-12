@@ -29,6 +29,6 @@ class SettingController extends Controller
         foreach ($data as $key => $value) {
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);
         }
-        return redirect()->back()->with('success', 'Ustawienia zostały pomyślnie zapisane! 🎉');
+        return redirect()->back()->with('success', 'settings.update_success');
     }
 }

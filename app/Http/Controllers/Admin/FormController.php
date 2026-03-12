@@ -60,7 +60,7 @@ class FormController extends Controller
 
         $formModel = Form::create($validated);
 
-        return redirect()->route('admin.forms.edit', $formModel->id)->with('success', 'Form created successfully.');
+        return redirect()->route('admin.forms.edit', $formModel->id)->with('success', 'forms.create_success');
     }
 
     public function edit(Form $form)
@@ -96,12 +96,12 @@ class FormController extends Controller
 
         $form->update($validated);
 
-        return redirect()->back()->with('success', 'Form updated successfully.');
+        return redirect()->back()->with('success', 'forms.update_success');
     }
 
     public function destroy(Form $form)
     {
         $form->delete();
-        return redirect()->route('admin.forms.index')->with('success', 'Form deleted successfully.');
+        return redirect()->route('admin.forms.index')->with('success', 'forms.delete_success');
     }
 }

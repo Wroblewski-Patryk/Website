@@ -193,6 +193,6 @@ class ThemeController extends Controller
         ['value' => $validated]
         );
 
-        return redirect()->back()->with('success', 'Theme configuration updated successfully.');
+        return redirect()->back()->with('success', 'theme.update_success');
     }
 }

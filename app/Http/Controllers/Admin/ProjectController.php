@@ -90,7 +90,7 @@ class ProjectController extends Controller
         }
 
         $project = Project::create($validated);
-        return redirect()->route('admin.projects.edit', $project->id)->with('message', 'Project created');
+        return redirect()->route('admin.projects.edit', $project->id)->with('success', 'projects.create_success');
     }
 
     public function edit(Project $project)
@@ -145,12 +145,12 @@ class ProjectController extends Controller
 
 
         $project->update($validated);
-        return redirect()->back()->with('message', 'Project updated');
+        return redirect()->back()->with('success', 'projects.update_success');
     }
 
     public function destroy(Project $project)
     {
         $project->delete();
-        return redirect()->back()->with('message', 'Project deleted');
+        return redirect()->back()->with('success', 'projects.delete_success');
     }
 }

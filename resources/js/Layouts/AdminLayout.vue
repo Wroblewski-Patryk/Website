@@ -69,10 +69,10 @@ const toast = useToastStore();
 const page = usePage();
 
 watch(() => page.props.flash, (flash) => {
-    if (flash?.success) toast.success(flash.success);
-    if (flash?.error) toast.error(flash.error);
-    if (flash?.warning) toast.warning(flash.warning);
-    if (flash?.info) toast.info(flash.info);
+    if (flash?.success) toast.success(t(flash.success));
+    if (flash?.error) toast.error(t(flash.error));
+    if (flash?.warning) toast.warning(t(flash.warning));
+    if (flash?.info) toast.info(t(flash.info));
 }, { deep: true, immediate: true });
 
 function applyTheme(themeName) {

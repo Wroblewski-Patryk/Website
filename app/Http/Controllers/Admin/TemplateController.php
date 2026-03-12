@@ -75,7 +75,7 @@ class TemplateController extends Controller
 
 
         $template = Template::create($data);
-        return redirect()->route('admin.templates.edit', $template->id)->with('success', 'Template created successfully.');
+        return redirect()->route('admin.templates.edit', $template->id)->with('success', 'templates.create_success');
     }
 
     public function edit(Template $template)
@@ -130,12 +130,12 @@ class TemplateController extends Controller
 
 
         $template->update($data);
-        return redirect()->back()->with('success', 'Template updated successfully.');
+        return redirect()->back()->with('success', 'templates.update_success');
     }
 
     public function destroy(Template $template)
     {
         $template->delete();
-        return redirect()->back()->with('message', 'Template deleted successfully');
+        return redirect()->back()->with('success', 'templates.delete_success');
     }
 }

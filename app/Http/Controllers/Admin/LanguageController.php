@@ -44,7 +44,7 @@ class LanguageController extends Controller
         }
 
         Language::create($validated);
-        return redirect()->back()->with('message', 'Language added');
+        return redirect()->back()->with('success', 'languages.create_success');
     }
 
     public function update(Request $request, Language $language)
@@ -60,15 +60,15 @@ class LanguageController extends Controller
         }
 
         $language->update($validated);
-        return redirect()->back()->with('message', 'Language updated');
+        return redirect()->back()->with('success', 'languages.update_success');
     }
 
     public function destroy(Language $language)
     {
         if ($language->is_default) {
-            return redirect()->back()->withErrors(['message' => 'Cannot delete default language']);
+            return redirect()->back()->withErrors(['message', 'languages.delete_default_error']);
         }
         $language->delete();
-        return redirect()->back()->with('message', 'Language deleted');
+        return redirect()->back()->with('success', 'languages.delete_success');
     }
 }

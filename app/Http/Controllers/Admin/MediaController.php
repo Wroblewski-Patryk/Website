@@ -88,7 +88,7 @@ class MediaController extends Controller
             }
         }
 
-        return redirect()->back()->with('message', 'Files uploaded successfully.');
+        return redirect()->back()->with('success', 'media.upload_success');
     }
 
     public function update(Request $request, Media $medium)
@@ -116,7 +116,7 @@ class MediaController extends Controller
 
         $medium->update($data);
 
-        return redirect()->back()->with('message', 'Media updated successfully.');
+        return redirect()->back()->with('success', 'media.update_success');
     }
 
     public function storeFolder(Request $request)
@@ -131,7 +131,7 @@ class MediaController extends Controller
             'parent_id' => $request->parent_id
         ]);
 
-        return redirect()->back()->with('message', 'Folder created successfully.');
+        return redirect()->back()->with('success', 'media.folder_create_success');
     }
 
     public function updateFolder(Request $request, MediaFolder $folder)
@@ -147,13 +147,13 @@ class MediaController extends Controller
             'parent_id' => $request->has('parent_id') ? $request->parent_id : $folder->parent_id
         ]);
 
-        return redirect()->back()->with('message', 'Folder updated successfully.');
+        return redirect()->back()->with('success', 'media.folder_update_success');
     }
 
     public function destroyFolder(MediaFolder $folder)
     {
         $folder->delete();
-        return redirect()->back()->with('message', 'Folder deleted successfully.');
+        return redirect()->back()->with('success', 'media.folder_delete_success');
     }
 
     public function destroy(Media $medium)
@@ -163,7 +163,7 @@ class MediaController extends Controller
         }
         $medium->delete();
 
-        return redirect()->back()->with('message', 'File deleted successfully.');
+        return redirect()->back()->with('success', 'media.delete_success');
     }
 
     public function bulkAction(Request $request)
@@ -189,7 +189,7 @@ class MediaController extends Controller
 
             MediaFolder::whereIn('id', $folderIds)->delete();
 
-            return redirect()->back()->with('message', 'Selected items deleted successfully.');
+            return redirect()->back()->with('success', 'media.bulk_delete_success');
         }
 
         if ($request->action === 'move') {
@@ -198,7 +198,7 @@ class MediaController extends Controller
             Media::whereIn('id', $mediaIds)->update(['folder_id' => $targetFolderId]);
             MediaFolder::whereIn('id', $folderIds)->update(['parent_id' => $targetFolderId]);
 
-            return redirect()->back()->with('message', 'Items moved successfully.');
+            return redirect()->back()->with('success', 'media.bulk_move_success');
         }
 
         return redirect()->back();

@@ -65,11 +65,11 @@ function deletePage(item) {
             <template #cell-status="{ item }">
                 <div v-if="item.status === 'published'" class="flex items-center gap-2 text-success text-xs">
                     <PhCheckCircle weight="fill" class="w-3.5 h-3.5" />
-                    {{ t('admin.common.published', 'Published') }}
+                    {{ t('admin.pages.status_published', 'Published') }}
                 </div>
                 <div v-else-if="item.status === 'planned'" class="flex items-center gap-2 text-info text-xs">
                     <PhClock weight="fill" class="w-3.5 h-3.5" />
-                    {{ t('admin.common.planned', 'Planned') }}
+                    {{ t('admin.pages.status_planned', 'Planned') }}
                 </div>
                 <div v-else-if="item.status === 'archived'" class="flex items-center gap-2 text-error text-xs">
                     <PhArchive weight="fill" class="w-3.5 h-3.5" />
@@ -77,7 +77,7 @@ function deletePage(item) {
                 </div>
                 <div v-else class="flex items-center gap-2 opacity-40 text-xs text-base-content">
                     <PhFileText weight="fill" class="w-3.5 h-3.5" />
-                    {{ t('admin.common.draft', 'Draft') }}
+                    {{ t('admin.pages.status_draft', 'Draft') }}
                 </div>
             </template>
 

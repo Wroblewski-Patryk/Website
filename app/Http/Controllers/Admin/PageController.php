@@ -81,7 +81,7 @@ class PageController extends Controller
 
         $page = Page::create($validated);
 
-        return redirect()->route('admin.pages.edit', $page->id)->with('success', 'Page created successfully.');
+        return redirect()->route('admin.pages.edit', $page->id)->with('success', 'pages.create_success');
     }
 
     public function edit(Page $page)
@@ -144,12 +144,12 @@ class PageController extends Controller
 
         $page->update($validated);
 
-        return redirect()->back()->with('success', 'Page updated successfully.');
+        return redirect()->back()->with('success', 'pages.update_success');
     }
 
     public function destroy(Page $page)
     {
         $page->delete();
-        return redirect()->back()->with('message', 'Page deleted successfully');
+        return redirect()->back()->with('success', 'pages.delete_success');
     }
 }
