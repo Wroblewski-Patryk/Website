@@ -380,8 +380,8 @@ const changeLanguage = (langCode) => {
                                     <li><Link :href="route('admin.theme.colors')" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/colors')}">{{ t('admin.menu.colors', 'Colors') }}</Link></li>
                                     <li><Link :href="route('admin.theme.fonts')" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/fonts')}">{{ t('admin.menu.fonts', 'Fonts') }}</Link></li>
                                     <li><Link :href="route('admin.theme.typography')" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/typography')}">{{ t('admin.menu.typography', 'Typography') }}</Link></li>
-                                    <li><Link :href="route('admin.theme.sizes')" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/sizes')}">{{ t('admin.menu.sizes', 'Sizes / Metrics') }}</Link></li>
-                                    <li><Link :href="route('admin.theme.effects')" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/effects')}">{{ t('admin.menu.effects', 'Shadows / Effects') }}</Link></li>
+                                    <li><Link :href="route('admin.theme.sizes')" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/sizes')}">{{ t('admin.menu.sizes', 'Sizes') }}</Link></li>
+                                    <li><Link :href="route('admin.theme.effects')" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/effects')}">{{ t('admin.menu.effects', 'Effects') }}</Link></li>
                                 </ul>
                             </li>
 
@@ -449,6 +449,7 @@ const changeLanguage = (langCode) => {
 
                 <!-- Main Content Area -->
                 <div class="drawer-content flex flex-col min-w-0 flex-1 overflow-x-hidden pt-0 shadow-inner bg-base-200">
+                    <slot name="header" />
                     <main class="p-4 lg:p-8 flex-grow max-h-full" :class="{ 'max-w-7xl mx-auto w-full': !fullWidth }">
                         <slot />
                     </main>

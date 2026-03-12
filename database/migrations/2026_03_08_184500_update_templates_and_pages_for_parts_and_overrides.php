@@ -24,12 +24,6 @@ return new class extends Migration
             if (!Schema::hasColumn('pages', 'template_id')) {
                 $table->foreignId('template_id')->nullable()->constrained('templates')->nullOnDelete();
             }
-            if (!Schema::hasColumn('pages', 'header_override_id')) {
-                $table->foreignId('header_override_id')->nullable()->constrained('templates')->nullOnDelete();
-            }
-            if (!Schema::hasColumn('pages', 'footer_override_id')) {
-                $table->foreignId('footer_override_id')->nullable()->constrained('templates')->nullOnDelete();
-            }
             if (!Schema::hasColumn('pages', 'sidebar_override_id')) {
                 $table->foreignId('sidebar_override_id')->nullable()->constrained('templates')->nullOnDelete();
             }
@@ -42,11 +36,14 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('pages', function (Blueprint $table) {
-            $table->dropForeign(['template_id']);
-            $table->dropForeign(['header_override_id']);
-            $table->dropForeign(['footer_override_id']);
-            $table->dropForeign(['sidebar_override_id']);
-            $table->dropColumn(['template_id', 'header_override_id', 'footer_override_id', 'sidebar_override_id']);
+            if (Schema::hasColumn('pages', 'template_id')) {
+                $table->dropForeign(['template_id']);
+                $table->dropColumn('template_id');
+            }
+            if (Schema::hasColumn('pages', 'sidebar_override_id')) {
+                $table->dropForeign(['sidebar_override_id']);
+                $table->dropColumn('sidebar_override_id');
+            }
         });
 
         Schema::table('templates', function (Blueprint $table) {

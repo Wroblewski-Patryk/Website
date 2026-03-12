@@ -4,26 +4,28 @@ import { Head, useForm, Link } from '@inertiajs/vue3';
 import { PhPencilSimple, PhTrash, PhHouse, PhUsers } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ResourceTable from '@/Components/ResourceTable.vue';
+import { useTranslations } from '@/Composables/useTranslations';
 
-const props = defineProps(['users']);
+const props = defineProps(['users_list']);
 const tableRef = ref(null);
 const deleteForm = useForm({});
+const { t } = useTranslations();
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
-    { label: 'Users' }
+    { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
+    { label: t('admin.users.title', 'Users') }
 ];
 
 const columns = [
     { key: 'id', label: 'ID', sortable: true },
-    { key: 'name', label: 'Imię i nazwisko', sortable: true },
-    { key: 'email', label: 'E-mail', sortable: true },
-    { key: 'created_at', label: 'Data dodania', sortable: true, optional: true },
-    { key: 'actions', label: 'Akcje', sortable: false, align: 'right' }
+    { key: 'name', label: t('admin.users.full_name', 'Full Name'), sortable: true },
+    { key: 'email', label: t('admin.users.email_address', 'Email Address'), sortable: true },
+    { key: 'created_at', label: t('admin.users.created_at', 'Created At'), sortable: true, optional: true },
+    { key: 'actions', label: t('admin.common.actions', 'Actions'), sortable: false, align: 'right' }
 ];
 
 function deleteUser(item) {
-    if (confirm('Czy na pewno chcesz usunąć tego użytkownika?')) {
+    if (confirm(t('admin.users.delete_confirm', 'Are you sure you want to delete this user?'))) {
         deleteForm.delete(route('admin.users.destroy', item.id), {
             preserveScroll: true
         });
@@ -32,17 +34,17 @@ function deleteUser(item) {
 </script>
 
 <template>
-    <Head title="Users" />
+    <Head :title="t('admin.users.title', 'Users')" />
     <AdminLayout>
         <ResourceTable
-            title="Users"
-            description="Zarządzaj kontami użytkowników z dostępem do panelu."
+            :title="t('admin.users.title', 'Users')"
+            :description="t('admin.users.desc', 'Manage user accounts with access to the panel.')"
             :icon="markRaw(PhUsers)"
             :breadcrumbs="breadcrumbs"
-            :resources="users"
+            :resources="users_list"
             :columns="columns"
             :create-route="route('admin.users.create')"
-            create-label="Dodaj użytkownika"
+            :create-label="t('admin.common.create', 'Create')"
             persistence-key="users"
             ref="tableRef"
             @delete-confirmed="deleteUser"

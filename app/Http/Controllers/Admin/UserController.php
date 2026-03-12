@@ -17,7 +17,7 @@ class UserController extends Controller
         $users = User::latest()->paginate(10);
 
         return Inertia::render('Admin/Users/Index', [
-            'users' => $users
+            'users_list' => $users
         ]);
     }
 
@@ -26,7 +26,9 @@ class UserController extends Controller
      */
     public function create()
     {
-    // To be implemented
+        return Inertia::render('Admin/Users/Edit', [
+            'user_item' => new User()
+        ]);
     }
 
     /**
@@ -34,7 +36,19 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-    // To be implemented
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => bcrypt($validatedData['password']),
+        ]);
+
+        return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
     }
 
     /**
@@ -43,7 +57,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         return Inertia::render('Admin/Users/Edit', [
-            'user' => $user
+            'user_item' => $user
         ]);
     }
 

@@ -2,11 +2,14 @@
 import { watch, markRaw } from 'vue';
 import ConfiguratorLayout from './ConfiguratorLayout.vue';
 import { PhPalette, PhHouse, PhPaintRoller } from '@phosphor-icons/vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
-    { label: 'Theme', url: route('admin.theme.index') },
-    { label: 'Colors' }
+    { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
+    { label: t('admin.menu.theme', 'Theme'), url: route('admin.theme.index') },
+    { label: t('admin.menu.colors', 'Colors') }
 ];
 
 // Rough approximation for live preview 
@@ -67,8 +70,8 @@ const setupLivePreview = (form) => {
 
 <template>
     <ConfiguratorLayout 
-        title="Colors" 
-        description="Manage the main DaisyUI color palette used across all blocks."
+        :title="t('admin.theme.colors_title', 'Colors')" 
+        :description="t('admin.theme.colors_desc', 'Manage the main DaisyUI color palette used across all blocks.')"
         :breadcrumbs="breadcrumbs">
         <template #default="{ form }">
             
@@ -76,7 +79,10 @@ const setupLivePreview = (form) => {
 
             <div class="card bg-base-100 shadow-sm border border-base-200">
                 <div class="card-body">
-                    <h2 class="card-title text-xl mb-4 border-b border-base-200 pb-2"><PhPalette weight="regular" class="w-6 h-6 text-primary inline-block align-text-bottom" /> DaisyUI Colors</h2>
+                    <h2 class="card-title text-xl mb-4 border-b border-base-200 pb-2">
+                        <PhPalette weight="regular" class="w-6 h-6 text-primary inline-block align-text-bottom" /> 
+                        {{ t('admin.theme.colors_title', 'DaisyUI Colors') }}
+                    </h2>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                         <div v-for="(val, key) in form.globals.colors" :key="key" class="form-control">
@@ -93,13 +99,10 @@ const setupLivePreview = (form) => {
 
                     <!-- Preview Buttons -->
                     <div class="mt-8 p-6 bg-base-200 rounded-box border border-base-300 flex flex-wrap gap-4 items-center justify-center">
+                        <h3 class="w-full text-center text-xs font-black uppercase tracking-widest opacity-30 mb-2">{{ t('admin.theme.live_preview', 'Live Preview') }}</h3>
                         <button class="btn" :style="{ backgroundColor: form.globals.colors.primary, color: form.globals.colors['base-100'], border: 'none' }">Primary Button</button>
                         <button class="btn" :style="{ backgroundColor: form.globals.colors.secondary, color: form.globals.colors['base-100'], border: 'none' }">Secondary Button</button>
                         <button class="btn" :style="{ backgroundColor: form.globals.colors.accent, color: form.globals.colors['base-100'], border: 'none' }">Accent Button</button>
-                        <div class="badge badge-lg" :style="{ backgroundColor: form.globals.colors.info, color: form.globals.colors['base-100'], border: 'none' }">Info</div>
-                        <div class="badge badge-lg" :style="{ backgroundColor: form.globals.colors.success, color: form.globals.colors['base-100'], border: 'none' }">Success</div>
-                        <div class="badge badge-lg" :style="{ backgroundColor: form.globals.colors.warning, color: form.globals.colors['base-100'], border: 'none' }">Warning</div>
-                        <div class="badge badge-lg" :style="{ backgroundColor: form.globals.colors.error, color: form.globals.colors['base-100'], border: 'none' }">Error</div>
                     </div>
                 </div>
             </div>

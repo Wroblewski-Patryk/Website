@@ -3,11 +3,14 @@ import { markRaw } from 'vue';
 import ConfiguratorLayout from './ConfiguratorLayout.vue';
 import FontSelect from '@/Components/ThemeConfigurator/FontSelect.vue';
 import { PhStack, PhTextT, PhHouse, PhPaintRoller } from '@phosphor-icons/vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
-    { label: 'Theme', url: route('admin.theme.index') },
-    { label: 'Fonts' }
+    { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
+    { label: t('admin.menu.theme', 'Theme'), url: route('admin.theme.index') },
+    { label: t('admin.menu.fonts', 'Fonts') }
 ];
 
 const popularFonts = [
@@ -45,14 +48,17 @@ const allGoogleFonts = [
 
 <template>
     <ConfiguratorLayout 
-        title="Fonts" 
-        description="Select Google Fonts to populate the 3 core Tailwind font stacks."
+        :title="t('admin.theme.fonts_title', 'Fonts')" 
+        :description="t('admin.theme.fonts_desc', 'Select Google Fonts to populate the 3 core Tailwind font stacks.')"
         :breadcrumbs="breadcrumbs">
         <template #default="{ form }">
 
             <div class="card bg-base-100 shadow-sm border border-base-200">
                 <div class="card-body">
-                    <h2 class="card-title text-xl mb-6 border-b border-base-200 pb-2"><PhTextT weight="regular" class="w-6 h-6 text-accent inline-block align-text-bottom" /> Google Fonts Configuration</h2>
+                    <h2 class="card-title text-xl mb-6 border-b border-base-200 pb-2">
+                        <PhTextT weight="regular" class="w-6 h-6 text-accent inline-block align-text-bottom" /> 
+                        {{ t('admin.theme.fonts_title', 'Google Fonts Configuration') }}
+                    </h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div class="form-control">
@@ -87,7 +93,7 @@ const allGoogleFonts = [
                     </div>
 
                     <div class="mt-8 p-8 bg-base-200 rounded-box border border-base-300 text-center space-y-6 shadow-inner">
-                        <p class="text-sm font-bold tracking-widest uppercase opacity-50 mb-2">Live Font Preview</p>
+                        <p class="text-sm font-bold tracking-widest uppercase opacity-50 mb-2">{{ t('admin.theme.live_preview', 'Live Font Preview') }}</p>
                         
                         <h1 class="text-3xl md:text-5xl font-bold" :style="{ fontFamily: form.globals.fonts.sans + ', sans-serif' }">
                             Sans-Serif: Clean & Modern
@@ -114,7 +120,8 @@ const allGoogleFonts = [
             <div class="card bg-base-100 shadow-sm border border-base-200 mt-8">
                 <div class="card-body">
                     <h2 class="card-title text-xl mb-4 border-b border-base-200 pb-2">
-                        <PhStack weight="regular" class="w-6 h-6 text-info inline-block align-text-bottom" /> Tailwind Fallback Stacks
+                        <PhStack weight="regular" class="w-6 h-6 text-info inline-block align-text-bottom" /> 
+                        {{ t('admin.theme.fallback_stacks', 'Tailwind Fallback Stacks') }}
                     </h2>
                     
                     <div class="grid grid-cols-1 gap-6">

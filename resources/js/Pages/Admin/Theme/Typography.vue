@@ -3,11 +3,14 @@ import { markRaw } from 'vue';
 import ConfiguratorLayout from './ConfiguratorLayout.vue';
 import UnitInput from '../../../Components/UnitInput.vue';
 import { PhTextAa, PhWarning, PhHouse, PhPaintRoller } from '@phosphor-icons/vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
-    { label: 'Theme', url: route('admin.theme.index') },
-    { label: 'Typography' }
+    { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
+    { label: t('admin.menu.theme', 'Theme'), url: route('admin.theme.index') },
+    { label: t('admin.menu.typography', 'Typography') }
 ];
 
 const weightOptions = {
@@ -25,8 +28,8 @@ const weightOptions = {
 
 <template>
     <ConfiguratorLayout 
-        title="Typography" 
-        description="Fine-tune typography weights, line heights, and letter spacing."
+        :title="t('admin.theme.typography_title', 'Typography')" 
+        :description="t('admin.theme.typography_desc', 'Fine-tune typography weights, line heights, and letter spacing.')"
         :breadcrumbs="breadcrumbs">
         <template #default="{ form }">
 
@@ -35,13 +38,14 @@ const weightOptions = {
                 <div class="card bg-base-100 shadow-sm border border-base-200">
                     <div class="card-body">
                         <h2 class="card-title text-xl mb-4 border-b border-base-200 pb-2">
-                            <PhTextAa weight="regular" class="w-6 h-6 text-secondary inline-block align-text-bottom" /> Typography Metrics
+                            <PhTextAa weight="regular" class="w-6 h-6 text-secondary inline-block align-text-bottom" /> 
+                            {{ t('admin.theme.typography_title', 'Typography Metrics') }}
                         </h2>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                             <!-- Font Sizes -->
                             <div>
-                                <h3 class="font-bold mb-4 opacity-70 uppercase tracking-wider text-sm">Font Sizes</h3>
+                                <h3 class="font-bold mb-4 opacity-70 uppercase tracking-wider text-sm">{{ t('admin.theme.font_sizes', 'Font Sizes') }}</h3>
                                 <div class="space-y-4">
                                     <div v-for="size in ['xs', 'sm', 'base', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl', '7xl']" :key="size" class="form-control">
                                         <label class="label pb-1"><span class="label-text text-xs font-bold">text-{{ size }}</span></label>
@@ -52,7 +56,7 @@ const weightOptions = {
                             
                             <!-- Font Weights -->
                             <div>
-                                <h3 class="font-bold mb-4 opacity-70 uppercase tracking-wider text-sm">Font Weights</h3>
+                                <h3 class="font-bold mb-4 opacity-70 uppercase tracking-wider text-sm">{{ t('admin.theme.font_weights', 'Font Weights') }}</h3>
                                 <div class="space-y-4">
                                     <div v-for="weight in ['thin', 'extralight', 'light', 'normal', 'medium', 'semibold', 'bold', 'extrabold', 'black']" :key="weight" class="form-control">
                                         <label class="label pb-1"><span class="label-text text-xs font-bold">font-{{ weight }}</span></label>
@@ -65,7 +69,7 @@ const weightOptions = {
 
                             <!-- Line Heights -->
                             <div>
-                                <h3 class="font-bold mb-4 opacity-70 uppercase tracking-wider text-sm">Line Heights</h3>
+                                <h3 class="font-bold mb-4 opacity-70 uppercase tracking-wider text-sm">{{ t('admin.theme.line_heights', 'Line Heights') }}</h3>
                                 <div class="space-y-4">
                                     <div v-for="lh in ['none', 'tight', 'snug', 'normal', 'relaxed', 'loose']" :key="lh" class="form-control">
                                         <label class="label pb-1 flex justify-between">
@@ -82,7 +86,7 @@ const weightOptions = {
 
                             <!-- Tracking -->
                             <div>
-                                <h3 class="font-bold mb-4 opacity-70 uppercase tracking-wider text-sm">Letter Spacing</h3>
+                                <h3 class="font-bold mb-4 opacity-70 uppercase tracking-wider text-sm">{{ t('admin.theme.letter_spacing', 'Letter Spacing') }}</h3>
                                 <div class="space-y-4">
                                     <div v-for="track in ['tighter', 'tight', 'normal', 'wide', 'wider', 'widest']" :key="track" class="form-control">
                                         <label class="label pb-1"><span class="label-text text-xs font-bold">tracking-{{ track }}</span></label>
@@ -98,8 +102,8 @@ const weightOptions = {
             <div v-else class="alert alert-warning shadow-sm">
                 <PhWarning weight="fill" class="w-6 h-6 text-warning" />
                 <div>
-                    <h3 class="font-bold">Missing Config</h3>
-                    <div class="text-xs">The configuration data was not found. Please re-save the theme settings to generate it.</div>
+                    <h3 class="font-bold">{{ t('admin.settings.missing_config', 'Missing Config') }}</h3>
+                    <div class="text-xs">{{ t('admin.settings.missing_config_desc', 'The configuration data was not found. Please re-save the theme settings to generate it.') }}</div>
                 </div>
             </div>
 

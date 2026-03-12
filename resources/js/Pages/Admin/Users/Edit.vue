@@ -4,51 +4,60 @@ import { markRaw } from 'vue';
 import { PhUser, PhHouse, PhUsers, PhFloppyDisk, PhX } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
+import { useTranslations } from '@/Composables/useTranslations';
 
 const props = defineProps({
-    user: Object
+    user_item: Object
 });
 
+const { t } = useTranslations();
+
 const form = useForm({
-    name: props.user.name,
-    email: props.user.email,
+    name: props.user_item.name || '',
+    email: props.user_item.email || '',
     password: '',
     password_confirmation: ''
 });
 
 const submit = () => {
-    form.put(route('admin.users.update', props.user.id), {
-        preserveScroll: true,
-        onSuccess: () => {
-            if (form.password) {
-                form.reset('password', 'password_confirmation');
+    if (props.user_item.id) {
+        form.put(route('admin.users.update', props.user_item.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                if (form.password) {
+                    form.reset('password', 'password_confirmation');
+                }
             }
-        }
-    });
+        });
+    } else {
+        form.post(route('admin.users.store'), {
+            preserveScroll: true
+        });
+    }
 };
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
-    { label: 'Users', url: route('admin.users.index'), icon: markRaw(PhUsers) },
-    { label: 'Edit Profile' }
+    { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
+    { label: t('admin.users.title', 'Users'), url: route('admin.users.index'), icon: markRaw(PhUsers) },
+    { label: props.user_item.id ? t('admin.users.edit_user', 'Edit User') : t('admin.users.create_user', 'Create User') }
 ];
 </script>
 
 <template>
-    <Head title="Edit User" />
+    <Head :title="user_item.id ? t('admin.users.edit_user', 'Edit User') : t('admin.users.create_user', 'Create User')" />
     <AdminLayout>
         <div class="space-y-6">
             <div class="bg-base-100 p-6 rounded-box shadow-sm border border-base-300">
                 <ModuleHeader 
-                    title="Edit User" 
-                    :description="`Update profile details for ${user.name}.`" 
+                    :title="user_item.id ? t('admin.users.edit_user', 'Edit User') : t('admin.users.create_user', 'Create User')" 
+                    :description="user_item.id ? t('admin.users.edit_desc', `Update profile details for ${user_item.name}.`, { name: user_item.name }) : t('admin.users.create_desc', 'Create a new user account.')" 
                     :icon="markRaw(PhUser)"
                     :breadcrumbs="breadcrumbs"
                 >
                     <template #actions>
                         <div class="flex items-center gap-2">
                             <Link :href="route('admin.users.index')" class="btn btn-ghost hover:bg-base-200">
-                                <PhX weight="bold" class="w-4 h-4" /> Cancel
+                                <PhX weight="bold" class="w-4 h-4" /> {{ t('admin.common.cancel', 'Cancel') }}
                             </Link>
                             <button 
                                 @click="submit" 
@@ -57,7 +66,7 @@ const breadcrumbs = [
                             >
                                 <span v-if="form.processing" class="loading loading-spinner loading-xs"></span>
                                 <PhFloppyDisk v-else weight="bold" class="w-4 h-4" /> 
-                                Save Changes
+                                {{ user_item.id ? t('admin.common.save', 'Save Changes') : t('admin.common.create', 'Create') }}
                             </button>
                         </div>
                     </template>
@@ -70,21 +79,21 @@ const breadcrumbs = [
                 <div class="xl:col-span-2 space-y-6">
                     <div class="bg-base-100 rounded-box shadow-sm border border-base-300 p-6">
                         <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-                            <PhUser weight="bold" class="w-5 h-5 text-primary" /> Profile Details
+                            <PhUser weight="bold" class="w-5 h-5 text-primary" /> {{ t('admin.users.profile_details', 'Profile Details') }}
                         </h2>
                         
                         <div class="space-y-4">
                             <!-- Name Source Group -->
                             <div class="form-control w-full">
                                 <label class="label">
-                                    <span class="label-text font-semibold">Full Name <span class="text-error">*</span></span>
+                                    <span class="label-text font-semibold">{{ t('admin.users.full_name', 'Full Name') }} <span class="text-error">*</span></span>
                                 </label>
                                 <input 
                                     v-model="form.name" 
                                     type="text" 
                                     class="input input-bordered w-full bg-base-100 focus:bg-base-100 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
                                     :class="{'input-error bg-error/5 border-error': form.errors.name}"
-                                    placeholder="Enter full name"
+                                    :placeholder="t('admin.users.name_placeholder', 'Enter full name')"
                                     required
                                 />
                                 <label class="label" v-if="form.errors.name">
@@ -95,7 +104,7 @@ const breadcrumbs = [
                             <!-- Email Address -->
                             <div class="form-control w-full">
                                 <label class="label">
-                                    <span class="label-text font-semibold">Email Address <span class="text-error">*</span></span>
+                                    <span class="label-text font-semibold">{{ t('admin.users.email_address', 'Email Address') }} <span class="text-error">*</span></span>
                                 </label>
                                 <input 
                                     v-model="form.email" 
@@ -114,21 +123,21 @@ const breadcrumbs = [
 
                     <div class="bg-base-100 rounded-box shadow-sm border border-base-300 p-6">
                         <h2 class="text-xl font-bold mb-2 flex items-center gap-2">
-                            Change Password
+                            {{ t('admin.users.change_password', 'Change Password') }}
                         </h2>
-                        <p class="text-sm opacity-60 mb-6">Leave blank if you do not want to change the password.</p>
+                        <p class="text-sm opacity-60 mb-6">{{ t('admin.users.password_hint', 'Leave blank if you do not want to change the password.') }}</p>
                         
                         <div class="space-y-4">
                             <div class="form-control w-full">
                                 <label class="label">
-                                    <span class="label-text font-semibold">New Password</span>
+                                    <span class="label-text font-semibold">{{ t('admin.users.new_password', 'New Password') }} <span v-if="!user_item.id" class="text-error">*</span></span>
                                 </label>
                                 <input 
                                     v-model="form.password" 
                                     type="password" 
                                     class="input input-bordered w-full bg-base-100 focus:bg-base-100 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all font-mono"
                                     :class="{'input-error bg-error/5 border-error': form.errors.password}"
-                                    placeholder="Enter new password"
+                                    :placeholder="t('admin.users.password_placeholder', 'Enter new password')"
                                     autocomplete="new-password"
                                 />
                                 <label class="label" v-if="form.errors.password">
@@ -138,13 +147,13 @@ const breadcrumbs = [
 
                             <div class="form-control w-full">
                                 <label class="label">
-                                    <span class="label-text font-semibold">Confirm New Password</span>
+                                    <span class="label-text font-semibold">{{ t('admin.users.confirm_password', 'Confirm New Password') }} <span v-if="!user_item.id" class="text-error">*</span></span>
                                 </label>
                                 <input 
                                     v-model="form.password_confirmation" 
                                     type="password" 
                                     class="input input-bordered w-full bg-base-100 focus:bg-base-100 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all font-mono"
-                                    placeholder="Re-type new password"
+                                    :placeholder="t('admin.users.confirm_placeholder', 'Re-type new password')"
                                 />
                             </div>
                         </div>
@@ -154,20 +163,20 @@ const breadcrumbs = [
                 <!-- Sidebar Metadata Column -->
                 <div class="space-y-6">
                     <div class="bg-base-100 rounded-box shadow-sm border border-base-300 p-6">
-                        <h2 class="text-xs font-black uppercase tracking-widest opacity-40 mb-4 pb-2 border-b border-base-200">Account Status</h2>
+                        <h2 class="text-xs font-black uppercase tracking-widest opacity-40 mb-4 pb-2 border-b border-base-200">{{ t('admin.users.account_status', 'Account Status') }}</h2>
                         
                         <div class="space-y-4">
                             <div class="flex flex-col gap-1">
-                                <span class="text-xs font-semibold opacity-60">Created At</span>
+                                <span class="text-xs font-semibold opacity-60">{{ t('admin.users.created_at', 'Created At') }}</span>
                                 <span class="text-sm font-mono opacity-80 bg-base-200 p-2 rounded-lg break-all">
-                                    {{ new Date(user.created_at).toLocaleString() }}
+                                    {{ user_item.created_at ? new Date(user_item.created_at).toLocaleString() : '-' }}
                                 </span>
                             </div>
                             
                             <div class="flex flex-col gap-1 mt-4">
-                                <span class="text-xs font-semibold opacity-60">Last Updated</span>
+                                <span class="text-xs font-semibold opacity-60">{{ t('admin.users.last_updated', 'Last Updated') }}</span>
                                 <span class="text-sm font-mono opacity-80 bg-base-200 p-2 rounded-lg break-all">
-                                    {{ new Date(user.updated_at).toLocaleString() }}
+                                    {{ user_item.updated_at ? new Date(user_item.updated_at).toLocaleString() : '-' }}
                                 </span>
                             </div>
                         </div>

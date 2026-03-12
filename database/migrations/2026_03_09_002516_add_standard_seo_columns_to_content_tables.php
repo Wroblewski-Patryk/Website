@@ -43,16 +43,18 @@ return new class extends Migration
     public function down(): void
     {
         $tables = ['pages', 'posts', 'templates'];
+        $columns = ['meta_title', 'meta_description', 'og_image', 'canonical_url', 'seo_index', 'seo_follow'];
 
         foreach ($tables as $tableName) {
-            Schema::table($tableName, function (Blueprint $table) use ($tableName) {
-                $columns = ['meta_title', 'meta_description', 'og_image', 'canonical_url', 'seo_index', 'seo_follow'];
+            if (Schema::hasTable($tableName)) {
                 foreach ($columns as $column) {
                     if (Schema::hasColumn($tableName, $column)) {
-                        $table->dropColumn($column);
+                        Schema::table($tableName, function (Blueprint $table) use ($column) {
+                            $table->dropColumn($column);
+                        });
                     }
                 }
-            });
+            }
         }
     }
 };

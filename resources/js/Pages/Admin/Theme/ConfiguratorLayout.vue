@@ -4,6 +4,7 @@ import { useForm, usePage } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
 import { PhCheckCircle, PhFloppyDisk, PhPaintRoller } from '@phosphor-icons/vue';
+import { useTranslations } from '@/Composables/useTranslations';
 
 const props = defineProps({
     title: String,
@@ -11,6 +12,7 @@ const props = defineProps({
     breadcrumbs: Array,
 });
 
+const { t } = useTranslations();
 const page = usePage();
 
 // We initialize the form with global data so it can be saved from any tab
@@ -34,8 +36,7 @@ const savedMessage = ref(false);
 
 const saveConfig = () => {
     isSaving.value = true;
-    form.post(route('admin.theme.update'), {
-        preserveScroll: true,
+    form.post(route('admin.theme.store'), {
         preserveScroll: true,
         onSuccess: () => {
             isSaving.value = false;
@@ -62,10 +63,14 @@ const saveConfig = () => {
                 :breadcrumbs="breadcrumbs"
                 :icon="markRaw(PhPaintRoller)">
                 <template #actions>
-                    <span v-if="savedMessage" class="text-success text-sm font-semibold flex items-center gap-1 mr-4"><PhCheckCircle weight="regular" class="w-4 h-4" /> Saved</span>
-                    <button @click="saveConfig" class="btn btn-primary shadow-lg shadow-primary/20" :class="{'loading': isSaving}">
-                        <PhFloppyDisk weight="regular" class="w-4 h-4" v-if="!isSaving" /> 
-                        Save
+                    <span v-if="savedMessage" class="text-success text-sm font-semibold flex items-center gap-1 mr-4">
+                        <PhCheckCircle weight="regular" class="w-4 h-4" /> 
+                        {{ t('admin.theme.saved', 'Saved') }}
+                    </span>
+                    <button @click="saveConfig" class="btn btn-primary shadow-lg shadow-primary/20" :disabled="isSaving">
+                        <span v-if="isSaving" class="loading loading-spinner loading-xs"></span>
+                        <PhFloppyDisk weight="regular" class="w-4 h-4" v-else /> 
+                        {{ t('admin.theme.save_btn', 'Save') }}
                     </button>
                 </template>
             </ModuleHeader>
