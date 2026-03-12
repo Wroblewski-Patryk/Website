@@ -8,13 +8,13 @@
             <div class="flex items-center gap-2">
                 <!-- Link Toggles with DaisyUI Join -->
                 <div class="join bg-base-300 rounded-md p-0.5">
-                    <button @click="toggleLinkAll" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="linkAll ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Link All">
+                    <button @click="toggleLinkAll" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="linkAll ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" :title="t('admin.builder.unit_link_all', 'Link All')">
                         <i class="fas fa-link"></i>
                     </button>
-                    <button @click="toggleLinkY" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="linkY ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Link Top & Bottom">
+                    <button @click="toggleLinkY" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="linkY ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" :title="t('admin.builder.unit_link_y', 'Link Top & Bottom')">
                         <i class="fas fa-arrows-alt-v"></i>
                     </button>
-                    <button @click="toggleLinkX" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="linkX ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Link Left & Right">
+                    <button @click="toggleLinkX" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="linkX ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" :title="t('admin.builder.unit_link_x', 'Link Left & Right')">
                         <i class="fas fa-arrows-alt-h"></i>
                     </button>
                 </div>
@@ -36,8 +36,8 @@
             
             <!-- Top Input -->
             <div class="w-20 z-10 px-1">
-                <input type="number" step="any" :value="internal.top" @input="updateTop($event.target.value)" class="input input-xs input-bordered w-full text-center bg-base-100/90 shadow-sm hover:border-primary focus:border-primary transition-colors focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="-" title="Top" />
-                <div class="text-[8px] uppercase font-bold tracking-widest text-center opacity-30 mt-1 cursor-default select-none">Top</div>
+                <input type="number" step="any" :value="internal.top" @input="updateTop($event.target.value)" class="input input-xs input-bordered w-full text-center bg-base-100/90 shadow-sm hover:border-primary focus:border-primary transition-colors focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="-" :title="t('admin.builder.unit_top', 'Top')" />
+                <div class="text-[8px] uppercase font-bold tracking-widest text-center opacity-30 mt-1 cursor-default select-none">{{ t('admin.builder.unit_top', 'Top') }}</div>
             </div>
 
             <!-- Middle Row: Left - Center - Right -->
@@ -45,8 +45,8 @@
                 <!-- Left Input -->
                 <!-- If LinkAll OR LinkX is ON, Left takes value from Right (or Top if LinkAll) and is disabled -->
                 <div class="w-20 px-1">
-                    <div class="text-[8px] uppercase font-bold tracking-widest text-center opacity-30 mb-1 cursor-default select-none" :class="{'opacity-10': linkAll || linkX}">Left</div>
-                    <input type="number" step="any" :value="internal.left" @input="updateLeft($event.target.value)" :disabled="linkAll || linkX" :class="{'opacity-50 cursor-not-allowed': linkAll || linkX}" class="input input-xs input-bordered w-full text-center bg-base-100/90 shadow-sm hover:border-primary focus:border-primary transition-colors focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="-" title="Left" />
+                    <div class="text-[8px] uppercase font-bold tracking-widest text-center opacity-30 mb-1 cursor-default select-none" :class="{'opacity-10': linkAll || linkX}">{{ t('admin.builder.unit_left', 'Left') }}</div>
+                    <input type="number" step="any" :value="internal.left" @input="updateLeft($event.target.value)" :disabled="linkAll || linkX" :class="{'opacity-50 cursor-not-allowed': linkAll || linkX}" class="input input-xs input-bordered w-full text-center bg-base-100/90 shadow-sm hover:border-primary focus:border-primary transition-colors focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="-" :title="t('admin.builder.unit_left', 'Left')" />
                 </div>
 
                 <!-- Center visual indicator -->
@@ -57,16 +57,16 @@
                 <!-- Right Input -->
                 <!-- If LinkAll is ON, Right takes value from Top and is disabled -->
                 <div class="w-20 px-1">
-                    <div class="text-[8px] uppercase font-bold tracking-widest text-center opacity-30 mb-1 cursor-default select-none" :class="{'opacity-10': linkAll}">Right</div>
-                    <input type="number" step="any" :value="internal.right" @input="updateRight($event.target.value)" :disabled="linkAll" :class="{'opacity-50 cursor-not-allowed': linkAll}" class="input input-xs input-bordered w-full text-center bg-base-100/90 shadow-sm hover:border-primary focus:border-primary transition-colors focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="-" title="Right" />
+                    <div class="text-[8px] uppercase font-bold tracking-widest text-center opacity-30 mb-1 cursor-default select-none" :class="{'opacity-10': linkAll}">{{ t('admin.builder.unit_right', 'Right') }}</div>
+                    <input type="number" step="any" :value="internal.right" @input="updateRight($event.target.value)" :disabled="linkAll" :class="{'opacity-50 cursor-not-allowed': linkAll}" class="input input-xs input-bordered w-full text-center bg-base-100/90 shadow-sm hover:border-primary focus:border-primary transition-colors focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="-" :title="t('admin.builder.unit_right', 'Right')" />
                 </div>
             </div>
 
             <!-- Bottom Input -->
             <!-- If LinkAll OR LinkY is ON, Bottom takes value from Top and is disabled -->
             <div class="w-20 z-10 px-1">
-                <div class="text-[8px] uppercase font-bold tracking-widest text-center opacity-30 mb-1 cursor-default select-none" :class="{'opacity-10': linkAll || linkY}">Bottom</div>
-                <input type="number" step="any" :value="internal.bottom" @input="updateBottom($event.target.value)" :disabled="linkAll || linkY" :class="{'opacity-50 cursor-not-allowed': linkAll || linkY}" class="input input-xs input-bordered w-full text-center bg-base-100/90 shadow-sm hover:border-primary focus:border-primary transition-colors focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="-" title="Bottom" />
+                <div class="text-[8px] uppercase font-bold tracking-widest text-center opacity-30 mb-1 cursor-default select-none" :class="{'opacity-10': linkAll || linkY}">{{ t('admin.builder.unit_bottom', 'Bottom') }}</div>
+                <input type="number" step="any" :value="internal.bottom" @input="updateBottom($event.target.value)" :disabled="linkAll || linkY" :class="{'opacity-50 cursor-not-allowed': linkAll || linkY}" class="input input-xs input-bordered w-full text-center bg-base-100/90 shadow-sm hover:border-primary focus:border-primary transition-colors focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="-" :title="t('admin.builder.unit_bottom', 'Bottom')" />
             </div>
             
         </div>
@@ -75,6 +75,9 @@
 
 <script setup>
 import { reactive, watch, ref } from 'vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const props = defineProps({
     top: { type: [String, Number], default: '' },

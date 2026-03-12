@@ -64,12 +64,12 @@
                         <div class="flex items-center">
                             <button @click.stop="store.toggleBlockVisibility(element.id)" 
                                     class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-primary transition-colors" 
-                                    :title="element.settings?.hidden ? 'Show Block' : 'Hide Block'">
+                                    :title="element.settings?.hidden ? t('admin.builder.action_show', 'Show Block') : t('admin.builder.action_hide', 'Hide Block')">
                                 <component :is="element.settings?.hidden ? PhEyeSlash : PhEye" weight="bold" class="w-3 h-3" />
                             </button>
                             <button @click.stop="store.toggleBlockLock(element.id)" 
                                     class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-warning transition-colors" 
-                                    :title="element.settings?.locked ? 'Unlock Block' : 'Lock Block'">
+                                    :title="element.settings?.locked ? t('admin.builder.action_unlock', 'Unlock Block') : t('admin.builder.action_lock', 'Lock Block')">
                                 <component :is="element.settings?.locked ? PhLock : PhLockSimpleOpen" weight="bold" class="w-3 h-3" />
                             </button>
                         </div>
@@ -78,7 +78,7 @@
                         <div class="w-px h-3 bg-base-content/10 mx-1"></div>
 
                         <!-- Group 2: Drag & Drop -->
-                        <div class="drag-handle btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-primary transition-colors cursor-move" title="Drag to reorder">
+                        <div class="drag-handle btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-primary transition-colors cursor-move" :title="t('admin.builder.action_drag', 'Drag to reorder')">
                             <PhDotsSixVertical weight="bold" class="w-3 h-3" />
                         </div>
 
@@ -89,17 +89,17 @@
                         <div class="flex items-center">
                             <button @click.stop="store.isEditingBlock = true; store.showRightSidebar = true; store.activeBlockId = element.id" 
                                     class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-primary transition-colors" 
-                                    title="Settings">
+                                    :title="t('admin.builder.action_settings', 'Settings')">
                                 <PhSlidersHorizontal weight="bold" class="w-3 h-3" />
                             </button>
                             <button @click.stop="store.duplicateBlock(element.id)" 
                                     class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-primary transition-colors" 
-                                    title="Duplicate">
+                                    :title="t('admin.builder.action_duplicate', 'Duplicate')">
                                 <PhCopy weight="bold" class="w-3.5 h-3.5" />
                             </button>
                             <button @click.stop="store.removeBlock(element.id)" 
                                     class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-error transition-colors" 
-                                    title="Delete">
+                                    :title="t('admin.builder.action_delete', 'Delete')">
                                 <PhTrash weight="bold" class="w-3 h-3" />
                             </button>
                         </div>
@@ -123,6 +123,7 @@
 <script setup>
 import draggable from 'vuedraggable';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useTranslations } from '@/Composables/useTranslations';
 import { 
     PhDotsSixVertical, PhSlidersHorizontal, PhCopy, PhTrash, PhCube, PhTextT, 
     PhTextAa, PhTextHOne, PhListBullets, PhQuotes, PhCode, PhCursorClick, 
@@ -165,6 +166,7 @@ const props = defineProps({
 
 
 const store = useBlockBuilderStore();
+const { t } = useTranslations();
 
 // Local state for expanded nodes (persisted in store for pro feel)
 // If store doesn't have it, we use a local ref for now but let's check

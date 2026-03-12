@@ -13,7 +13,7 @@
                         type="text"
                         :value="title"
                         @input="$emit('update:title', $event.target.value)"
-                        placeholder="Untitled..."
+                        :placeholder="t('admin.builder.untitled', 'Untitled...')"
                         class="bg-transparent border-none focus:outline-none text-sm font-bold p-0 placeholder:opacity-30 min-w-[180px] max-w-[360px] truncate"
                     />
                     <PhPencilSimple weight="bold" class="w-3 h-3 text-base-content/40 shrink-0" />
@@ -35,14 +35,14 @@
                 </button>
             </div>
 
-            <div v-if="currentViewport === 'custom'" class="join">
+             <div v-if="currentViewport === 'custom'" class="join">
                 <input
                     type="number"
                     min="1"
                     :value="customWidth"
                     @input="emit('update:customWidth', parseDimension($event.target.value, customWidth))"
                     class="input input-bordered input-xs join-item w-16 px-1 text-center font-mono"
-                    title="Custom width"
+                    :title="t('admin.builder.viewport_width', 'Custom width')"
                 />
                 <span class="join-item px-1 text-[10px] opacity-50 font-black flex items-center">x</span>
                 <input
@@ -51,7 +51,7 @@
                     :value="customHeight"
                     @input="emit('update:customHeight', parseDimension($event.target.value, customHeight))"
                     class="input input-bordered input-xs join-item w-16 px-1 text-center font-mono"
-                    title="Custom height"
+                    :title="t('admin.builder.viewport_height', 'Custom height')"
                 />
                 <span class="join-item px-2 text-[10px] opacity-50 font-black flex items-center">px</span>
             </div>
@@ -69,10 +69,10 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="btn btn-ghost btn-sm gap-2 font-normal"
-                title="Open Preview"
+                :title="t('admin.builder.preview_action', 'Open Preview')"
             >
                 <PhEye weight="bold" class="w-3 h-3" />
-                <span class="hidden sm:inline">Preview</span>
+                <span class="hidden sm:inline">{{ t('admin.builder.preview', 'Preview') }}</span>
             </a>
 
             <button
@@ -82,7 +82,7 @@
             >
                 <PhFloppyDisk v-if="!saving" weight="bold" class="w-3 h-3" />
                 <span v-else class="loading loading-spinner loading-xs"></span>
-                <span class="hidden sm:inline">Save</span>
+                <span class="hidden sm:inline">{{ t('admin.builder.save', 'Save') }}</span>
             </button>
 
             <slot name="actions-right"></slot>
@@ -101,6 +101,8 @@ import {
     PhFloppyDisk,
     PhEye
 } from '@phosphor-icons/vue';
+import { computed } from 'vue';
+import { useTranslations } from '@/Composables/useTranslations';
 
 defineProps({
     title: String,
@@ -124,6 +126,7 @@ defineProps({
 });
 
 const emit = defineEmits(['update:title', 'update:viewport', 'update:customWidth', 'update:customHeight', 'save']);
+const { t } = useTranslations();
 
 const parseDimension = (value, fallback) => {
     const next = Number(value);
@@ -131,10 +134,10 @@ const parseDimension = (value, fallback) => {
     return Math.round(next);
 };
 
-const viewports = [
-    { id: 'desktop', name: 'Desktop', icon: PhDesktop },
-    { id: 'tablet', name: 'Tablet', icon: PhDeviceTablet },
-    { id: 'mobile', name: 'Mobile', icon: PhDeviceMobile },
-    { id: 'custom', name: 'Custom', icon: PhArrowsOut }
-];
+const viewports = computed(() => [
+    { id: 'desktop', name: t('admin.builder.viewport_desktop', 'Desktop'), icon: PhDesktop },
+    { id: 'tablet', name: t('admin.builder.viewport_tablet', 'Tablet'), icon: PhDeviceTablet },
+    { id: 'mobile', name: t('admin.builder.viewport_mobile', 'Mobile'), icon: PhDeviceMobile },
+    { id: 'custom', name: t('admin.builder.viewport_custom', 'Custom'), icon: PhArrowsOut }
+]);
 </script>

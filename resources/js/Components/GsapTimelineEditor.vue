@@ -3,10 +3,10 @@
         <!-- Controls Header -->
         <div class="flex items-center gap-4 mb-4 bg-base-200/50 p-2 rounded-lg border border-white/5">
             <div class="flex gap-2">
-                <button @click="restart" class="btn btn-sm btn-ghost btn-square" title="Restart">
+                <button @click="restart" class="btn btn-sm btn-ghost btn-square" :title="t('admin.builder.action_restart', 'Restart')">
                     <PhSkipBack weight="bold" class="w-4 h-4" />
                 </button>
-                <button @click="togglePlay" class="btn btn-sm btn-primary btn-square" :title="isPlaying ? 'Pause' : 'Play'">
+                <button @click="togglePlay" class="btn btn-sm btn-primary btn-square" :title="isPlaying ? t('admin.builder.action_pause', 'Pause') : t('admin.builder.action_play', 'Play')">
                     <PhPause weight="fill" v-if="isPlaying" class="w-4 h-4" />
                     <PhPlay weight="fill" v-else class="w-4 h-4" />
                 </button>
@@ -56,7 +56,7 @@
                      <div class="flex-1 h-full relative group-hover:bg-white/5 transition-colors">
                         <div class="absolute top-1/2 -translate-y-1/2 h-6 bg-primary/60 rounded cursor-ew-resize border border-primary/40 shadow-sm hover:brightness-125 transition-all"
                              :style="getTrackStyle(block)"
-                             title="Drag to change delay">
+                             :title="t('admin.builder.action_drag_delay', 'Drag to change delay')">
                             <div class="px-2 text-[10px] font-mono font-bold text-white/90 leading-6 truncate mix-blend-overlay">
                                 {{ block.settings.animations.preset }}
                             </div>
@@ -66,7 +66,7 @@
 
                 <div v-if="blocks.length === 0" class="flex flex-col items-center justify-center opacity-30 py-12 pointer-events-none">
                     <PhTimer weight="bold" class="w-12 h-12 mb-4" />
-                    <p class="text-xs text-center max-w-sm">No blocks attached to the Main Timeline.</p>
+                    <p class="text-xs text-center max-w-sm">{{ t('admin.builder.no_blocks_timeline', 'No blocks attached to the Main Timeline.') }}</p>
                 </div>
             </div>
         </div>
@@ -77,6 +77,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { PhSkipBack, PhPlay, PhPause, PhTimer, PhCube } from '@phosphor-icons/vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useTranslations } from '@/Composables/useTranslations';
 import gsap from 'gsap';
 
 const props = defineProps({
@@ -87,6 +88,7 @@ const props = defineProps({
 });
 
 const store = useBlockBuilderStore();
+const { t } = useTranslations();
 
 const isPlaying = ref(false);
 const progress = ref(0);

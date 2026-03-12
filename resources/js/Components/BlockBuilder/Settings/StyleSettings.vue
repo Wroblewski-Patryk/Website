@@ -1,7 +1,7 @@
 <template>
     <div class="space-y-6">
         <!-- 1. Layout -->
-        <AdminCollapse title="Layout" icon="PhLayout" persistKey="style_layout">
+        <AdminCollapse :title="t('admin.theme.layout', 'Layout')" icon="PhLayout" persistKey="style_layout">
             <div class="space-y-4 pt-1">
                 <!-- Display -->
                 <div class="form-control">
@@ -85,7 +85,7 @@
         </AdminCollapse>
 
         <!-- 2. Sizing & Positioning -->
-        <AdminCollapse title="Sizing & Position" icon="PhBoundingBox" persistKey="style_sizing">
+        <AdminCollapse :title="t('admin.builder.tab_sizing', 'Sizing & Position')" icon="PhBoundingBox" persistKey="style_sizing">
             <div class="space-y-6 pt-1">
                 <div class="form-control mb-4">
                     <label class="label pb-1"><span class="label-text text-[10px] uppercase font-bold opacity-50">Z-Index</span></label>
@@ -97,7 +97,7 @@
                     <label class="label pb-0"><span class="label-text text-[10px] uppercase font-bold opacity-50">Width</span></label>
                     <div class="grid grid-cols-2 gap-x-2 gap-y-2">
                         <div class="form-control col-span-2">
-                            <UnitInput v-model="settings.style.width" placeholder="Width (auto)" />
+                            <UnitInput v-model="settings.style.width" :placeholder="t('admin.builder.style_width', 'Width') + ' (auto)'" />
                         </div>
                         <div class="form-control">
                             <label class="label py-0.5"><span class="text-[8px] uppercase opacity-40">Min</span></label>
@@ -115,7 +115,7 @@
                     <label class="label pb-0"><span class="label-text text-[10px] uppercase font-bold opacity-50">Height</span></label>
                     <div class="grid grid-cols-2 gap-x-2 gap-y-2">
                         <div class="form-control col-span-2">
-                            <UnitInput v-model="settings.style.height" placeholder="Height (auto)" />
+                            <UnitInput v-model="settings.style.height" :placeholder="t('admin.builder.style_height', 'Height') + ' (auto)'" />
                         </div>
                         <div class="form-control">
                             <label class="label py-0.5"><span class="text-[8px] uppercase opacity-40">Min</span></label>
@@ -197,10 +197,10 @@
         </AdminCollapse>
 
         <!-- 2. Typography -->
-        <AdminCollapse title="Typography" icon="PhTextT" persistKey="style_typography" v-if="!['spacer', 'divider', 'image', 'video', 'gallery', 'carousel'].includes(blockType)">
+        <AdminCollapse :title="t('admin.theme.typography', 'Typography')" icon="PhTextT" persistKey="style_typography" v-if="!['spacer', 'divider', 'image', 'video', 'gallery', 'carousel'].includes(blockType)">
             <div class="space-y-4 pt-1">
                 <div class="form-control">
-                    <FillControl v-model="textFill" label="Text Color" />
+                    <FillControl v-model="textFill" :label="t('admin.builder.style_text_color', 'Text Color')" />
                 </div>
 
                 <div class="divider my-0 opacity-10"></div>
@@ -270,10 +270,10 @@
         </AdminCollapse>
 
         <!-- 3. Background & Effects -->
-        <AdminCollapse title="Background & Effects" icon="PhPalette" persistKey="style_background">
+        <AdminCollapse :title="t('admin.builder.style_background', 'Background & Effects')" icon="PhPalette" persistKey="style_background">
             <div class="space-y-6 pt-1">
                 <div class="form-control">
-                    <FillControl v-model="backgroundFill" label="Background" />
+                    <FillControl v-model="backgroundFill" :label="t('admin.builder.style_background', 'Background')" />
                 </div>
                 
                 <div v-if="backgroundFill?.type === 'image'" class="form-control">
@@ -321,14 +321,14 @@
         </AdminCollapse>
 
         <!-- 4. Borders -->
-        <AdminCollapse title="Borders" icon="PhSquareHalf" persistKey="style_borders">
+        <AdminCollapse :title="t('admin.builder.tab_borders', 'Borders')" icon="PhSquareHalf" persistKey="style_borders">
             <div class="space-y-6 pt-1">
                 <LinkedUnitInput 
                     v-model:top="settings.style.borderTopLeftRadius"
                     v-model:right="settings.style.borderTopRightRadius"
                     v-model:bottom="settings.style.borderBottomRightRadius"
                     v-model:left="settings.style.borderBottomLeftRadius"
-                    label="Radius" 
+                    :label="t('admin.builder.style_radius', 'Radius')" 
                 />
                 <div class="divider my-0 opacity-10"></div>
                 <div class="grid grid-cols-2 gap-4">
@@ -338,7 +338,7 @@
                             v-model:right="settings.style.borderRightWidth"
                             v-model:bottom="settings.style.borderBottomWidth"
                             v-model:left="settings.style.borderLeftWidth"
-                            label="Width" 
+                            :label="t('admin.builder.style_width', 'Width')" 
                         />
                     </div>
                     <div class="form-control col-span-2">
@@ -359,14 +359,14 @@
         </AdminCollapse>
 
         <!-- 5. Spacing -->
-        <AdminCollapse title="Spacing" icon="PhFrameCorners" persistKey="style_spacing">
+        <AdminCollapse :title="t('admin.theme.spacing', 'Spacing')" icon="PhFrameCorners" persistKey="style_spacing">
             <div class="space-y-6 pt-1">
                 <LinkedUnitInput 
                     v-model:top="settings.style.marginTop"
                     v-model:right="settings.style.marginRight"
                     v-model:bottom="settings.style.marginBottom"
                     v-model:left="settings.style.marginLeft"
-                    label="Margin" 
+                    :label="t('admin.builder.style_margin', 'Margin')" 
                 />
                 <div class="divider my-0 opacity-10"></div>
                 <LinkedUnitInput 
@@ -374,13 +374,13 @@
                     v-model:right="settings.style.paddingRight"
                     v-model:bottom="settings.style.paddingBottom"
                     v-model:left="settings.style.paddingLeft"
-                    label="Padding" 
+                    :label="t('admin.builder.style_padding', 'Padding')" 
                 />
             </div>
         </AdminCollapse>
-
+ 
         <!-- 6. Advanced -->
-        <AdminCollapse title="Advanced" icon="PhSlidersHorizontal" persistKey="style_advanced">
+        <AdminCollapse :title="t('admin.builder.tab_advanced', 'Advanced')" icon="PhSlidersHorizontal" persistKey="style_advanced">
             <div class="space-y-4 pt-1">
                 <div class="form-control">
                     <label class="label"><span class="label-text text-[10px] uppercase">Overflow</span></label>
@@ -405,7 +405,7 @@
 
         <div class="form-control px-2 pt-4">
             <button @click="settings.style = {}" class="btn btn-outline btn-error btn-xs w-full opacity-50 hover:opacity-100 transition-opacity">
-                <PhTrash class="w-3 h-3 mr-1" /> Reset All Styles
+                <PhTrash class="w-3 h-3 mr-1" /> {{ t('admin.builder.action_reset_styles', 'Reset All Styles') }}
             </button>
         </div>
     </div>
@@ -413,6 +413,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import { useTranslations } from '@/Composables/useTranslations';
 import AdminCollapse from '@/Components/AdminCollapse.vue';
 import FillControl from '@/Components/FillControl.vue';
 import LinkedUnitInput from '@/Components/LinkedUnitInput.vue';
@@ -432,6 +433,8 @@ const props = defineProps({
     },
     blockType: String
 });
+
+const { t } = useTranslations();
 
 const createFillProxy = (newProp, legacyProp) => computed({
     get: () => {

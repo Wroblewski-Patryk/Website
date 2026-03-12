@@ -17,34 +17,34 @@
             <template #actions-left>
                 <div class="flex items-center mr-2">
                     <div class="join">
-                        <button @click="showLeftSidebar = !showLeftSidebar" class="btn btn-xs join-item h-8 px-3 gap-2" :class="showLeftSidebar ? 'btn-primary' : 'btn-ghost'" title="Toggle Block Palette">
+                        <button @click="showLeftSidebar = !showLeftSidebar" class="btn btn-xs join-item h-8 px-3 gap-2" :class="showLeftSidebar ? 'btn-primary' : 'btn-ghost'" :title="t('admin.builder.toggle_palette', 'Toggle Block Palette')">
                             <PhCube weight="bold" class="w-3 h-3" />
                         </button>
-                        <button @click="toggleTimeline" class="btn btn-xs join-item h-8 px-3 gap-2" :class="showTimeline ? 'btn-primary' : 'btn-ghost'" title="Toggle Timeline">
+                        <button @click="toggleTimeline" class="btn btn-xs join-item h-8 px-3 gap-2" :class="showTimeline ? 'btn-primary' : 'btn-ghost'" :title="t('admin.builder.toggle_timeline', 'Toggle Timeline')">
                             <PhTimer weight="bold" class="w-3 h-3" />
                         </button>
-                        <button @click="store.showRightSidebar = !store.showRightSidebar" class="btn btn-xs join-item h-8 px-3 gap-2" :class="store.showRightSidebar ? 'btn-primary' : 'btn-ghost'" title="Toggle Document Inspector">
+                        <button @click="store.showRightSidebar = !store.showRightSidebar" class="btn btn-xs join-item h-8 px-3 gap-2" :class="store.showRightSidebar ? 'btn-primary' : 'btn-ghost'" :title="t('admin.builder.toggle_inspector', 'Toggle Document Inspector')">
                             <PhSlidersHorizontal weight="bold" class="w-3 h-3" />
                         </button>
                     </div>
 
                     <div class="h-4 w-[1px] bg-base-content/15 mx-2"></div>
 
-                    <button @click="store.isDepthView = !store.isDepthView" class="btn btn-xs h-8 px-3 gap-2" :class="store.isDepthView ? 'btn-primary' : 'btn-ghost'" title="Toggle 3D View">
+                    <button @click="store.isDepthView = !store.isDepthView" class="btn btn-xs h-8 px-3 gap-2" :class="store.isDepthView ? 'btn-primary' : 'btn-ghost'" :title="t('admin.builder.toggle_3d', 'Toggle 3D View')">
                         <PhStack weight="bold" class="w-3 h-3" />
                     </button>
 
                     <div class="h-4 w-[1px] bg-base-content/15 mx-2"></div>
 
                     <div class="join items-center">
-                        <button @click="zoomOut" class="btn btn-xs btn-ghost join-item h-8 px-3 gap-2" title="Zoom Out">
+                        <button @click="zoomOut" class="btn btn-xs btn-ghost join-item h-8 px-3 gap-2" :title="t('admin.builder.zoom_out', 'Zoom Out')">
                             <PhMinus weight="bold" class="w-3 h-3" />
                         </button>
                         <span class="join-item h-8 px-2 text-[10px] font-black font-mono text-center flex items-center">{{ Math.round(zoomLevel * 100) }}%</span>
-                        <button @click="zoomIn" class="btn btn-xs btn-ghost join-item h-8 px-3 gap-2" title="Zoom In">
+                        <button @click="zoomIn" class="btn btn-xs btn-ghost join-item h-8 px-3 gap-2" :title="t('admin.builder.zoom_in', 'Zoom In')">
                             <PhPlus weight="bold" class="w-3 h-3" />
                         </button>
-                        <button @click="resetZoom" class="btn btn-xs btn-ghost join-item h-8 px-3 gap-2" title="Reset Zoom">
+                        <button @click="resetZoom" class="btn btn-xs btn-ghost join-item h-8 px-3 gap-2" :title="t('admin.builder.zoom_reset', 'Reset Zoom')">
                             <PhArrowUUpLeft weight="bold" class="w-3 h-3" />
                         </button>
                     </div>
@@ -61,7 +61,7 @@
                 <SidebarPanelHeader
                     :icon="PhCube"
                     icon-weight="regular"
-                    title="Palette" />
+                    :title="t('admin.builder.palette_title', 'Palette')" />
 
                 <div class="flex-1 overflow-y-auto p-4 custom-scrollbar">
                     <!-- Categories -->
@@ -147,7 +147,7 @@
 
                         <div v-if="store.blocks.length === 0" class="absolute inset-x-0 top-32 flex flex-col items-center justify-center pointer-events-none">
                             <PhStack weight="thin" class="w-12 h-12 mb-4 opacity-10 text-base-content" />
-                            <p class="text-[10px] font-black uppercase tracking-widest opacity-30">Drag blocks here</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest opacity-30">{{ t('admin.builder.drag_blocks_here', 'Drag blocks here') }}</p>
                         </div>
 
                         <slot name="canvas-footer"></slot>
@@ -161,7 +161,7 @@
                     <div class="flex items-center justify-between px-4 py-2 bg-base-200/50 border-b border-white/5 backdrop-blur shadow-sm">
                         <div class="flex items-center gap-2">
                             <PhTimer weight="bold" class="w-4 h-4 text-primary" />
-                            <span class="text-xs font-bold uppercase tracking-widest">GSAP Timeline sequence</span>
+                            <span class="text-xs font-bold uppercase tracking-widest">{{ t('admin.builder.timeline_sequence', 'GSAP Timeline sequence') }}</span>
                         </div>
                         <button @click="toggleTimeline" class="btn btn-ghost btn-xs btn-circle">
                             <PhX weight="bold" class="w-4 h-4 opacity-50" />
@@ -220,6 +220,7 @@ import {
     PhArrowUUpLeft, PhPlus, PhX, PhPerspective
 } from '@phosphor-icons/vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useTranslations } from '@/Composables/useTranslations';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
 import BlockEditorSidebar from '@/Components/BlockEditorSidebar.vue';
 import BuilderHeader from '@/Components/BlockBuilder/Layout/BuilderHeader.vue';
@@ -263,6 +264,7 @@ provide('isEditor', true);
 const emit = defineEmits(['save', 'update:title', 'update:viewport']);
 
 const store = useBlockBuilderStore();
+const { t } = useTranslations();
 const viewport = ref('desktop');
 
 const paletteCategories = computed(() => {

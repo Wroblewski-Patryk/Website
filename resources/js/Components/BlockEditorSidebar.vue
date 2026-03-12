@@ -4,6 +4,7 @@ import { computed, ref, watch, useSlots } from 'vue';
 import { 
     PhX, PhStack, PhClockCounterClockwise, PhSelection, PhSlidersHorizontal, PhInfo, PhCloudArrowUp, PhFloppyDisk, PhGlobe, PhGear
 } from '@phosphor-icons/vue';
+import { useTranslations } from '@/Composables/useTranslations';
 
 // New Modular Components
 import BlockSettingsManager from './BlockBuilder/BlockSettingsManager.vue';
@@ -22,6 +23,7 @@ const props = defineProps({
 });
 
 const store = useBlockBuilderStore();
+const { t } = useTranslations();
 defineEmits(['save']);
 const activeSidebarTab = ref('content');
 const activeInspectorTab = ref('layers'); // Layers, History, Info, SEO
@@ -65,7 +67,7 @@ const showAdvanced = computed(() => !!$slots.advanced);
             <SidebarPanelHeader
                 :icon="PhSelection"
                 icon-weight="bold"
-                title="Settings">
+                :title="t('admin.builder.action_settings', 'Settings')">
                 <template #actions>
                     <button @click="closeSidebar" class="btn btn-ghost btn-xs btn-circle">
                         <PhX weight="bold" class="w-4 h-4" />
@@ -79,7 +81,7 @@ const showAdvanced = computed(() => !!$slots.advanced);
                         @click="activeSidebarTab = (tab === 'design' ? 'style' : tab)"
                         class="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-all relative"
                         :class="activeSidebarTab === (tab === 'design' ? 'style' : tab) ? 'text-primary' : 'opacity-40 hover:opacity-100'">
-                    {{ tab }}
+                    {{ t('admin.builder.tab_' + tab, tab) }}
                     <div v-if="activeSidebarTab === (tab === 'design' ? 'style' : tab)" class="absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full"></div>
                 </button>
             </div>
@@ -111,11 +113,11 @@ const showAdvanced = computed(() => !!$slots.advanced);
                 <!-- ADVANCED TAB -->
                 <div v-if="activeSidebarTab === 'advanced'" class="p-6 space-y-4">
                     <div class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50">Custom CSS Class</span></label>
+                        <label class="label"><span class="label-text text-xs opacity-50">{{ t('admin.builder.custom_css_class', 'Custom CSS Class') }}</span></label>
                         <input type="text" v-model="store.activeBlock.settings.customClass" class="input input-bordered w-full font-mono text-xs" />
                     </div>
                     <div class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50">Block ID</span></label>
+                        <label class="label"><span class="label-text text-xs opacity-50">{{ t('admin.builder.block_id', 'Block ID') }}</span></label>
                         <input type="text" v-model="store.activeBlock.id" readonly class="input input-bordered w-full font-mono text-[10px] opacity-50 cursor-not-allowed" />
                     </div>
                 </div>
@@ -128,7 +130,7 @@ const showAdvanced = computed(() => !!$slots.advanced);
             <SidebarPanelHeader
                 :icon="PhSlidersHorizontal"
                 icon-weight="duotone"
-                title="Inspector" />
+                :title="t('admin.builder.inspector_title', 'Inspector')" />
 
             <!-- Inspector Tabs -->
             <div class="flex border-b border-base-content/10 bg-base-200/50 backdrop-blur-sm sticky z-10 overflow-x-auto no-scrollbar scroll-smooth">
@@ -144,7 +146,7 @@ const showAdvanced = computed(() => !!$slots.advanced);
                     <PhGear v-if="tab === 'advanced'" weight="bold" class="w-4 h-4" />
                     
                     <span class="leading-none whitespace-nowrap overflow-hidden text-ellipsis max-w-full px-1">
-                        {{ tab === 'advanced' ? 'Advanced' : tab }}
+                        {{ t('admin.builder.tab_' + tab, tab === 'advanced' ? 'Advanced' : tab) }}
                     </span>
 
                     <div v-if="activeInspectorTab === tab" class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary shadow-[0_-2px_10px_rgba(var(--admin-p),0.5)]"></div>
@@ -191,7 +193,7 @@ const showAdvanced = computed(() => !!$slots.advanced);
                 <div v-if="activeInspectorTab === 'advanced'" class="p-6 h-full overflow-y-auto custom-scrollbar">
                     <slot name="advanced">
                         <div class="text-center py-20 opacity-20 italic text-xs font-serif">
-                            No advanced options for this module.
+                            {{ t('admin.builder.no_advanced_options', 'No advanced options for this module.') }}
                         </div>
                     </slot>
                 </div>

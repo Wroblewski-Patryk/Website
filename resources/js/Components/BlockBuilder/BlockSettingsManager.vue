@@ -8,13 +8,16 @@
             :templates="templates"
         />
         <div v-else class="text-center py-10 opacity-30 italic text-xs">
-            No specific settings for {{ activeBlock.type }} yet.
+            {{ t('admin.builder.no_specific_settings', 'No specific settings for {type} yet.').replace('{type}', activeBlock.type) }}
         </div>
     </div>
 </template>
 
 <script setup>
 import { computed, defineAsyncComponent } from 'vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const props = defineProps({
     activeBlock: Object,

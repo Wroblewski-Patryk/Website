@@ -2,7 +2,7 @@
     <div class="flex-1 overflow-y-auto px-4 pb-4 custom-scrollbar">
         <div v-if="history.length === 0" class="text-center py-20 opacity-20">
             <PhClockCounterClockwise weight="thin" class="w-12 h-12 mx-auto mb-2" />
-            <p class="text-xs">No history yet</p>
+            <p class="text-xs">{{ t('admin.builder.inspector_history_empty', 'No history yet') }}</p>
         </div>
         <div v-else class="space-y-2">
             <button 
@@ -23,6 +23,9 @@
 
 <script setup>
 import { PhClockCounterClockwise } from '@phosphor-icons/vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const props = defineProps({
     history: {
