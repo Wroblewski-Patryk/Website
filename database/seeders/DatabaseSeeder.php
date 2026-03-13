@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($languages as $lang) {
-            Language::create($lang);
+            Language::updateOrCreate(['code' => $lang['code']], $lang);
         }
 
         // 1. Create Admin User
@@ -36,43 +36,16 @@ class DatabaseSeeder extends Seeder
         ]
         );
 
-        // 2. Create Default Home Page
-        $homePage = Page::create(
-        [
-            'slug' => ['en' => 'home', 'pl' => 'home'],
-            'title' => ['en' => 'Home', 'pl' => 'Strona Główna'],
-            'status' => 'published',
-            'content' => [
-                [
-                    'id' => 'block_' . Str::random(9),
-                    'type' => 'hero',
-                    'content' => [
-                        'headline' => 'Welcome to our New Website',
-                        'subheadline' => 'This page is powered by our pure Vue 3 Block Builder',
-                    ],
-                    'appearance' => [
-                        'backgroundColor' => 'transparent',
-                        'textColor' => 'inherit',
-                        'paddingTop' => '4rem',
-                        'paddingBottom' => '4rem',
-                    ]
-                ],
-                [
-                    'id' => 'block_' . Str::random(9),
-                    'type' => 'text',
-                    'content' => [
-                        'text' => '<h2>Start building your amazing site</h2><p>Go to the admin panel to edit this page and add more blocks.</p>',
-                    ],
-                    'appearance' => [
-                        'backgroundColor' => 'transparent',
-                        'textColor' => 'inherit',
-                        'paddingTop' => '2rem',
-                        'paddingBottom' => '2rem',
-                    ]
-                ]
-            ]
-        ]
-        );
+        // 2. Create System Pages
+        $this->call(SystemPageSeeder::class);
+
+        // helper to get page id
+        $getPageId = function($slug) {
+            $page = \App\Models\Page::whereRaw("json_unquote(json_extract(slug, '$.pl')) = ?", [$slug])
+                ->orWhereRaw("json_unquote(json_extract(slug, '$.en')) = ?", [$slug])
+                ->first();
+            return $page ? $page->id : null;
+        };
 
         // 3. Create Default Settings
         $defaultSettings = [
@@ -82,8 +55,12 @@ class DatabaseSeeder extends Seeder
                 'de' => 'Featherly CMS DE',
                 'fr' => 'Featherly CMS FR'
             ],
-            'home_page_id' => $homePage->id,
-            'blog_page_id' => null,
+            'home_page_id' => $getPageId('home'),
+            'blog_page_id' => $getPageId('blog'),
+            'projects_page_id' => $getPageId('projekty'),
+            'page_404_id' => $getPageId('404'),
+            'maintenance_page_id' => $getPageId('przerwa-techniczna'),
+            'coming_soon_page_id' => $getPageId('juz-wkrotce'),
             'default_header_id' => null,
             'default_footer_id' => null,
             'theme_colors' => [
@@ -116,19 +93,19 @@ class DatabaseSeeder extends Seeder
                 'box' => '1rem'
             ]
         ];
-
-        foreach ($defaultSettings as $key => $value) {
-            Setting::create([
-                'key' => $key,
-                'value' => $value
-            ]);
-        }
-
-        $this->call([
-            AdminUiTranslationSeeder::class,
-            PostSeeder::class,
-            ProjectSeeder::class,
-            TemplateSeeder::class,
-        ]);
+ 
+         foreach ($defaultSettings as $key => $value) {
+             Setting::updateOrCreate(
+                 ['key' => $key],
+                 ['value' => $value]
+             );
+         }
+ 
+         $this->call([
+             AdminUiTranslationSeeder::class,
+             PostSeeder::class,
+             ProjectSeeder::class,
+             TemplateSeeder::class,
+         ]);
     }
 }

@@ -7,6 +7,7 @@ import { useTranslations } from '@/Composables/useTranslations';
 
 const props = defineProps({
     projects: Array,
+    page: Object,
     settings: Object,
     seo: Object,
 });
@@ -19,7 +20,7 @@ const { t } = useTranslations();
     <AppLayout :settings="settings">
         
         <div class="max-w-7xl mx-auto px-6 py-24">
-            <h1 class="text-6xl font-black italic uppercase tracking-tighter mb-12">Latest Projects</h1>
+            <h1 class="text-6xl font-black italic uppercase tracking-tighter mb-12">{{ t(page.title) }}</h1>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div v-for="project in projects" :key="project.id" class="group relative overflow-hidden rounded-3xl bg-base-200 aspect-[4/3]">

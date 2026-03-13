@@ -94,6 +94,10 @@ class HandleInertiaRequests extends Middleware
                 'title_order' => $settings['title_order'] ?? 'brand_first',
             ],
             'admin_seo' => $this->getAdminSeoContext($request),
+            'archive_slugs' => [
+                'blog' => ($settings['blog_page_id'] ?? null) ? \App\Models\Page::find($settings['blog_page_id'])->getTranslation('slug', app()->getLocale()) : 'blog',
+                'projects' => ($settings['projects_page_id'] ?? null) ? \App\Models\Page::find($settings['projects_page_id'])->getTranslation('slug', app()->getLocale()) : 'projects',
+            ]
         ];
     }
 

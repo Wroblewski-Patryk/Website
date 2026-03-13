@@ -28,15 +28,30 @@ class PostSeeder extends Seeder
             'status' => 'published',
             'published_at' => now(),
             'content' => [
-                [
-                    'id' => 'block_' . \Illuminate\Support\Str::random(9),
-                    'type' => 'text',
-                    'content' => [
-                        'text' => '<p>Cześć! To jest treść w języku polskim.</p>',
-                    ],
-                    'appearance' => [
-                        'paddingTop' => '2rem',
-                        'paddingBottom' => '2rem',
+                'pl' => [
+                    [
+                        'id' => 'block_' . \Illuminate\Support\Str::random(9),
+                        'type' => 'text',
+                        'content' => [
+                            'text' => '<p>Cześć! To jest treść wpisu w języku polskim.</p>',
+                        ],
+                        'appearance' => [
+                            'paddingTop' => '2rem',
+                            'paddingBottom' => '2rem',
+                        ]
+                    ]
+                ],
+                'en' => [
+                    [
+                        'id' => 'block_' . \Illuminate\Support\Str::random(9),
+                        'type' => 'text',
+                        'content' => [
+                            'text' => '<p>Hello! This is post content in English.</p>',
+                        ],
+                        'appearance' => [
+                            'paddingTop' => '2rem',
+                            'paddingBottom' => '2rem',
+                        ]
                     ]
                 ]
             ]
@@ -58,16 +73,32 @@ class PostSeeder extends Seeder
             'status' => 'published',
             'published_at' => now(),
             'content' => [
-                [
-                    'id' => 'block_' . \Illuminate\Support\Str::random(9),
-                    'type' => 'hero',
-                    'content' => [
-                        'headline' => 'Buduj szybciej',
-                        'subheadline' => 'Z naszym systemem blokowym.',
-                    ],
-                    'appearance' => [
-                        'paddingTop' => '4rem',
-                        'paddingBottom' => '4rem',
+                'pl' => [
+                    [
+                        'id' => 'block_' . \Illuminate\Support\Str::random(9),
+                        'type' => 'hero',
+                        'content' => [
+                            'headline' => 'Buduj szybciej',
+                            'subheadline' => 'Z naszym systemem blokowym.',
+                        ],
+                        'appearance' => [
+                            'paddingTop' => '4rem',
+                            'paddingBottom' => '4rem',
+                        ]
+                    ]
+                ],
+                'en' => [
+                    [
+                        'id' => 'block_' . \Illuminate\Support\Str::random(9),
+                        'type' => 'hero',
+                        'content' => [
+                            'headline' => 'Build faster',
+                            'subheadline' => 'With our block system.',
+                        ],
+                        'appearance' => [
+                            'paddingTop' => '4rem',
+                            'paddingBottom' => '4rem',
+                        ]
                     ]
                 ]
             ]

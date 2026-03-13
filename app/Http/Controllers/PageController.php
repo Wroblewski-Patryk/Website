@@ -19,7 +19,6 @@ class PageController extends Controller
         // Dynamiczna obsługa locale i ścieżki (ze względu na opcjonalny prefiks w web.php)
         if (in_array($localeOrPath, ['pl', 'en'])) {
             $locale = $localeOrPath;
-            $path = $path;
             app()->setLocale($locale);
         }
         else {
@@ -77,12 +76,24 @@ class PageController extends Controller
         $firstSegment = $segments[0];
 
         // Find page by slug (checking current locale preferred, or any)
-        // Wyszukiwanie priorytetowo w obecnym języku, a następnie w ustawionym fallback config['app.fallback_locale']
         $fallbackLocale = config('app.fallback_locale');
+        
         $firstPage = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
-            ->where("slug->{$locale}", $firstSegment)
-            ->orWhere("slug->{$fallbackLocale}", $firstSegment)
+            ->where(function($query) use ($locale, $fallbackLocale, $firstSegment) {
+                $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$firstSegment])
+                      ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$firstSegment]);
+            })
             ->first();
+
+        // If not found, try finding a page by the full path
+        if (!$firstPage) {
+            $firstPage = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
+                ->where(function($query) use ($locale, $fallbackLocale, $path) {
+                    $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$path])
+                          ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$path]);
+                })
+                ->first();
+        }
 
         if ($firstPage) {
             // Check if this is a special archive page (Blog)
@@ -154,9 +165,15 @@ class PageController extends Controller
         }
 
         $seoService = app(\App\Services\SeoService::class);
+        
+        // Resolve translatable content for frontend
+        $pageData = $page->toArray();
+        $pageData['content'] = $page->content; // Spatie returns current locale when accessed directly
+        $pageData['title'] = $page->title;
+        $pageData['slug'] = $page->slug;
 
         return Inertia::render($component, [
-            'page' => $page,
+            'page' => $pageData,
             'settings' => $settings,
             'seo' => $seoService->getMetaData($page),
             'all_projects' => Project::all(),
@@ -181,9 +198,10 @@ class PageController extends Controller
         $locale = app()->getLocale();
         $fallbackLocale = config('app.fallback_locale');
         try {
-            $post = Post::where("slug->{$locale}", $slug)
-                ->orWhere("slug->{$fallbackLocale}", $slug)
-                ->first();
+            $post = Post::where(function($query) use ($locale, $fallbackLocale, $slug) {
+                $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$slug])
+                      ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$slug]);
+            })->first();
 
             if (!$post || ($post->status !== 'published' && !$isAdmin)) {
                 return $this->render404($settings, $page404Id);
@@ -192,8 +210,13 @@ class PageController extends Controller
             $blogId = $settings['blog_page_id'] ?? null;
             $blogTitle = $blogId ? $seoService->getEntityTitle(Page::find($blogId)) : 'Blog';
 
+            $postData = $post->toArray();
+            $postData['content'] = $post->content;
+            $postData['title'] = $post->title;
+            $postData['slug'] = $post->slug;
+
             return Inertia::render('Blog/Show', [
-                'post' => $post,
+                'post' => $postData,
                 'settings' => $settings,
                 'seo' => $seoService->getMetaData($post, $blogTitle),
             ]);
@@ -219,9 +242,10 @@ class PageController extends Controller
         $locale = app()->getLocale();
         $fallbackLocale = config('app.fallback_locale');
         try {
-            $project = Project::where("slug->{$locale}", $slug)
-                ->orWhere("slug->{$fallbackLocale}", $slug)
-                ->first();
+            $project = Project::where(function($query) use ($locale, $fallbackLocale, $slug) {
+                $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$slug])
+                      ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$slug]);
+            })->first();
 
             if (!$project || ($project->status !== 'published' && !$isAdmin)) {
                 return $this->render404($settings, $page404Id);
@@ -230,8 +254,13 @@ class PageController extends Controller
             $projectsId = $settings['projects_page_id'] ?? null;
             $projectsTitle = $projectsId ? $seoService->getEntityTitle(Page::find($projectsId)) : 'Projekty';
 
+            $projectData = $project->toArray();
+            $projectData['content'] = $project->content;
+            $projectData['title'] = $project->title;
+            $projectData['slug'] = $project->slug;
+
             return Inertia::render('Public/Project', [
-                'project' => $project,
+                'project' => $projectData,
                 'settings' => $settings,
                 'seo' => $seoService->getMetaData($project, $projectsTitle),
             ]);

@@ -30,7 +30,7 @@ const { t } = useTranslations();
         </div>
 
         <div v-else class="relative z-20 max-w-7xl mx-auto px-4 py-32 text-white">
-            <h1 class="text-5xl md:text-7xl font-black mb-16 text-center uppercase tracking-tight">Blog</h1>
+            <h1 class="text-5xl md:text-7xl font-black mb-16 text-center uppercase tracking-tight">{{ t(page.title) }}</h1>
         </div>
         
         <div class="max-w-7xl mx-auto px-4 pb-32">

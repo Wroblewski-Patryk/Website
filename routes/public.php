@@ -16,4 +16,6 @@ Route::get('/forms/{id}/preview', function ($id) {
     ]);
 })->name('forms.preview');
 
+Route::get('/{path?}', [PageController::class, 'show'])->where('path', '.*');
+
 // Przeniesiona naprawa kolejności przez wymuszenie manualnego loadu w boot.php
