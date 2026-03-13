@@ -216,12 +216,7 @@ const restoreRevision = (rev) => {
 };
 
 const save = () => {
-    // Sync current blocks to map before saving everything
-    if (store.editingLocale) {
-        store.blocksMap[store.editingLocale] = JSON.parse(JSON.stringify(store.blocks));
-    }
-    
-    form.content = store.blocksMap;
+    form.content = store.blocks;
     
     if (props.template?.id) {
         form.put(route('admin.templates.update', props.template.id), {

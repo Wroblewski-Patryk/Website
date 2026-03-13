@@ -1,14 +1,25 @@
 <script setup>
+import { computed } from 'vue';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SeoHead from '@/Components/SeoHead.vue';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
-import { Head, Link } from '@inertiajs/vue3';
 
-defineProps({
+const props = defineProps({
     page: {
         type: Object,
         default: null,
     },
+});
+
+const blocks = computed(() => {
+    if (!props.page?.content) return [];
+    // Handle old format: { pl: [], en: [] }
+    if (!Array.isArray(props.page.content) && typeof props.page.content === 'object') {
+        const locale = usePage().props.locale || 'pl';
+        return props.page.content[locale] || props.page.content['pl'] || props.page.content['en'] || Object.values(props.page.content)[0] || [];
+    }
+    return Array.isArray(props.page.content) ? props.page.content : [];
 });
 </script>
 
@@ -20,9 +31,9 @@ defineProps({
     />
 
     <AppLayout>
-        <template v-if="page && page.content">
+        <template v-if="blocks.length > 0">
             <DynamicBlock 
-                v-for="(block, index) in page.content" 
+                v-for="(block, index) in blocks" 
                 :key="index"
                 :block="block" 
             />

@@ -14,7 +14,6 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         isEditingBlock: false,
         editingLocale: 'pl',
         availableLocales: [],
-        blocksMap: {}, // Map of blocks per locale { pl: [], en: [] }
         categories: [
             {
                 id: 'typography',
@@ -145,16 +144,44 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
     actions: {
         init(initialContent) {
             if (initialContent && !Array.isArray(initialContent) && typeof initialContent === 'object') {
-                // New format: { pl: [], en: [] }
-                this.blocksMap = JSON.parse(JSON.stringify(initialContent));
-                const locale = this.editingLocale || Object.keys(this.blocksMap)[0] || 'pl';
-                this.blocks = Array.isArray(this.blocksMap[locale]) ? this.blocksMap[locale] : [];
+                // Migration logic: merge { pl: [], en: [] } into a single structure
+                const locales = Object.keys(initialContent);
+                const firstLocale = locales[0] || 'pl';
+                const baseBlocks = JSON.parse(JSON.stringify(initialContent[firstLocale] || []));
+
+                // Helper to merge content from other locales
+                const mergeContent = (targetBlocks, sourceBlocks, locale) => {
+                    targetBlocks.forEach(target => {
+                        const source = sourceBlocks.find(s => s.id === target.id);
+                        if (source) {
+                            // Merge content
+                            Object.keys(source.content).forEach(key => {
+                                const val = source.content[key];
+                                if (typeof val === 'string') {
+                                    if (typeof target.content[key] !== 'object' || target.content[key] === null) {
+                                        const oldVal = target.content[key];
+                                        target.content[key] = {};
+                                        target.content[key][firstLocale] = oldVal;
+                                    }
+                                    target.content[key][locale] = val;
+                                }
+                            });
+                            // Recurse children
+                            if (target.children && source.children) {
+                                mergeContent(target.children, source.children, locale);
+                            }
+                        }
+                    });
+                };
+
+                locales.slice(1).forEach(locale => {
+                    mergeContent(baseBlocks, initialContent[locale], locale);
+                });
+
+                this.blocks = baseBlocks;
             } else {
-                // Old/Flat format
+                // Flat format or new unified format
                 this.blocks = Array.isArray(initialContent) ? initialContent : [];
-                if (this.editingLocale) {
-                    this.blocksMap[this.editingLocale] = this.blocks;
-                }
             }
             this.isDirty = false;
         },
@@ -163,27 +190,9 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
             if (!this.editingLocale) {
                 this.editingLocale = currentLocale;
             }
-            // Ensure blocksMap has entries for all available locales
-            this.availableLocales.forEach(lang => {
-                const code = typeof lang === 'string' ? lang : lang.code;
-                if (!this.blocksMap[code]) {
-                    this.blocksMap[code] = [];
-                }
-            });
         },
         setEditingLocale(locale) {
-            // Save current blocks to map before switching
-            if (this.editingLocale) {
-                this.blocksMap[this.editingLocale] = JSON.parse(JSON.stringify(this.blocks));
-            }
-            
             this.editingLocale = locale;
-            
-            // Load blocks for the new locale
-            if (!this.blocksMap[locale]) {
-                this.blocksMap[locale] = [];
-            }
-            this.blocks = this.blocksMap[locale];
         },
         createBlockObject(type, parentId = null) {
             const defaults = {

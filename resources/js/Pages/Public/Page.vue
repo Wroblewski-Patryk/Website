@@ -1,5 +1,6 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import { Head, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
 import SeoHead from '@/Components/SeoHead.vue';
@@ -16,6 +17,16 @@ const props = defineProps({
     sidebar: Object,
     page_template: Object,
 });
+
+const blocks = computed(() => {
+    if (!props.page?.content) return [];
+    // Handle old format: { pl: [], en: [] }
+    if (!Array.isArray(props.page.content) && typeof props.page.content === 'object') {
+        const locale = usePage().props.locale || 'pl';
+        return props.page.content[locale] || props.page.content['pl'] || props.page.content['en'] || Object.values(props.page.content)[0] || [];
+    }
+    return Array.isArray(props.page.content) ? props.page.content : [];
+});
 </script>
 
 <template>
@@ -29,9 +40,9 @@ const props = defineProps({
         :page_template="props.page_template"
     >
 
-        <div v-if="page.content" class="page-content">
+        <div v-if="blocks.length > 0" class="page-content">
             <DynamicBlock 
-                v-for="block in page.content" 
+                v-for="block in blocks" 
                 :key="block.id" 
                 :block="block" 
             />

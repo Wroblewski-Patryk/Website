@@ -42,10 +42,10 @@ watch(() => store.activeBlock, (newBlock) => {
     if (newBlock) {
         if (!newBlock.settings) newBlock.settings = {};
         if (!newBlock.settings.style) newBlock.settings.style = {};
-        if (!newBlock.settings.animation) newBlock.settings.animation = {};
+        if (!newBlock.settings.animations) newBlock.settings.animations = {};
         // Ensure default animation fields if enabled
-        if (newBlock.settings.animation.type && !newBlock.settings.animation.duration) {
-            newBlock.settings.animation.duration = 800;
+        if (newBlock.settings.animations.type && !newBlock.settings.animations.duration) {
+            newBlock.settings.animations.duration = 800;
         }
     }
 }, { immediate: true, deep: true });
@@ -89,39 +89,44 @@ const showAdvanced = computed(() => !!$slots.advanced);
             <!-- Sidebar Content Area -->
             <div class="flex-1 overflow-y-auto custom-scrollbar">
                 
-                <!-- CONTENT TAB -->
-                <div v-if="activeSidebarTab === 'content'">
+                <!-- Tab 1: Content -->
+                <div v-show="activeSidebarTab === 'content'" class="animate-in fade-in slide-in-from-right-2 duration-300">
                     <BlockSettingsManager 
                         :active-block="store.activeBlock" 
                         :templates="flattenedTemplates" 
+                        mode="content"
                     />
                 </div>
 
-                <!-- STYLE / DESIGN TAB -->
-                <div v-if="activeSidebarTab === 'style' || activeSidebarTab === 'design'" class="p-6">
+                <!-- Tab 2: Design -->
+                <div v-show="activeSidebarTab === 'style'" class="p-6 animate-in fade-in slide-in-from-right-2 duration-300">
                     <StyleSettings 
-                        :settings="store.activeBlock.settings" 
+                        v-if="store.activeBlock"
+                        v-model="store.activeBlock.settings.style" 
                         :block-type="store.activeBlock.type" 
                     />
                 </div>
 
-                <!-- ANIMATIONS TAB -->
-                <div v-if="activeSidebarTab === 'animations'" class="p-6">
-                    <AnimationSettings :settings="store.activeBlock.settings" />
+                <!-- Tab 3: Animations -->
+                <div v-show="activeSidebarTab === 'animations'" class="p-6 animate-in fade-in slide-in-from-right-2 duration-300">
+                    <AnimationSettings 
+                        v-if="store.activeBlock"
+                        v-model="store.activeBlock.settings.animations" 
+                    />
                 </div>
 
-                <!-- ADVANCED TAB -->
-                <div v-if="activeSidebarTab === 'advanced'" class="p-6 space-y-4">
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50">{{ t('admin.builder.custom_css_class', 'Custom CSS Class') }}</span></label>
-                        <input type="text" v-model="store.activeBlock.settings.customClass" class="input input-bordered w-full font-mono text-xs" />
-                    </div>
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50">{{ t('admin.builder.block_id', 'Block ID') }}</span></label>
-                        <input type="text" v-model="store.activeBlock.id" readonly class="input input-bordered w-full font-mono text-[10px] opacity-50 cursor-not-allowed" />
+                <!-- Tab 4: Advanced -->
+                <div v-show="activeSidebarTab === 'advanced'" class="animate-in fade-in slide-in-from-right-2 duration-300">
+                    <div v-if="store.activeBlock" class="flex flex-col">
+                        <BlockSettingsManager 
+                            :active-block="store.activeBlock" 
+                            :templates="flattenedTemplates" 
+                            mode="advanced"
+                        />
                     </div>
                 </div>
             </div>
+
         </template>
 
         <!-- CASE 2: DOCUMENT INSPECTOR (No block selected) -->

@@ -6,6 +6,7 @@
             v-model="proxiedContent"
             :type="activeBlock.type"
             :templates="templates"
+            :mode="mode"
         />
         <div v-else class="text-center py-10 opacity-30 italic text-xs">
             {{ t('admin.builder.no_specific_settings', 'No specific settings for {type} yet.').replace('{type}', activeBlock.type) }}
@@ -25,6 +26,10 @@ const page = usePage();
 
 const props = defineProps({
     activeBlock: Object,
+    mode: {
+        type: String, // 'content' or 'advanced'
+        default: 'content'
+    },
     templates: {
         type: Array,
         default: () => []
@@ -32,11 +37,41 @@ const props = defineProps({
 });
 
 /**
+ * Global (Non-localized) Content Proxy
+ * This proxy handles settings that are shared across all languages.
+ */
+const globalContent = computed(() => {
+    if (!props.activeBlock) return {};
+    
+    return new Proxy(props.activeBlock.content, {
+        get(target, key) {
+            const val = target[key];
+            const locale = store.editingLocale;
+
+            // If it's a translatable object, return the current locale value BUT setters will overwrite the whole object
+            // or we might want to return the raw object if we're editing at a technical level.
+            // For Advanced tab, if a value is localzed, we probably shouldn't be here, but if we are,
+            // we show the current locale's value.
+            if (val && typeof val === 'object' && !Array.isArray(val) && Object.keys(val).some(k => store.availableLocales.some(al => al.code === k))) {
+                return val[locale] !== undefined ? val[locale] : '';
+            }
+            return val;
+        },
+        set(target, key, value) {
+            // In global mode, we overwrite the key completely, making it shared (non-localized)
+            target[key] = value;
+            store.isDirty = true;
+            return true;
+        }
+    });
+});
+
+/**
  * Localized Content Proxy
  * This proxy wraps the activeBlock.content and handles the translation logic
  * transparently for the specific settings components.
  */
-const proxiedContent = computed(() => {
+const localizedContent = computed(() => {
     if (!props.activeBlock) return {};
     
     return new Proxy(props.activeBlock.content, {
@@ -82,6 +117,9 @@ const proxiedContent = computed(() => {
         }
     });
 });
+
+const proxiedContent = computed(() => props.mode === 'advanced' ? globalContent.value : localizedContent.value);
+
 
 const settingsMap = {
     heading: 'HeadingSettings',
