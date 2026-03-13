@@ -9,7 +9,7 @@ export function useTranslations() {
      * @param {Object|string} obj - The object to translate (e.g. {pl: "...", en: "..."})
      * @returns {string} - The translated string
      */
-    const translate = (obj, fallback = null) => {
+    const translate = (obj, fallback = null, forceLocale = null) => {
         if (!obj) return fallback || '';
         
         // Handle JSON strings if they slip through
@@ -30,14 +30,21 @@ export function useTranslations() {
             return fallback || obj;
         }
 
-        const locale = page.props.locale || 'pl';
+        const locale = forceLocale || page.props.locale || 'pl';
 
         // Try the exact locale
         if (obj[locale]) return obj[locale];
 
-        // Fallback to whatever first key is available if no translation exists for the exact locale
-        const keys = Object.keys(obj);
-        if (keys.length > 0) return obj[keys[0]];
+        // Try to find any locale if the requested one is empty/missing
+        // BUT only if we didn't explicitly force a locale that should be empty
+        const availableKeys = Object.keys(obj).filter(k => obj[k]);
+        if (availableKeys.length > 0) {
+            // If requested locale exists but is empty, and we have other languages, maybe fallback?
+            // For the builder, we might want to show empty if it's empty.
+            if (obj[locale] === '') return ''; 
+            
+            if (!obj[locale]) return obj[availableKeys[0]];
+        }
 
         return fallback || String(obj);
     };

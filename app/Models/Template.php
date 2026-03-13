@@ -14,7 +14,7 @@ class Template extends Model
     protected $fillable = ['title', 'type', 'is_active', 'is_default', 'content', 'meta_title', 'meta_description', 'canonical_url', 'og_image', 'seo_index', 'seo_follow'];
     protected $guarded = [];
 
-    public $translatable = ['title', 'content', 'meta_title', 'meta_description', 'og_image'];
+    public $translatable = ['title', 'meta_title', 'meta_description', 'og_image'];
 
     public function revisions(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
@@ -22,6 +22,7 @@ class Template extends Model
     }
 
     protected $casts = [
+        'content' => 'array',
         'is_active' => 'boolean',
         'is_default' => 'boolean',
     ];

@@ -211,7 +211,7 @@ import { computed, onMounted, watch } from 'vue';
 
 const { t } = useTranslations();
 const pageProps = usePage().props;
-const activeLocale = computed(() => pageProps.locale);
+const activeLocale = computed(() => store.editingLocale || pageProps.locale || 'pl');
 
 const props = defineProps({
     page: Object,

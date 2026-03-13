@@ -206,6 +206,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick, provide } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import { 
     PhCube, PhTextT, PhTextAa, PhTextHOne, PhListBullets, PhQuotes, PhCode, 
     PhCursorClick, PhHandPointing, PhCaretDown, PhBrowsers, PhArrowsLeftRight, 
@@ -264,6 +265,7 @@ provide('isEditor', true);
 const emit = defineEmits(['save', 'update:title', 'update:viewport']);
 
 const store = useBlockBuilderStore();
+const page = usePage();
 const { t } = useTranslations();
 const viewport = ref('desktop');
 
@@ -307,8 +309,19 @@ const paletteCategories = computed(() => {
 });
 
 const docTitle = computed({
-    get: () => props.title,
-    set: (val) => emit('update:title', val)
+    get: () => {
+        const locale = store.editingLocale || page.props.locale || 'pl';
+        if (props.title && typeof props.title === 'object') {
+            return props.title[locale] || props.title[Object.keys(props.title)[0]] || '';
+        }
+        return props.title;
+    },
+    set: (val) => {
+        const locale = store.editingLocale || page.props.locale || 'pl';
+        const newTitle = typeof props.title === 'object' ? { ...props.title } : {};
+        newTitle[locale] = val;
+        emit('update:title', newTitle);
+    }
 });
 const customWidth = ref(1920);
 const customHeight = ref(1080);
@@ -440,6 +453,8 @@ const handleKeyDown = (e) => {
 
 onMounted(() => {
     window.addEventListener('keydown', handleKeyDown);
+
+    store.initLocales(page.props.languages, page.props.locale);
 
     if (canvasRef.value) {
         resizeObserver = new ResizeObserver((entries) => {

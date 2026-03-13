@@ -16,11 +16,12 @@ class Page extends Model
         return $this->morphMany(Revision::class , 'revisionable')->latest();
     }
 
-    public $translatable = ['title', 'slug', 'content', 'meta_title', 'meta_description', 'og_image'];
+    public $translatable = ['title', 'slug', 'meta_title', 'meta_description', 'og_image'];
 
     protected $guarded = [];
 
     protected $casts = [
+        'content' => 'array',
         'settings' => 'array',
         'published_at' => 'datetime',
         'archived_at' => 'datetime',

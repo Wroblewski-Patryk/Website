@@ -3,7 +3,7 @@
         <component 
             :is="settingsComponent" 
             v-if="settingsComponent"
-            v-model="activeBlock.content"
+            v-model="proxiedContent"
             :type="activeBlock.type"
             :templates="templates"
         />
@@ -16,8 +16,12 @@
 <script setup>
 import { computed, defineAsyncComponent } from 'vue';
 import { useTranslations } from '@/Composables/useTranslations';
+import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { usePage } from '@inertiajs/vue3';
 
 const { t } = useTranslations();
+const store = useBlockBuilderStore();
+const page = usePage();
 
 const props = defineProps({
     activeBlock: Object,
@@ -25,6 +29,58 @@ const props = defineProps({
         type: Array,
         default: () => []
     }
+});
+
+/**
+ * Localized Content Proxy
+ * This proxy wraps the activeBlock.content and handles the translation logic
+ * transparently for the specific settings components.
+ */
+const proxiedContent = computed(() => {
+    if (!props.activeBlock) return {};
+    
+    return new Proxy(props.activeBlock.content, {
+        get(target, key) {
+            const val = target[key];
+            const locale = store.editingLocale;
+
+            // If it's a translatable object, return the specific locale
+            if (val && typeof val === 'object' && !Array.isArray(val) && Object.keys(val).some(k => store.availableLocales.some(al => al.code === k))) {
+                return val[locale] !== undefined ? val[locale] : '';
+            }
+            return val;
+        },
+        set(target, key, value) {
+            const locale = store.editingLocale;
+            let val = target[key];
+
+            // For now, we only translate strings (this covers most content like text, links, etc.)
+            if (typeof value === 'string') {
+                const isTranslatableObject = val && typeof val === 'object' && !Array.isArray(val) && Object.keys(val).some(k => store.availableLocales.some(al => al.code === k));
+
+                if (isTranslatableObject) {
+                    target[key][locale] = value;
+                } else {
+                    // Convert from string to object if we are in a non-default locale OR if another translation exists
+                    const defaultLocale = page.props.locale || 'pl';
+                    const newVal = {};
+                    
+                    // If the old value was a string, we assume it's for the default locale
+                    if (typeof val === 'string' && locale !== defaultLocale) {
+                        newVal[defaultLocale] = val;
+                    }
+                    
+                    newVal[locale] = value;
+                    target[key] = newVal;
+                }
+            } else {
+                // Non-string values (booleans, numbers, etc.) are shared across all languages
+                target[key] = value;
+            }
+            store.isDirty = true;
+            return true;
+        }
+    });
 });
 
 const settingsMap = {
@@ -82,7 +138,6 @@ const settingsComponent = computed(() => {
     const componentName = settingsMap[props.activeBlock.type];
     if (!componentName) return null;
     
-    // Using simple async import since they are in the same parent directory's /Settings
     return defineAsyncComponent(() => 
         import(`./Settings/${componentName}.vue`)
     );

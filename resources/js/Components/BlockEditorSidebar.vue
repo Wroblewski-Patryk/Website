@@ -91,6 +91,20 @@ const showAdvanced = computed(() => !!$slots.advanced);
                 
                 <!-- CONTENT TAB -->
                 <div v-if="activeSidebarTab === 'content'">
+                    <!-- Language Tabs (Second Level) -->
+                    <div v-if="store.availableLocales.length > 1" class="px-6 pt-4 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+                        <button 
+                            v-for="lang in store.availableLocales" 
+                            :key="lang.code"
+                            @click="store.setEditingLocale(lang.code)"
+                            class="btn btn-xs rounded-full gap-2 transition-all duration-300 border-none px-4"
+                            :class="store.editingLocale === lang.code ? 'btn-primary shadow-[0_0_15px_rgba(var(--admin-p),0.3)]' : 'bg-base-200/50 opacity-40 hover:opacity-100'"
+                        >
+                            <span :class="`fi fi-${lang.code === 'en' ? 'gb' : lang.code} rounded-sm w-3 h-2`"></span>
+                            <span class="text-[9px] font-black uppercase tracking-widest">{{ lang.code }}</span>
+                        </button>
+                    </div>
+
                     <BlockSettingsManager 
                         :active-block="store.activeBlock" 
                         :templates="flattenedTemplates" 

@@ -14,7 +14,13 @@ const props = defineProps(['block']);
 const page = usePage();
 const store = useBlockBuilderStore();
 const isEditor = inject('isEditor', false);
-const { t } = useTranslations();
+const { t: originalT } = useTranslations();
+const t = (val, fallback = null) => {
+    if (isEditor && store.editingLocale) {
+        return originalT(val, fallback, store.editingLocale);
+    }
+    return originalT(val, fallback);
+};
 
 const menuItems = computed(() => {
     if (props.block.type !== 'menu' || !props.block.content.menu_id) return [];
@@ -288,7 +294,6 @@ const textStyleObj = computed(() => {
 
 const submitContact = () => {
     // Basic implementation for the contact form block
-    console.log("Contact form submitted");
 };
 
 const contactForm = useForm({

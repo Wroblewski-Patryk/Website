@@ -12,6 +12,8 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         expandedNodes: {}, // Persist expanded/collapsed state of layers
         sidebarCollapses: {}, // Persist expanded/collapsed state of sidebar sections
         isEditingBlock: false,
+        editingLocale: null,
+        availableLocales: [],
         categories: [
             {
                 id: 'typography',
@@ -140,6 +142,15 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         init(initialBlocks) {
             this.blocks = Array.isArray(initialBlocks) ? initialBlocks : [];
             this.isDirty = false;
+        },
+        initLocales(languages, currentLocale) {
+            this.availableLocales = languages || [];
+            if (!this.editingLocale) {
+                this.editingLocale = currentLocale;
+            }
+        },
+        setEditingLocale(locale) {
+            this.editingLocale = locale;
         },
         createBlockObject(type, parentId = null) {
             const defaults = {

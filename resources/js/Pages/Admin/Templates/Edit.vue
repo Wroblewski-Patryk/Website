@@ -157,7 +157,7 @@ import { useToastStore } from '@/Stores/useToastStore';
 import { computed, onMounted, ref, watch } from 'vue';
 
 const pageProps = usePage().props;
-const activeLocale = computed(() => pageProps.locale);
+const activeLocale = computed(() => store.editingLocale || pageProps.locale || 'pl');
 
 const props = defineProps({
     template: Object,

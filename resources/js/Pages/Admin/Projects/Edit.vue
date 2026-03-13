@@ -9,7 +9,7 @@ import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import { useToastStore } from '@/Stores/useToastStore';
 
 const pageProps = usePage().props;
-const activeLocale = computed(() => pageProps.locale);
+const activeLocale = computed(() => store.editingLocale || pageProps.locale || 'pl');
 
 const props = defineProps({
     project: Object,
