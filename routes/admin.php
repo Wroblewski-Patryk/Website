@@ -13,7 +13,7 @@ Route::name('dashboard.')->group(function () {
 // Content Section
 Route::resource('pages', AdminPageController::class)->except(['show']);
 Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->except(['show']);
-Route::resource('categories', \App\Http\Controllers\Admin\PostCategoryController::class)->except(['show']);
+
 
 Route::name('media.')->prefix('media')->group(function () {
     Route::get('/', [\App\Http\Controllers\Admin\MediaController::class, 'index'])->name('index');
@@ -27,7 +27,7 @@ Route::name('media.')->prefix('media')->group(function () {
 });
 
 Route::resource('projects', \App\Http\Controllers\Admin\ProjectController::class)->except(['show']);
-Route::resource('clients', \App\Http\Controllers\Admin\ClientController::class)->except(['show']);
+
 Route::resource('forms', \App\Http\Controllers\Admin\FormController::class)->except(['show']);
 Route::resource('templates', \App\Http\Controllers\Admin\TemplateController::class)->except(['show']);
 
