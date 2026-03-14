@@ -1,7 +1,7 @@
 <template>
     <AdminLayout :full-width="true">
         <BlockBuilder 
-            v-model:title="form.title[activeLocale]"
+            v-model:title="form.title"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"
@@ -167,16 +167,18 @@ const props = defineProps({
 const store = useBlockBuilderStore();
 const toast = useToastStore();
 
+const isObject = (val) => val && typeof val === 'object' && !Array.isArray(val);
+
 const form = useForm({
-    title: props.template?.title || { pl: '', en: '' },
+    title: isObject(props.template?.title) ? props.template.title : { pl: '', en: '' },
     type: props.template?.type || 'header',
     content: props.template?.content || [],
     is_default: props.template?.is_default ?? false,
     // SEO Fields
-    meta_title: props.template?.meta_title || { pl: '', en: '' },
-    meta_description: props.template?.meta_description || { pl: '', en: '' },
+    meta_title: isObject(props.template?.meta_title) ? props.template.meta_title : { pl: '', en: '' },
+    meta_description: isObject(props.template?.meta_description) ? props.template.meta_description : { pl: '', en: '' },
     canonical_url: props.template?.canonical_url || '',
-    og_image: props.template?.og_image || { pl: '', en: '' },
+    og_image: isObject(props.template?.og_image) ? props.template.og_image : { pl: '', en: '' },
     seo_index: props.template?.seo_index ?? true,
     seo_follow: props.template?.seo_follow ?? true,
 });
@@ -199,7 +201,7 @@ const generateSlug = (text) => {
 const templateSlug = ref(generateSlug(form.title[activeLocale.value]));
 
 watch(() => form.title[activeLocale.value], (newTitle) => {
-    if (newTitle) {
+    if (newTitle && (!props.template?.id || !templateSlug.value)) {
         templateSlug.value = generateSlug(newTitle);
     }
 });

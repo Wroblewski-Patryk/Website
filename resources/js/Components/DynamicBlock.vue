@@ -797,17 +797,6 @@ const contactForm = useForm({
 
         <div v-else-if="block.type === 'divider'" class="divider">{{ t(block.content.text) }}</div>
 
-        <div v-else-if="block.type === 'hero'" class="hero min-h-screen bg-base-200" :style="t(block.content.bg_image) ? `background-image: url(${t(block.content.bg_image)});` : ''">
-            <div v-if="t(block.content.bg_image)" class="hero-overlay bg-opacity-60"></div>
-            <div class="hero-content text-center" :class="t(block.content.bg_image) ? 'text-neutral-content' : ''">
-                <div class="max-w-md">
-                    <h1 class="text-5xl font-bold">{{ t(block.content.headline) }}</h1>
-                    <p class="py-6">{{ t(block.content.subheadline) }}</p>
-                    <button class="btn btn-primary" v-if="block.content.primaryLabel">{{ t(block.content.primaryLabel) }}</button>
-                </div>
-            </div>
-        </div>
-
         <!-- 9. Building -->
         <div v-else-if="block.type === 'template_reference'" 
              class="template-reference-block"

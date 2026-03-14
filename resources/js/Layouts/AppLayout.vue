@@ -12,6 +12,7 @@ const props = defineProps({
     type: Object,
     default: () => ({ content: [] })
   },
+  settings: Object,
   header: Object,
   footer: Object,
   sidebar: Object,

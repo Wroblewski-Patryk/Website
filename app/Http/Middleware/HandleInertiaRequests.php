@@ -60,9 +60,32 @@ class HandleInertiaRequests extends Middleware
             $languages = \App\Models\Language::where('is_active', true)->orderBy('is_default', 'desc')->get();
             $allProjects = \App\Models\Project::orderBy('order')->get();
             
-            $themeConfig = isset($settings['theme_config']) ? 
-                (is_array($settings['theme_config']) ? $settings['theme_config'] : json_decode($settings['theme_config'], true))
-                : null;
+            $themeColors = isset($settings['theme_colors']) ? (is_array($settings['theme_colors']) ? $settings['theme_colors'] : json_decode($settings['theme_colors'], true)) : [];
+            $themeRadius = isset($settings['theme_radius']) ? (is_array($settings['theme_radius']) ? $settings['theme_radius'] : json_decode($settings['theme_radius'], true)) : [];
+            $themeTypography = isset($settings['theme_typography']) ? (is_array($settings['theme_typography']) ? $settings['theme_typography'] : json_decode($settings['theme_typography'], true)) : [];
+
+            $themeConfig = [
+                'globals' => [
+                    'colors' => $themeColors,
+                    'borderRadius' => $themeRadius,
+                    'typography' => $themeTypography,
+                    'fonts' => [
+                        'sans' => $themeTypography['fontSans'] ?? 'Inter',
+                        'serif' => $themeTypography['fontSerif'] ?? 'Merriweather',
+                        'mono' => $themeTypography['fontMono'] ?? 'Fira Code',
+                    ],
+                    'advanced' => [
+                        'font-sans' => 'var(--font-sans)',
+                        'font-serif' => 'var(--font-serif)',
+                        'font-mono' => 'var(--font-mono)',
+                    ]
+                ],
+                // Add defaults for DynamicBlock to use
+                'block_defaults' => [
+                    'paragraph' => ['fontSize' => '1.125rem', 'lineHeight' => '1.75'],
+                    'heading' => ['fontWeight' => '900', 'letterSpacing' => '-0.05em'],
+                ]
+            ];
 
             $translations = Translation::all()->reduce(function ($carry, $translation) {
                 $locale = app()->getLocale();

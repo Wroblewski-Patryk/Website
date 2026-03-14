@@ -17,6 +17,9 @@ class PageController extends Controller
      */
     public function show(Request $request, $localeOrPath = null, $path = null)
     {
+        $blogId = \App\Models\Setting::where('key', 'blog_page_id')->value('value');
+        $projectsId = \App\Models\Setting::where('key', 'projects_page_id')->value('value');
+
         // Dynamiczna obsługa locale i ścieżki (ze względu na opcjonalny prefiks w web.php)
         if (in_array($localeOrPath, ['pl', 'en'])) {
             $locale = $localeOrPath;
@@ -26,74 +29,50 @@ class PageController extends Controller
             $locale = app()->getLocale();
             $path = $localeOrPath;
         }
+        
+        $fallbackLocale = config('app.fallback_locale', 'pl');
+        $actualPath = $path ?: $localeOrPath;
+        $segments = explode('/', trim($actualPath, '/'));
+        $firstSegment = $segments[0] ?? '';
 
         $settings = [];
         try {
             $settings = Setting::pluck('value', 'key')->toArray();
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning("Database connection failed in PageController: " . $e->getMessage());
-            $settings = [];
-        }
+        } catch (\Exception $e) {}
 
-        $isMaintenance = ($settings['maintenance_mode'] ?? '0') === '1';
         $isAdmin = auth()->check();
-
-        // 1. Maintenance Mode Check
-        if ($isMaintenance && !$isAdmin) {
-            try {
-                $maintPageId = $settings['maintenance_page_id'] ?? null;
-                if ($maintPageId) {
-                    $maintPage = Page::find($maintPageId);
-                    if ($maintPage) {
-                        return Inertia::render('Public/Page', [
-                            'page' => $maintPage,
-                            'settings' => $settings
-                        ]);
-                    }
-                }
-            } catch (\Exception $e) {}
-            abort(503, 'Site in maintenance mode.');
-        }
-
-        $homeId = $settings['home_page_id'] ?? null;
-        $blogId = $settings['blog_page_id'] ?? null;
-        $projectsId = $settings['projects_page_id'] ?? null;
-        $page404Id = $settings['page_404_id'] ?? null;
         $comingSoonId = $settings['coming_soon_page_id'] ?? null;
+        $page404Id = $settings['page_404_id'] ?? null;
 
-        if (!$path) {
-            if (!$homeId)
-                abort(404);
-            
-            try {
-                $page = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])->find($homeId);
-                return $this->renderPage($page, $settings, $isAdmin, $comingSoonId, $page404Id);
-            } catch (\Exception $e) {
-                return $this->render404($settings, $page404Id);
+        // 1. Check if we are at root (/)
+        if ($actualPath === null || $actualPath === '') {
+            $homeId = $settings['home_page_id'] ?? null;
+            if ($homeId) {
+                $homePage = Page::find($homeId);
+                if ($homePage) {
+                    return $this->renderPage($homePage, $settings, $isAdmin, $comingSoonId, $page404Id);
+                }
             }
+            return $this->render404($settings, $page404Id);
         }
 
-        $segments = explode('/', $path);
-        $firstSegment = $segments[0];
-
+        // 2. Resolve Page or special archive
         // Find page by slug (checking current locale preferred, or any)
-        $fallbackLocale = config('app.fallback_locale');
-        
-        $firstPage = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
+        $pageQuery = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
             ->where(function($query) use ($locale, $fallbackLocale, $firstSegment) {
                 $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$firstSegment])
                       ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$firstSegment]);
-            })
-            ->first();
+            });
+            
+        $firstPage = $pageQuery->first();
 
         // If not found, try finding a page by the full path
         if (!$firstPage) {
             $firstPage = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
-                ->where(function($query) use ($locale, $fallbackLocale, $path) {
-                    $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$path])
-                          ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$path]);
-                })
-                ->first();
+                ->where(function ($query) use ($locale, $fallbackLocale, $actualPath) {
+                    $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$actualPath])
+                          ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$actualPath]);
+                })->first();
         }
 
         if ($firstPage) {
@@ -101,13 +80,14 @@ class PageController extends Controller
             if ($firstPage->id == $blogId && count($segments) > 1) {
                 return $this->showPost($segments[1]); // Assuming single level for now
             }
-
+            
             // Check if this is a special archive page (Projects)
             if ($firstPage->id == $projectsId && count($segments) > 1) {
                 return $this->showProject($segments[1]);
             }
 
             // Otherwise, it's just a regular page (or the archive page itself)
+            // Redirect if using wrong locale slug? (Skip for now to avoid loops, let's just render)
             return $this->renderPage($firstPage, $settings, $isAdmin, $comingSoonId, $page404Id);
         }
 

@@ -35,18 +35,17 @@ export function useTranslations() {
         // Try the exact locale
         if (obj[locale]) return obj[locale];
 
-        // Try to find any locale if the requested one is empty/missing
-        // BUT only if we didn't explicitly force a locale that should be empty
+        if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+            return fallback || (obj !== null && typeof obj !== 'object' ? String(obj) : '');
+        }
+
         const availableKeys = Object.keys(obj).filter(k => obj[k]);
         if (availableKeys.length > 0) {
-            // If requested locale exists but is empty, and we have other languages, maybe fallback?
-            // For the builder, we might want to show empty if it's empty.
             if (obj[locale] === '') return ''; 
-            
             if (!obj[locale]) return obj[availableKeys[0]];
         }
 
-        return fallback || String(obj);
+        return fallback || '';
     };
 
     return { translate, t: translate };

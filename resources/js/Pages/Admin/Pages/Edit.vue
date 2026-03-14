@@ -1,7 +1,7 @@
 <template>
     <AdminLayout :full-width="true">
         <BlockBuilder 
-            v-model:title="form.title[activeLocale]"
+            v-model:title="form.title"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"
@@ -230,9 +230,11 @@ const props = defineProps({
 const store = useBlockBuilderStore();
 const toast = useToastStore();
 
+const isObject = (val) => val && typeof val === 'object' && !Array.isArray(val);
+
 const form = useForm({
-    title: props.page?.title || { pl: '', en: '' },
-    slug: props.page?.slug || { pl: '', en: '' },
+    title: isObject(props.page?.title) ? props.page.title : { pl: '', en: '' },
+    slug: isObject(props.page?.slug) ? props.page.slug : { pl: '', en: '' },
     content: props.page?.content || [],
     status: props.page?.status || 'draft',
     published_at: props.page?.published_at ? props.page.published_at.substring(0, 19).replace('T', ' ') : '',
@@ -240,12 +242,11 @@ const form = useForm({
     footer_override_id: props.page?.footer_override_id || null,
     sidebar_override_id: props.page?.sidebar_override_id || null,
     template_id: props.page?.template_id || null,
-    template: props.page?.template || 'default',
     // SEO Fields
-    meta_title: props.page?.meta_title || { pl: '', en: '' },
-    meta_description: props.page?.meta_description || { pl: '', en: '' },
+    meta_title: isObject(props.page?.meta_title) ? props.page.meta_title : { pl: '', en: '' },
+    meta_description: isObject(props.page?.meta_description) ? props.page.meta_description : { pl: '', en: '' },
     canonical_url: props.page?.canonical_url || '',
-    og_image: props.page?.og_image || { pl: '', en: '' },
+    og_image: isObject(props.page?.og_image) ? props.page.og_image : { pl: '', en: '' },
     seo_index: props.page?.seo_index ?? true,
     seo_follow: props.page?.seo_follow ?? true,
 });

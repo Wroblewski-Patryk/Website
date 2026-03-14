@@ -1,7 +1,7 @@
 <template>
     <AdminLayout :full-width="true">
         <BlockBuilder 
-            v-model:title="form.title[activeLocale]"
+            v-model:title="form.title"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"
@@ -198,19 +198,21 @@ const props = defineProps({
 const store = useBlockBuilderStore();
 const toast = useToastStore();
 
+const isObject = (val) => val && typeof val === 'object' && !Array.isArray(val);
+
 const form = useForm({
-    title: props.post?.title || { pl: '', en: '' },
-    slug: props.post?.slug || { pl: '', en: '' },
-    excerpt: props.post?.excerpt || { pl: '', en: '' },
+    title: isObject(props.post?.title) ? props.post.title : { pl: '', en: '' },
+    slug: isObject(props.post?.slug) ? props.post.slug : { pl: '', en: '' },
+    excerpt: isObject(props.post?.excerpt) ? props.post.excerpt : { pl: '', en: '' },
     content: props.post?.content || [],
     status: props.post?.status || 'draft',
     published_at: props.post?.published_at ? props.post.published_at.substring(0, 19).replace('T', ' ') : '',
-    featured_image: props.post?.featured_image || { pl: '', en: '' },
+    featured_image: isObject(props.post?.featured_image) ? props.post.featured_image : { pl: '', en: '' },
     // SEO Fields
-    meta_title: props.post?.meta_title || { pl: '', en: '' },
-    meta_description: props.post?.meta_description || { pl: '', en: '' },
+    meta_title: isObject(props.post?.meta_title) ? props.post.meta_title : { pl: '', en: '' },
+    meta_description: isObject(props.post?.meta_description) ? props.post.meta_description : { pl: '', en: '' },
     canonical_url: props.post?.canonical_url || '',
-    og_image: props.post?.og_image || { pl: '', en: '' },
+    og_image: isObject(props.post?.og_image) ? props.post.og_image : { pl: '', en: '' },
     seo_index: props.post?.seo_index ?? true,
     seo_follow: props.post?.seo_follow ?? true,
 });
@@ -234,9 +236,11 @@ const generateSlug = (text) => {
         .replace(/-+$/, '');
 };
 
-// Auto-slug generation - always update on title change
+// Auto-slug generation - update on title change ONLY if slug is empty OR it's a new post
 watch(() => form.title[activeLocale.value], (newTitle) => {
-    form.slug[activeLocale.value] = generateSlug(newTitle);
+    if (newTitle && (!props.post?.id || !form.slug[activeLocale.value])) {
+        form.slug[activeLocale.value] = generateSlug(newTitle);
+    }
 });
 
 const restoreRevision = (rev) => {

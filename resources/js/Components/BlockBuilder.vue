@@ -262,7 +262,7 @@ const iconMap = {
 };
 
 const props = defineProps({
-    title: { type: String, default: 'Untitled' },
+    title: { type: [String, Object], default: 'Untitled' },
     categories: { type: Array, default: () => [] },
     moduleCategories: { type: Array, default: () => [] },
     menus: { type: Array, default: () => [] },
@@ -332,7 +332,7 @@ const docTitle = computed({
     },
     set: (val) => {
         const locale = store.editingLocale || page.props.locale || 'pl';
-        const newTitle = typeof props.title === 'object' ? { ...props.title } : {};
+        const newTitle = (props.title && typeof props.title === 'object' && !Array.isArray(props.title)) ? { ...props.title } : {};
         newTitle[locale] = val;
         emit('update:title', newTitle);
     }

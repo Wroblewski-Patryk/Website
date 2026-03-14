@@ -83,13 +83,19 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 ]
             },
             {
-                id: 'layout_media',
-                label: 'Layout & Media',
-                icon: 'PhStack',
+                id: 'layout',
+                label: 'Layout',
+                icon: 'PhColumns',
                 blocks: [
                     { type: 'container', label: 'Container', icon: 'PhBoundingBox' },
                     { type: 'divider', label: 'Divider', icon: 'PhMinus' },
-                    { type: 'hero', label: 'Hero', icon: 'PhStar' },
+                ]
+            },
+            {
+                id: 'media',
+                label: 'Media',
+                icon: 'PhImage',
+                blocks: [
                     { type: 'image', label: 'Image', icon: 'PhImage' },
                     { type: 'video', label: 'Video', icon: 'PhVideoCamera' },
                 ]
@@ -248,7 +254,6 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                     gridConfig: { cols: '1', gap: '4' }
                 },
                 divider: { text: 'OR' },
-                hero: { headline: 'Provident cupiditate voluptatem et in.', subheadline: 'Provident cupiditate voluptatem et in.', primaryLabel: 'Get Started', bg_image: 'https://img.daisyui.com/images/stock/photo-1507358522600-9f71e620c44e.webp' },
                 image: { url: 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp', alt: '', caption: '' },
                 video: { url: '', autoplay: false, controls: true },
 

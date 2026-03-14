@@ -19,10 +19,12 @@ const props = defineProps({
 const store = useBlockBuilderStore();
 const toast = useToastStore();
 
+const isObject = (val) => val && typeof val === 'object' && !Array.isArray(val);
+
 const form = useForm({
-    title: props.project?.title || { pl: '', en: '' },
-    slug: props.project?.slug || { pl: '', en: '' },
-    description: props.project?.description || { pl: '', en: '' },
+    title: isObject(props.project?.title) ? props.project.title : { pl: '', en: '' },
+    slug: isObject(props.project?.slug) ? props.project.slug : { pl: '', en: '' },
+    description: isObject(props.project?.description) ? props.project.description : { pl: '', en: '' },
     content: props.project?.content || [],
     desktop_image: props.project?.desktop_image || '',
     mobile_image: props.project?.mobile_image || '',
@@ -33,10 +35,10 @@ const form = useForm({
     status: props.project?.status || 'draft',
     published_at: props.project?.published_at ? props.project.published_at.substring(0, 19).replace('T', ' ') : '',
     // SEO Fields
-    meta_title: props.project?.meta_title || { pl: '', en: '' },
-    meta_description: props.project?.meta_description || { pl: '', en: '' },
+    meta_title: isObject(props.project?.meta_title) ? props.project.meta_title : { pl: '', en: '' },
+    meta_description: isObject(props.project?.meta_description) ? props.project.meta_description : { pl: '', en: '' },
     canonical_url: props.project?.canonical_url || '',
-    og_image: props.project?.og_image || { pl: '', en: '' },
+    og_image: isObject(props.project?.og_image) ? props.project.og_image : { pl: '', en: '' },
     seo_index: props.project?.seo_index ?? true,
     seo_follow: props.project?.seo_follow ?? true,
 });
@@ -57,7 +59,9 @@ const generateSlug = (text) => {
 };
 
 watch(() => form.title[activeLocale.value], (newTitle) => {
-    form.slug[activeLocale.value] = generateSlug(newTitle);
+    if (newTitle && (!props.project?.id || !form.slug[activeLocale.value])) {
+        form.slug[activeLocale.value] = generateSlug(newTitle);
+    }
 });
 
 onMounted(() => {
@@ -96,7 +100,7 @@ function submit() {
     <Head :title="project ? 'Edit Project' : 'Add Project'" />
     <AdminLayout :full-width="true">
         <BlockBuilder 
-            v-model:title="form.title[activeLocale]"
+            v-model:title="form.title"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"
