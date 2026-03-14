@@ -1,6 +1,6 @@
 <script setup>
 import { Head, useForm, router, usePage } from '@inertiajs/vue3';
-import { markRaw, ref, onMounted } from 'vue';
+import { markRaw, ref, onMounted, computed } from 'vue';
 import { 
     PhFloppyDisk, PhHouse, PhGearSix, PhBrowser, PhBookOpen, PhMagnifyingGlass, PhGlobe, PhImage, PhCheckCircle, PhXCircle, PhMapTrifold, PhLayout
 } from '@phosphor-icons/vue';
