@@ -195,7 +195,25 @@ class PageController extends Controller
                       ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$slug]);
             })->first();
 
-            if (!$post || ($post->status !== 'published' && !$isAdmin)) {
+            if (!$post) {
+                return $this->render404($settings, $page404Id);
+            }
+
+            if ($post->status === 'draft' && !$isAdmin) {
+                return $this->render404($settings, $page404Id);
+            }
+
+            if ($post->status === 'planned' && !$isAdmin) {
+                $comingSoonId = $settings['coming_soon_page_id'] ?? null;
+                if ($comingSoonId) {
+                    $soonPage = Page::find($comingSoonId);
+                    if ($soonPage) {
+                        return Inertia::render('Public/Page', [
+                            'page' => $soonPage,
+                            'settings' => $settings
+                        ]);
+                    }
+                }
                 return $this->render404($settings, $page404Id);
             }
 
@@ -251,7 +269,25 @@ class PageController extends Controller
                       ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$slug]);
             })->first();
 
-            if (!$project || ($project->status !== 'published' && !$isAdmin)) {
+            if (!$project) {
+                return $this->render404($settings, $page404Id);
+            }
+
+            if ($project->status === 'draft' && !$isAdmin) {
+                return $this->render404($settings, $page404Id);
+            }
+
+            if ($project->status === 'planned' && !$isAdmin) {
+                $comingSoonId = $settings['coming_soon_page_id'] ?? null;
+                if ($comingSoonId) {
+                    $soonPage = Page::find($comingSoonId);
+                    if ($soonPage) {
+                        return Inertia::render('Public/Page', [
+                            'page' => $soonPage,
+                            'settings' => $settings
+                        ]);
+                    }
+                }
                 return $this->render404($settings, $page404Id);
             }
 
@@ -292,10 +328,21 @@ class PageController extends Controller
     {
         try {
             if ($page404Id) {
-                $errorPage = Page::find($page404Id);
+                $errorPage = Page::with(['headerOverride', 'footerOverride'])->find($page404Id);
                 if ($errorPage) {
+                    $contentService = app(\App\Services\BlockContentService::class);
+                    $pageData = $errorPage->toArray();
+                    $pageData['content'] = $contentService->resolveReferences($errorPage->content ?: []);
+                    $pageData['title'] = $errorPage->title;
+                    $pageData['slug'] = $errorPage->slug;
+
+                    $header = $errorPage->headerOverride ?? Template::where('type', 'header')->where('is_active', true)->where('is_default', true)->first();
+                    $footer = $errorPage->footerOverride ?? Template::where('type', 'footer')->where('is_active', true)->where('is_default', true)->first();
+
                     return Inertia::render('Public/Page', [
-                        'page' => $errorPage,
+                        'page' => $pageData,
+                        'header' => $header ? ['content' => $contentService->resolveReferences($header->content ?: [])] : null,
+                        'footer' => $footer ? ['content' => $contentService->resolveReferences($footer->content ?: [])] : null,
                         'settings' => $settings,
                         'seo' => app(\App\Services\SeoService::class)->getMetaData($errorPage),
                     ])->toResponse(request())->setStatusCode(404);

@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Form;
+use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class FormController extends Controller
 {
+    use HandlePublishableStatus;
     public function index(Request $request)
     {
         $query = Form::query();
@@ -58,6 +60,8 @@ class FormController extends Controller
             'published_at' => 'nullable|date',
         ]);
 
+        $this->applyStatusLogic(null, $validated);
+
         $formModel = Form::create($validated);
 
         return redirect()->route('admin.forms.edit', $formModel->id)->with('success', 'forms.create_success');
@@ -93,6 +97,8 @@ class FormController extends Controller
             'status' => 'nullable|string',
             'published_at' => 'nullable|date',
         ]);
+
+        $this->applyStatusLogic($form, $validated);
 
         $form->update($validated);
 

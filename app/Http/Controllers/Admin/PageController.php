@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
+use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PageController extends Controller
 {
+    use HandlePublishableStatus;
     public function index(Request $request)
     {
         $query = Page::query();
@@ -77,7 +79,7 @@ class PageController extends Controller
             'seo_follow' => 'nullable|boolean',
         ]);
 
-
+        $this->applyStatusLogic(null, $validated);
 
         $page = Page::create($validated);
 
@@ -132,7 +134,7 @@ class PageController extends Controller
             'seo_follow' => 'nullable|boolean',
         ]);
 
-
+        $this->applyStatusLogic($page, $validated);
 
         // Store revision of OLD content before update
         if ($page->content) {

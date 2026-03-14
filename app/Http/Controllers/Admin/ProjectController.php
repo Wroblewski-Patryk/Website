@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class ProjectController extends Controller
 {
+    use HandlePublishableStatus;
     public function index(Request $request)
     {
         $query = Project::query();
@@ -85,6 +87,8 @@ class ProjectController extends Controller
             'seo_follow' => 'nullable|boolean',
         ]);
 
+        $this->applyStatusLogic(null, $validated);
+
         if (empty($validated['slug'])) {
             $validated['slug'] = [app()->getLocale() => Str::slug($validated['title'][app()->getLocale()] ?? $validated['title']['pl'] ?? '')];
         }
@@ -142,7 +146,7 @@ class ProjectController extends Controller
             'seo_follow' => 'nullable|boolean',
         ]);
 
-
+        $this->applyStatusLogic($project, $validated);
 
         $project->update($validated);
         return redirect()->back()->with('success', 'projects.update_success');

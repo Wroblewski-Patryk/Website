@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Post;
+use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PostController extends Controller
 {
+    use HandlePublishableStatus;
     public function index(Request $request)
     {
         $query = Post::query();
@@ -84,7 +86,7 @@ class PostController extends Controller
             'seo_follow' => 'nullable|boolean',
         ]);
 
-
+        $this->applyStatusLogic(null, $validated);
 
         $post = Post::create($validated);
 
@@ -137,7 +139,7 @@ class PostController extends Controller
             'seo_follow' => 'nullable|boolean',
         ]);
 
-
+        $this->applyStatusLogic($post, $validated);
 
         // Store revision
         if ($post->content) {
