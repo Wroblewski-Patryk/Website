@@ -26,8 +26,8 @@ const menuOpen = ref({
 
 // Watch for URL changes to keep submenus open
 watch(() => usePage().url, (url) => {
-    if (url.includes('/admin/posts') || url.includes('/admin/categories')) menuOpen.value.posts = true;
-    if (url.includes('/admin/projects') || url.includes('/admin/clients')) menuOpen.value.projects = true;
+    if (url.includes('/admin/posts')) menuOpen.value.posts = true;
+    if (url.includes('/admin/projects')) menuOpen.value.projects = true;
     if (url.includes('/admin/theme')) menuOpen.value.theme = true;
 }, { immediate: true });
 
@@ -91,7 +91,7 @@ const adminTitle = computed(() => {
     
     // Try to find entity name in props (many edit pages pass the object)
     let entityName = null;
-    const entity = page.props.post || page.props.page || page.props.project || page.props.template || page.props.user || page.props.client;
+    const entity = page.props.post || page.props.page || page.props.project || page.props.template || page.props.user;
     if (entity) {
         // Handle translatable title or simple title/name/label
         entityName = (entity.title && typeof entity.title === 'object' ? t(entity.title) : entity.title) 
@@ -277,17 +277,15 @@ const changeLanguage = (langCode) => {
                                         <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('admin.menu.posts', 'Posts') }}</span>
                                     </Link>
                                     <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button @click="menuOpen.posts = !menuOpen.posts" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
-                                            <PhCaretDown weight="bold" class="w-3.5 h-3.5 transition-transform duration-300" :class="{'rotate-180': menuOpen.posts}" />
-                                        </button>
+                                        <div class="p-1.5 opacity-0 group-hover:opacity-100 transition-all">
+                                            <!-- Submenu placeholder or removed -->
+                                        </div>
                                         <Link :href="route('admin.posts.create')" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
                                             <PhPlus weight="bold" class="w-3.5 h-3.5" />
                                         </Link>
                                     </div>
                                 </div>
-                                <ul v-show="menuOpen.posts && !isSidebarCollapsed" class="mt-0.5 ml-4 border-l border-base-300 pl-2 space-y-0.5">
-                                    <li><Link :href="route('admin.categories.index')" class="py-1 px-3 text-xs hover:text-primary hover:bg-transparent transition-colors block" :class="{'text-primary font-medium': $page.url.startsWith('/admin/categories')}">{{ t('admin.menu.categories', 'Categories') }}</Link></li>
-                                </ul>
+
                             </li>
 
                             <!-- Projects -->
@@ -299,17 +297,15 @@ const changeLanguage = (langCode) => {
                                         <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('admin.menu.projects', 'Projects') }}</span>
                                     </Link>
                                     <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button @click="menuOpen.projects = !menuOpen.projects" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
-                                            <PhCaretDown weight="bold" class="w-3.5 h-3.5 transition-transform duration-300" :class="{'rotate-180': menuOpen.projects}" />
-                                        </button>
+                                        <div class="p-1.5 opacity-0 group-hover:opacity-100 transition-all">
+                                            <!-- Submenu placeholder or removed -->
+                                        </div>
                                         <Link :href="route('admin.projects.create')" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
                                             <PhPlus weight="bold" class="w-3.5 h-3.5" />
                                         </Link>
                                     </div>
                                 </div>
-                                <ul v-show="menuOpen.projects && !isSidebarCollapsed" class="mt-0.5 ml-4 border-l border-base-300 pl-2 space-y-0.5">
-                                    <li><Link :href="route('admin.clients.index')" class="py-1 px-3 text-xs hover:text-primary hover:bg-transparent transition-colors block" :class="{'text-primary font-medium': $page.url.startsWith('/admin/clients')}">{{ t('admin.menu.clients', 'Clients') }}</Link></li>
-                                </ul>
+
                             </li>
 
                             <!-- Forms -->
