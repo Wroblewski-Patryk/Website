@@ -44,8 +44,8 @@ class PageManagementTest extends TestCase
             'content' => [['type' => 'paragraph', 'content' => ['text' => 'Initial content']]],
             'status' => 'published',
             'published_at' => now()->toDateTimeString(),
-            'meta_title' => 'SEO Title',
-            'meta_description' => 'SEO Description',
+            'meta_title' => ['pl' => 'Tytuł SEO', 'en' => 'SEO Title'],
+            'meta_description' => ['pl' => 'Opis SEO', 'en' => 'SEO Description'],
             'canonical_url' => 'https://example.com/canonical-page',
         ];
 
@@ -56,8 +56,8 @@ class PageManagementTest extends TestCase
             'id' => 1,
             'title->pl' => 'Testowa strona',
             'slug->pl' => 'testowa-strona',
-            'meta_title->pl' => 'SEO Title',
-            'meta_description->pl' => 'SEO Description',
+            'meta_title->pl' => 'Tytuł SEO',
+            'meta_description->pl' => 'Opis SEO',
             'canonical_url' => 'https://example.com/canonical-page',
         ]);
     }

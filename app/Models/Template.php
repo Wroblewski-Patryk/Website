@@ -12,7 +12,6 @@ class Template extends Model
 {
     use HasFactory, HasTranslations;
     protected $fillable = ['title', 'type', 'is_active', 'is_default', 'is_system', 'content', 'meta_title', 'meta_description', 'canonical_url', 'og_image', 'seo_index', 'seo_follow'];
-    protected $guarded = [];
 
     public $translatable = ['title', 'meta_title', 'meta_description', 'og_image'];
 

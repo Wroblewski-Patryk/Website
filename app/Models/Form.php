@@ -12,7 +12,6 @@ class Form extends Model
     use HasFactory, HasTranslations;
 
     public $translatable = ['title'];
-    protected $guarded = [];
 
     protected $fillable = [
         'title',

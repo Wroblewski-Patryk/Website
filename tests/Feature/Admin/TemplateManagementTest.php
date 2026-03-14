@@ -32,7 +32,7 @@ class TemplateManagementTest extends TestCase
     public function test_admin_can_store_template(): void
     {
         $data = [
-            'name' => 'Custom Header',
+            'title' => ['pl' => 'Nagłówek', 'en' => 'Custom Header'],
             'type' => 'header',
             'content' => [],
             'is_active' => true,
@@ -43,17 +43,17 @@ class TemplateManagementTest extends TestCase
 
         $response->assertRedirect(); // Redirects to edit
         $this->assertDatabaseHas('templates', [
-            'name' => 'Custom Header',
+            'title->en' => 'Custom Header',
             'is_default' => true,
         ]);
     }
 
     public function test_admin_can_update_template(): void
     {
-        $template = Template::factory()->create(['name' => 'Old Name']);
+        $template = Template::factory()->create(['title' => ['en' => 'Old Name']]);
 
         $data = [
-            'name' => 'Updated Name',
+            'title' => ['pl' => 'Nowa nazwa', 'en' => 'Updated Name'],
             'type' => $template->type,
             'content' => [],
             'is_active' => true,
@@ -64,7 +64,7 @@ class TemplateManagementTest extends TestCase
         $response->assertRedirect(); // Redirects back
         $this->assertDatabaseHas('templates', [
             'id' => $template->id,
-            'name' => 'Updated Name',
+            'title->en' => 'Updated Name',
         ]);
     }
 

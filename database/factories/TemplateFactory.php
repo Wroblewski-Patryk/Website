@@ -17,8 +17,11 @@ class TemplateFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->words(2, true),
-            'type' => fake()->randomElement(['header', 'footer']),
+            'title' => [
+                'pl' => fake()->words(2, true) . ' (PL)',
+                'en' => fake()->words(2, true) . ' (EN)',
+            ],
+            'type' => fake()->randomElement(['header', 'footer', 'sidebar', 'page']),
             'content' => [
                 [
                     'id' => \Illuminate\Support\Str::uuid()->toString(),

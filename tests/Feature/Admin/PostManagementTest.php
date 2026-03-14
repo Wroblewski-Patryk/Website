@@ -38,8 +38,8 @@ class PostManagementTest extends TestCase
             'excerpt' => ['pl' => 'Excerpt', 'en' => 'Excerpt'],
             'status' => 'published',
             'published_at' => now()->toDateTimeString(),
-            'meta_title' => 'SEO Title',
-            'meta_description' => 'SEO Description',
+            'meta_title' => ['pl' => 'SEO Tytuł', 'en' => 'SEO Title'],
+            'meta_description' => ['pl' => 'SEO Opis', 'en' => 'SEO Description'],
             'canonical_url' => 'https://example.com/canonical',
         ];
 
@@ -50,8 +50,8 @@ class PostManagementTest extends TestCase
             'id' => 1,
             'title->pl' => 'Test Post',
             'slug->pl' => 'test-post',
-            'meta_title->pl' => 'SEO Title',
-            'meta_description->pl' => 'SEO Description',
+            'meta_title->pl' => 'SEO Tytuł',
+            'meta_description->pl' => 'SEO Opis',
             'canonical_url' => 'https://example.com/canonical',
         ]);
     }
