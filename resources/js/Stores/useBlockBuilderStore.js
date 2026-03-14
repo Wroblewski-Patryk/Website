@@ -12,7 +12,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         expandedNodes: {}, // Persist expanded/collapsed state of layers
         sidebarCollapses: {}, // Persist expanded/collapsed state of sidebar sections
         isEditingBlock: false,
-        editingLocale: 'pl',
+        editingLocale: null,
         availableLocales: [],
         categories: [
             {
@@ -193,7 +193,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         },
         initLocales(languages, currentLocale) {
             this.availableLocales = languages || [];
-            if (!this.editingLocale) {
+            if (currentLocale) {
                 this.editingLocale = currentLocale;
             }
         },

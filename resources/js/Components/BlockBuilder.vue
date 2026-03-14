@@ -25,7 +25,7 @@
                         :class="store.editingLocale === lang.code ? 'btn-primary shadow-sm' : 'btn-ghost opacity-60 hover:opacity-100'"
                     >
                         <span :class="`fi fi-${lang.code === 'en' ? 'gb' : lang.code} rounded-sm w-3 h-2`"></span>
-                        <span class="text-[9px] font-black tracking-widest">{{ lang.code }}</span>
+                        <span class="text-[9px] font-black tracking-widest uppercase">{{ lang.code }}</span>
                     </button>
                 </div>
             </template>
