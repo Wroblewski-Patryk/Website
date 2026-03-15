@@ -13,6 +13,7 @@ class PostController extends BaseAdminContentController
 
     protected string $modelClass = Post::class;
     protected string $viewPath = 'Admin/Posts';
+    protected string $module = 'posts';
 
     public function index(Request $request)
     {

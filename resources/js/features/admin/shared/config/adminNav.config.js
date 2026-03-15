@@ -31,8 +31,8 @@ export const navigation = (t) => [
                 children: [
                     { label: t('admin.common.all', 'All'), route: 'admin.posts.index', active: '/admin/posts', exact: true, icon: PhList },
                     { label: t('admin.common.add', 'Add New'), route: 'admin.posts.create', active: '/admin/posts/create', icon: PhPlus },
-                    { label: t('admin.taxonomy.type_category', 'Categories'), route: 'admin.taxonomies.index', params: { type: 'category' }, active: '/admin/taxonomies?type=category', icon: PhTag },
-                    { label: t('admin.taxonomy.type_tag', 'Tags'), route: 'admin.taxonomies.index', params: { type: 'tag' }, active: '/admin/taxonomies?type=tag', icon: PhHash }
+                    { label: t('admin.taxonomy.type_category', 'Categories'), route: 'admin.posts.categories.index', active: '/admin/posts/categories', icon: PhTag },
+                    { label: t('admin.taxonomy.type_tag', 'Tags'), route: 'admin.posts.tags.index', active: '/admin/posts/tags', icon: PhHash }
                 ]
             },
             {
@@ -40,13 +40,13 @@ export const navigation = (t) => [
                 icon: PhCards,
                 route: 'admin.projects.index',
                 createRoute: 'admin.projects.create',
-                active: ['/admin/projects', '/admin/clients'],
+                active: '/admin/projects',
                 color: 'primary',
                 children: [
                     { label: t('admin.common.all', 'All'), route: 'admin.projects.index', active: '/admin/projects', exact: true, icon: PhList },
                     { label: t('admin.common.add', 'Add New'), route: 'admin.projects.create', active: '/admin/projects/create', icon: PhPlus },
-                    { label: t('admin.taxonomy.type_category', 'Categories'), route: 'admin.taxonomies.index', params: { type: 'category' }, active: '/admin/taxonomies?type=category', icon: PhTag },
-                    { label: t('admin.taxonomy.type_tag', 'Tags'), route: 'admin.taxonomies.index', params: { type: 'tag' }, active: '/admin/taxonomies?type=tag', icon: PhHash }
+                    { label: t('admin.taxonomy.type_category', 'Categories'), route: 'admin.projects.categories.index', active: '/admin/projects/categories', icon: PhTag },
+                    { label: t('admin.taxonomy.type_tag', 'Tags'), route: 'admin.projects.tags.index', active: '/admin/projects/tags', icon: PhHash }
                 ]
             },
             {

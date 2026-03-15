@@ -27,7 +27,22 @@ Route::middleware('permission:manage-content')->group(function () {
     });
 
     Route::resource('projects', \App\Http\Controllers\Admin\ProjectController::class)->except(['show']);
-    Route::resource('taxonomies', \App\Http\Controllers\Admin\TaxonomyController::class)->except(['show']);
+    
+    // Modular Taxonomies
+    $modules = ['posts', 'projects'];
+    foreach ($modules as $module) {
+        Route::prefix($module)->name($module . '.')->group(function () use ($module) {
+            Route::get('categories', [\App\Http\Controllers\Admin\TaxonomyController::class, 'index'])
+                ->defaults('type', 'category')->defaults('module', $module)->name('categories.index');
+            Route::get('tags', [\App\Http\Controllers\Admin\TaxonomyController::class, 'index'])
+                ->defaults('type', 'tag')->defaults('module', $module)->name('tags.index');
+        });
+    }
+
+    // Generic taxonomy routes for store/update/delete (to avoid duplicating everything)
+    Route::post('taxonomies', [\App\Http\Controllers\Admin\TaxonomyController::class, 'store'])->name('taxonomies.store');
+    Route::put('taxonomies/{taxonomy}', [\App\Http\Controllers\Admin\TaxonomyController::class, 'update'])->name('taxonomies.update');
+    Route::delete('taxonomies/{taxonomy}', [\App\Http\Controllers\Admin\TaxonomyController::class, 'destroy'])->name('taxonomies.destroy');
     
     Route::get('blocks', function () {
         return Inertia::render('Admin/Blocks');

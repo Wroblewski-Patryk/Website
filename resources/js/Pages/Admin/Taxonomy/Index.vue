@@ -1,5 +1,5 @@
 <script setup>
-import { ref, markRaw, onMounted, computed } from 'vue';
+import { ref, markRaw, onMounted, computed, watch } from 'vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import { PhPencilSimple, PhPlusCircle, PhTag, PhPlus, PhTrash, PhHouse, PhTextT, PhFileText, PhHash } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
@@ -10,7 +10,8 @@ const { t } = useTranslations();
 
 const props = defineProps({
     taxonomies: Object,
-    currentType: String
+    currentType: String,
+    currentModule: String
 });
 
 const tableRef = ref(null);
@@ -22,6 +23,7 @@ const locales = ['pl', 'en'];
 function initForm() {
     return {
         type: props.currentType || 'category',
+        module: props.currentModule || 'posts',
         order: 0,
         color: '#3b82f6',
         icon: '',
@@ -33,10 +35,21 @@ function initForm() {
 
 const form = useForm(initForm());
 
-const breadcrumbs = [
-    { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
-    { label: t('admin.menu.taxonomies', 'Taxonomies') }
-];
+const breadcrumbs = computed(() => {
+    const list = [
+        { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
+    ];
+
+    if (props.currentModule === 'posts') {
+        list.push({ label: t('admin.menu.posts', 'Posts'), url: route('admin.posts.index') });
+    } else if (props.currentModule === 'projects') {
+        list.push({ label: t('admin.menu.projects', 'Projects'), url: route('admin.projects.index') });
+    }
+
+    list.push({ label: props.currentType === 'category' ? t('admin.taxonomy.type_category', 'Categories') : t('admin.taxonomy.type_tag', 'Tags') });
+    
+    return list;
+});
 
 const columns = [
     { key: 'id', label: t('admin.common.id', 'ID'), sortable: true },
@@ -51,13 +64,11 @@ const types = [
     { id: 'tag', label: t('admin.taxonomy.type_tag', 'Tags'), icon: markRaw(PhTag) }
 ];
 
-function setType(typeId) {
-    router.get(route('admin.taxonomies.index'), { type: typeId }, { preserveState: true });
-}
 
 function openCreate() {
     form.reset();
     form.type = props.currentType;
+    form.module = props.currentModule;
     editingTaxonomy.value = null;
     isCreating.value = true;
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -66,6 +77,7 @@ function openCreate() {
 function openEdit(item) {
     editingTaxonomy.value = item;
     form.type = item.type;
+    form.module = item.module || props.currentModule;
     form.order = item.order;
     form.color = item.color;
     form.icon = item.icon;
@@ -102,24 +114,32 @@ function submit() {
 function deleteTaxonomy(item) {
     router.delete(route('admin.taxonomies.destroy', item.id));
 }
+
+const slugManuallyEdited = ref({ pl: false, en: false });
+
+function generateSlug(text) {
+    if (!text) return '';
+    return text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+}
+
+// Auto-generate slug from title
+watch(() => form.title[currentLocale.value], (newVal) => {
+    if (!editingTaxonomy.value && !slugManuallyEdited.value[currentLocale.value]) {
+        form.slug[currentLocale.value] = generateSlug(newVal);
+    }
+});
 </script>
 
 <template>
     <Head :title="t('admin.taxonomy.management', 'Taxonomy Management')" />
     <AdminLayout>
-        <!-- Tabs for Types -->
-        <div class="tabs tabs-boxed mb-6 bg-base-200/50 p-1 w-fit">
-            <button 
-                v-for="type in types" 
-                :key="type.id"
-                @click="setType(type.id)"
-                class="tab rounded-lg px-6 flex items-center gap-2 transition-all"
-                :class="{ 'tab-active bg-primary text-white shadow-md': currentType === type.id }"
-            >
-                <component :is="type.icon" weight="regular" class="w-4 h-4" />
-                {{ type.label }}
-            </button>
-        </div>
 
         <div v-if="isCreating" class="mb-8 p-8 bg-base-100 rounded-box border border-primary/20 shadow-xl max-w-4xl mx-auto">
             <h3 class="text-xl font-black text-primary mb-6 flex items-center gap-2">
@@ -133,9 +153,13 @@ function deleteTaxonomy(item) {
                 <div class="flex gap-2 mb-4 bg-base-200/50 p-1 rounded-xl w-fit">
                     <button v-for="lang in locales" :key="lang" type="button"
                         @click="currentLocale = lang"
-                        class="btn btn-xs rounded-lg px-4 border-none shadow-none uppercase"
+                        class="btn btn-xs rounded-lg px-4 border-none shadow-none uppercase relative"
                         :class="currentLocale === lang ? 'btn-primary' : 'btn-ghost opacity-50'">
                         {{ lang }}
+                        <span v-if="!form.title[lang]" class="absolute -top-1 -right-1 flex h-2 w-2">
+                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-error opacity-75"></span>
+                             <span class="relative inline-flex rounded-full h-2 w-2 bg-error"></span>
+                        </span>
                     </button>
                 </div>
 
@@ -147,7 +171,7 @@ function deleteTaxonomy(item) {
                     
                     <div class="form-control w-full">
                         <label class="label"><span class="label-text font-bold opacity-50">{{ t('admin.taxonomy.slug_label', 'Slug') }} ({{ currentLocale.toUpperCase() }})</span></label>
-                        <input type="text" v-model="form.slug[currentLocale]" class="input input-bordered w-full rounded-xl bg-base-200/50" />
+                        <input type="text" v-model="form.slug[currentLocale]" @input="slugManuallyEdited[currentLocale] = true" class="input input-bordered w-full rounded-xl bg-base-200/50" />
                     </div>
 
                     <div class="form-control w-full md:col-span-2">

@@ -5,23 +5,32 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Taxonomy;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class TaxonomyController extends Controller
 {
     public function index(Request $request)
     {
-        $type = $request->get('type', 'category');
+        $routeName = $request->route()->getName();
+        $segments = explode('.', $routeName);
         
+        // Expected format: admin.{module}.{type}s.index
+        // e.g. admin.posts.categories.index
+        $module = $segments[1] ?? 'posts';
+        $typeShort = $segments[2] ?? 'categories';
+        $type = Str::singular($typeShort); // categories -> category, tags -> tag
+
         $taxonomies = Taxonomy::where('type', $type)
-            ->orderBy('order')
+            ->where('module', $module)
+            ->orderBy('order', 'asc')
             ->orderBy('id', 'desc')
             ->paginate(20);
 
         return Inertia::render('Admin/Taxonomy/Index', [
             'taxonomies' => $taxonomies,
-            'currentType' => $type
+            'currentType' => $type,
+            'currentModule' => $module
         ]);
     }
 
@@ -30,6 +39,7 @@ class TaxonomyController extends Controller
         $locales = config('app.locales', ['pl', 'en']);
         $rules = [
             'type' => 'required|string',
+            'module' => 'required|string',
             'order' => 'nullable|integer',
             'color' => 'nullable|string|max:20',
             'icon' => 'nullable|string|max:50',
@@ -60,6 +70,7 @@ class TaxonomyController extends Controller
         $locales = config('app.locales', ['pl', 'en']);
         $rules = [
             'type' => 'required|string',
+            'module' => 'required|string',
             'order' => 'nullable|integer',
             'color' => 'nullable|string|max:20',
             'icon' => 'nullable|string|max:50',

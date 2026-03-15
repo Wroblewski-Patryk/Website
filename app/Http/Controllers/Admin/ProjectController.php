@@ -13,6 +13,7 @@ class ProjectController extends BaseAdminContentController
 
     protected string $modelClass = Project::class;
     protected string $viewPath = 'Admin/Projects';
+    protected string $module = 'projects';
 
     public function index(Request $request)
     {

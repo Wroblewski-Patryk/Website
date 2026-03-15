@@ -13,6 +13,7 @@ class PageController extends BaseAdminContentController
 
     protected string $modelClass = Page::class;
     protected string $viewPath = 'Admin/Pages';
+    protected string $module = 'pages';
     protected bool $useTaxonomies = false;
 
     public function index(Request $request)

@@ -27,6 +27,11 @@ abstract class BaseAdminContentController extends Controller
     protected bool $useTaxonomies = true;
 
     /**
+     * The module name for taxonomies.
+     */
+    protected string $module = 'posts';
+
+    /**
      * Whether this content type uses slugs.
      */
     protected bool $useSlug = true;
@@ -82,7 +87,9 @@ abstract class BaseAdminContentController extends Controller
         ];
 
         if ($this->useTaxonomies) {
-            $props['availableTaxonomies'] = Taxonomy::orderBy('order')->get();
+            $props['availableTaxonomies'] = Taxonomy::where('module', $this->module ?? 'posts')
+                ->orderBy('order')
+                ->get();
         }
 
         return $props;
