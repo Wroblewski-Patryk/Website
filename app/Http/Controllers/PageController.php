@@ -56,6 +56,11 @@ class PageController extends Controller
             return $this->render404($settings, $page404Id);
         }
 
+        // 1.5. Check for Taxonomy URLs (/category/{slug} or /tag/{slug})
+        if (in_array($firstSegment, ['category', 'tag']) && count($segments) > 1) {
+            return $this->showTaxonomy($firstSegment, $segments[1]);
+        }
+
         // 2. Resolve Page or special archive
         // Try to find page by the FULL path first (for nested slugs or specific pages)
         $firstPage = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
@@ -230,6 +235,54 @@ class PageController extends Controller
         } catch (\Exception $e) {
             return $this->render404($settings, $page404Id);
         }
+    }
+
+    /**
+     * Show content filtered by taxonomy.
+     */
+    public function showTaxonomy($type, $slug)
+    {
+        $settings = [];
+        try {
+            $settings = Setting::pluck('value', 'key')->toArray();
+        } catch (\Exception $e) {}
+        
+        $page404Id = $settings['page_404_id'] ?? null;
+        $locale = app()->getLocale();
+        $fallbackLocale = config('app.fallback_locale');
+
+        $taxonomy = \App\Models\Taxonomy::where('type', $type)
+            ->where(function($query) use ($locale, $fallbackLocale, $slug) {
+                $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$slug])
+                      ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$slug]);
+            })->first();
+
+        if (!$taxonomy) {
+            return $this->render404($settings, $page404Id);
+        }
+
+        $posts = $taxonomy->posts()->where('status', 'published')->latest('published_at')->paginate(12);
+        
+        // This is a bit simplified - we could use a dedicated Taxonomy/Show component
+        // or just reuse Blog/Index with a "filtered by" header.
+        
+        $templates = $this->resolveTemplates();
+        $contentService = app(\App\Services\BlockContentService::class);
+        $seoService = app(\App\Services\SeoService::class);
+
+        return Inertia::render('Blog/Index', [
+            'posts' => $posts,
+            'taxonomy' => $taxonomy,
+            'header' => $templates['header'] ? ['content' => $contentService->resolveReferences($templates['header']->content ?: [])] : null,
+            'footer' => $templates['footer'] ? ['content' => $contentService->resolveReferences($templates['footer']->content ?: [])] : null,
+            'sidebar' => $templates['sidebar'] ? ['content' => $contentService->resolveReferences($templates['sidebar']->content ?: [])] : null,
+            'page_template' => $templates['page'] ? ['content' => $contentService->resolveReferences($templates['page']->content ?: [])] : null,
+            'settings' => $settings,
+            'seo' => [
+                'title' => $taxonomy->getTranslation('title', $locale) . ' - Blog',
+                'description' => $taxonomy->getTranslation('description', $locale),
+            ]
+        ]);
     }
 
     /**

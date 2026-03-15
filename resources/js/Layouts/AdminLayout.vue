@@ -5,6 +5,9 @@ import { useTranslations } from '@/Composables/useTranslations';
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue';
 import ToastContainer from '@/Components/ToastContainer.vue';
 import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGearSix, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhUsers, PhSignOut, PhLifebuoy, PhPlus, PhCaretDown } from '@phosphor-icons/vue';
+import SidebarGroup from '@/Components/Admin/Sidebar/SidebarGroup.vue';
+import SidebarItem from '@/Components/Admin/Sidebar/SidebarItem.vue';
+import SidebarChild from '@/Components/Admin/Sidebar/SidebarChild.vue';
 
 defineProps({
     fullWidth: {
@@ -296,62 +299,32 @@ const changeLanguage = (langCode) => {
                             <!-- Sidebar content here -->
                             <!-- Dynamic Sidebar Content -->
                             <template v-for="(group, groupIdx) in navConfig" :key="groupIdx">
-                                <li v-if="hasPermission(group.permission)" class="menu-title mt-4 mb-1 px-4 pointer-events-none">
-                                    <span class="text-[10px] uppercase font-bold tracking-widest whitespace-nowrap overflow-hidden transition-all duration-300" 
-                                          :class="group.items[0]?.color ? `text-${group.items[0].color}` : 'text-primary'"
-                                          v-show="!isSidebarCollapsed">
-                                        {{ group.title }}
-                                    </span>
-                                </li>
+                                <SidebarGroup 
+                                    v-if="hasPermission(group.permission)"
+                                    :title="group.title" 
+                                    :collapsed="isSidebarCollapsed"
+                                    :color="group.items[0]?.color || 'primary'"
+                                />
 
                                 <template v-for="(item, itemIdx) in group.items" :key="itemIdx">
-                                    <li v-if="hasPermission(item.permission)" class="relative group/menu-item px-2">
-                                        <!-- Main Item -->
-                                        <div class="flex items-center justify-between group transition-all px-3 py-2 rounded-lg" 
-                                             :class="[
-                                                isItemActive(item) ? `bg-${item.color || 'primary'}/10 text-${item.color || 'primary'} font-semibold` : `hover:bg-base-200/50 hover:text-${item.color || 'primary'}`
-                                             ]">
-                                            <!-- Vertical Active Indicator -->
-                                            <div v-if="isItemActive(item)" :class="`absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-${item.color || 'primary'}`"></div>
-
-                                            <component :is="item.route ? Link : 'div'" 
-                                                       v-if="item.route || item.children"
-                                                       :href="item.route ? route(item.route) : null" 
-                                                       @click="!item.route && item.children ? toggleSubmenu(`${groupIdx}-${itemIdx}`) : null"
-                                                       class="flex items-center flex-1 cursor-pointer">
-                                                <component :is="item.icon" weight="regular" class="w-5 h-5 shrink-0 transition-colors" 
-                                                            :class="isItemActive(item) ? `text-${item.color || 'primary'}` : 'text-base-content/60 group-hover/menu-item:text-inherit'" />
-                                                <span v-show="!isSidebarCollapsed" class="ml-3 transition-opacity duration-300 text-sm">{{ item.label }}</span>
-                                            </component>
-
-                                            <!-- Action Buttons (Create or Toggle) -->
-                                            <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity gap-1">
-                                                <Link v-if="item.createRoute" :href="route(item.createRoute)" 
-                                                      class="p-1 rounded-md transition-all hover:bg-base-300"
-                                                      :class="`text-${item.color || 'primary'}`" title="Add New">
-                                                    <PhPlus weight="bold" class="w-4 h-4" />
-                                                </Link>
-                                                <button v-if="item.children" @click.stop="toggleSubmenu(`${groupIdx}-${itemIdx}`)" 
-                                                        class="p-1 rounded-md transition-all hover:bg-base-300">
-                                                    <PhCaretDown weight="bold" class="w-3.5 h-3.5 transition-transform duration-300" 
-                                                                 :class="[{'rotate-180': navState[`${groupIdx}-${itemIdx}`]}, `text-${item.color || 'primary'}`]" />
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <!-- Submenu -->
-                                        <ul v-if="item.children" v-show="navState[`${groupIdx}-${itemIdx}`] && !isSidebarCollapsed" 
-                                            class="mt-1 ml-6 border-l-2 border-base-200 pl-2 space-y-1 py-1">
-                                            <li v-for="(child, childIdx) in item.children" :key="childIdx">
-                                                <Link :href="route(child.route)" class="py-1.5 px-3 text-[13px] rounded-md transition-colors block" 
-                                                      :class="[
-                                                        isItemActive(child) ? `bg-${item.color || 'primary'}/5 text-${item.color || 'primary'} font-medium` : `hover:text-${item.color || 'primary'} hover:bg-base-200/30 text-base-content/70`
-                                                      ]">
-                                                    {{ child.label }}
-                                                </Link>
-                                            </li>
+                                    <SidebarItem 
+                                        v-if="hasPermission(item.permission)"
+                                        :item="item"
+                                        :collapsed="isSidebarCollapsed"
+                                        :isActive="isItemActive(item)"
+                                        :isOpen="navState[`${groupIdx}-${itemIdx}`]"
+                                        @toggle="toggleSubmenu(`${groupIdx}-${itemIdx}`)"
+                                    >
+                                        <ul v-if="item.children" class="mt-1 ml-6 border-l-2 border-base-200 pl-2 space-y-1 py-1">
+                                            <SidebarChild 
+                                                v-for="(child, childIdx) in item.children" 
+                                                :key="childIdx"
+                                                :child="child"
+                                                :isActive="isItemActive(child)"
+                                                :color="item.color || 'primary'"
+                                            />
                                         </ul>
-                                    </li>
+                                    </SidebarItem>
                                 </template>
                             </template>
                         </ul>

@@ -61,6 +61,14 @@
 
                     <div class="divider opacity-10 my-0"></div>
 
+                    <TaxonomySelect 
+                        v-model="form.taxonomies"
+                        :available-taxonomies="availableTaxonomies"
+                        :active-locale="activeLocale"
+                    />
+
+                    <div class="divider opacity-10 my-0"></div>
+
                     <div class="space-y-4">
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.projects.category', 'Category') }}</span></label>
@@ -105,6 +113,7 @@ import {
 } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/features/admin/block-builder/components/BlockBuilderMain.vue';
+import TaxonomySelect from '@/features/admin/shared/components/TaxonomySelect.vue';
 import { useForm, usePage, Head } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useToastStore } from '@/Stores/useToastStore';
@@ -122,6 +131,14 @@ const getEmptyLocales = () => {
 
 const props = defineProps({
     project: Object,
+    taxonomies: {
+        type: Array,
+        default: () => []
+    },
+    availableTaxonomies: {
+        type: Array,
+        default: () => []
+    },
     templates: [Array, Object],
 });
 
@@ -142,6 +159,7 @@ const form = useForm({
     client: props.project?.client || '',
     order: props.project?.order || 0,
     status: props.project?.status || 'draft',
+    taxonomies: props.taxonomies || [],
     published_at: props.project?.published_at ? props.project.published_at.substring(0, 19).replace('T', ' ') : '',
     // SEO Fields
     meta_title: isObject(props.project?.meta_title) ? props.project.meta_title : getEmptyLocales(),

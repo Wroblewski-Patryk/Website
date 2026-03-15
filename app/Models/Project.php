@@ -8,7 +8,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Project extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, \App\Traits\HasContentFeatures, \App\Traits\HasTaxonomies;
 
     protected $guarded = [];
 

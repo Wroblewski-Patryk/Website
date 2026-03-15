@@ -9,12 +9,7 @@ use App\Models\Revision;
 
 class Post extends Model
 {
-    use HasFactory, HasTranslations;
-
-    public function revisions(): \Illuminate\Database\Eloquent\Relations\MorphMany
-    {
-        return $this->morphMany(Revision::class , 'revisionable')->latest();
-    }
+    use HasFactory, HasTranslations, \App\Traits\HasContentFeatures, \App\Traits\HasTaxonomies;
 
     public $translatable = ['title', 'slug', 'excerpt', 'featured_image', 'meta_title', 'meta_description', 'og_image'];
 

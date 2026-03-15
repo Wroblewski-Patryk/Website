@@ -27,6 +27,7 @@ Route::middleware('permission:manage-content')->group(function () {
     });
 
     Route::resource('projects', \App\Http\Controllers\Admin\ProjectController::class)->except(['show']);
+    Route::resource('taxonomies', \App\Http\Controllers\Admin\TaxonomyController::class)->except(['show']);
     
     Route::get('blocks', function () {
         return Inertia::render('Admin/Blocks');

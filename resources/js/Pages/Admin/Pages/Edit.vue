@@ -112,6 +112,14 @@
 
                     <div class="divider opacity-10 my-0"></div>
 
+                    <TaxonomySelect 
+                        v-model="form.taxonomies"
+                        :available-taxonomies="availableTaxonomies"
+                        :active-locale="activeLocale"
+                    />
+
+                    <div class="divider opacity-10 my-0"></div>
+
                     <div class="space-y-3 bg-base-200/30 p-4 rounded-xl border border-base-content/10">
                         <div class="flex items-center justify-between text-[10px] uppercase tracking-wider opacity-60 font-bold px-1">
                             <span>{{ t('admin.pages.metadata', 'Metadata') }}</span>
@@ -211,6 +219,7 @@ import {
 } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/features/admin/block-builder/components/BlockBuilderMain.vue';
+import TaxonomySelect from '@/features/admin/shared/components/TaxonomySelect.vue';
 import DatePicker from '@/features/admin/shared/components/DatePicker.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
@@ -229,6 +238,14 @@ const getEmptyLocales = () => {
 
 const props = defineProps({
     page: Object,
+    taxonomies: {
+        type: Array,
+        default: () => []
+    },
+    availableTaxonomies: {
+        type: Array,
+        default: () => []
+    },
     templates: [Array, Object],
     menus: Array
 });
@@ -248,6 +265,7 @@ const form = useForm({
     footer_override_id: props.page?.footer_override_id || null,
     sidebar_override_id: props.page?.sidebar_override_id || null,
     template_id: props.page?.template_id || null,
+    taxonomies: props.taxonomies || [],
     // SEO Fields
     meta_title: isObject(props.page?.meta_title) ? props.page.meta_title : getEmptyLocales(),
     meta_description: isObject(props.page?.meta_description) ? props.page.meta_description : getEmptyLocales(),

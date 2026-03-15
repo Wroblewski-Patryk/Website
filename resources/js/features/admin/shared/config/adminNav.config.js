@@ -1,7 +1,7 @@
 import { 
     PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, 
     PhCube, PhLayout, PhImageSquare, PhGlobe, PhGearSix, 
-    PhUsers 
+    PhUsers, PhTag, PhHash
 } from '@phosphor-icons/vue';
 
 export const navigation = (t) => [
@@ -18,7 +18,7 @@ export const navigation = (t) => [
                 color: 'primary',
                 children: [
                     { label: t('admin.common.all', 'All'), route: 'admin.pages.index', active: '/admin/pages', exact: true },
-                    { label: t('admin.common.add', 'Add New'), route: 'admin.pages.create', active: '/admin/pages/create' }
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.pages.create', active: '/admin/pages/create' },
                 ]
             },
             {
@@ -30,7 +30,9 @@ export const navigation = (t) => [
                 color: 'primary',
                 children: [
                     { label: t('admin.common.all', 'All'), route: 'admin.posts.index', active: '/admin/posts', exact: true },
-                    { label: t('admin.common.add', 'Add New'), route: 'admin.posts.create', active: '/admin/posts/create' }
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.posts.create', active: '/admin/posts/create' },
+                    { label: t('admin.taxonomy.type_category', 'Categories'), route: 'admin.taxonomies.index', params: { type: 'category' }, active: '/admin/taxonomies?type=category' },
+                    { label: t('admin.taxonomy.type_tag', 'Tags'), route: 'admin.taxonomies.index', params: { type: 'tag' }, active: '/admin/taxonomies?type=tag' }
                 ]
             },
             {
@@ -42,7 +44,9 @@ export const navigation = (t) => [
                 color: 'primary',
                 children: [
                     { label: t('admin.common.all', 'All'), route: 'admin.projects.index', active: '/admin/projects', exact: true },
-                    { label: t('admin.common.add', 'Add New'), route: 'admin.projects.create', active: '/admin/projects/create' }
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.projects.create', active: '/admin/projects/create' },
+                    { label: t('admin.taxonomy.type_category', 'Categories'), route: 'admin.taxonomies.index', params: { type: 'category' }, active: '/admin/taxonomies?type=category' },
+                    { label: t('admin.taxonomy.type_tag', 'Tags'), route: 'admin.taxonomies.index', params: { type: 'tag' }, active: '/admin/taxonomies?type=tag' }
                 ]
             },
             {

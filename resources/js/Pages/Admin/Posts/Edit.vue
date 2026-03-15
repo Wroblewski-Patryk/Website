@@ -85,6 +85,14 @@
 
                     <div class="divider opacity-10 my-0"></div>
 
+                    <TaxonomySelect 
+                        v-model="form.taxonomies"
+                        :available-taxonomies="availableTaxonomies"
+                        :active-locale="activeLocale"
+                    />
+
+                    <div class="divider opacity-10 my-0"></div>
+
                     <div class="space-y-3 bg-base-200/30 p-4 rounded-xl border border-base-content/10">
                         <div class="flex items-center justify-between text-[10px] uppercase tracking-wider opacity-60 font-bold px-1">
                             <span>{{ t('admin.common.metadata', 'Metadata') }}</span>
@@ -182,6 +190,7 @@ import {
 } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/features/admin/block-builder/components/BlockBuilderMain.vue';
+import TaxonomySelect from '@/features/admin/shared/components/TaxonomySelect.vue';
 import DatePicker from '@/features/admin/shared/components/DatePicker.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
@@ -200,6 +209,14 @@ const getEmptyLocales = () => {
 
 const props = defineProps({
     post: Object,
+    taxonomies: {
+        type: Array,
+        default: () => []
+    },
+    availableTaxonomies: {
+        type: Array,
+        default: () => []
+    },
     templates: [Array, Object]
 });
 
@@ -216,6 +233,7 @@ const form = useForm({
     status: props.post?.status || 'draft',
     published_at: props.post?.published_at ? props.post.published_at.substring(0, 19).replace('T', ' ') : '',
     featured_image: isObject(props.post?.featured_image) ? props.post.featured_image : getEmptyLocales(),
+    taxonomies: props.taxonomies || [],
     // SEO Fields
     meta_title: isObject(props.post?.meta_title) ? props.post.meta_title : getEmptyLocales(),
     meta_description: isObject(props.post?.meta_description) ? props.post.meta_description : getEmptyLocales(),

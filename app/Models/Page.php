@@ -9,12 +9,7 @@ use App\Models\Revision; // Added this line
 
 class Page extends Model
 {
-    use HasFactory, HasTranslations;
-
-    public function revisions(): \Illuminate\Database\Eloquent\Relations\MorphMany
-    {
-        return $this->morphMany(Revision::class , 'revisionable')->latest();
-    }
+    use HasFactory, HasTranslations, \App\Traits\HasContentFeatures;
 
     public $translatable = ['title', 'slug', 'meta_title', 'meta_description', 'og_image'];
 

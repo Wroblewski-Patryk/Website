@@ -10,7 +10,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Template extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, \App\Traits\HasContentFeatures;
     protected $fillable = ['title', 'type', 'is_active', 'is_default', 'is_system', 'content', 'meta_title', 'meta_description', 'canonical_url', 'og_image', 'seo_index', 'seo_follow'];
 
     public $translatable = ['title', 'meta_title', 'meta_description', 'og_image'];
@@ -26,10 +26,6 @@ class Template extends Model
         });
     }
 
-    public function revisions(): \Illuminate\Database\Eloquent\Relations\MorphMany
-    {
-        return $this->morphMany(Revision::class , 'revisionable')->latest();
-    }
 
     protected $casts = [
         'content' => 'array',
