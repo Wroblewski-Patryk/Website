@@ -40,22 +40,25 @@ class SeoService
      */
     public function getModuleLabel(string $module): string
     {
-        $labels = [
-            'posts' => 'Blog',
-            'categories' => 'Kategorie',
-            'projects' => 'Projekty',
-            'clients' => 'Klienci',
-            'pages' => 'Strony',
-            'forms' => 'Formularze',
-            'media' => 'Media',
-            'theme' => 'Motyw',
-            'settings' => 'Ustawienia',
-            'users' => 'Użytkownicy',
-            'translations' => 'Tłumaczenia',
-            'languages' => 'Języki',
-        ];
+        $module = strtolower($module);
+        
+        // Try group 'admin' first, keys 'menu.*' or 'modules.*'
+        $keys = ["menu.{$module}", "modules.{$module}", "common.{$module}"];
+        
+        foreach ($keys as $key) {
+            $translation = \App\Models\Translation::where('group', 'admin')
+                ->where('key', $key)
+                ->first();
 
-        return $labels[strtolower($module)] ?? Str::ucfirst($module);
+            if ($translation) {
+                return $translation->getTranslation('text', App::getLocale()) 
+                    ?: $translation->getTranslation('text', config('app.fallback_locale', 'en'))
+                    ?: Str::ucfirst($module);
+            }
+        }
+
+        // Fallback to ucfirst
+        return Str::ucfirst($module);
     }
 
     /**
@@ -65,16 +68,12 @@ class SeoService
     protected function buildAdminTitle(string $brand, string $separator, string $module, string $action, $entity = null): string
     {
         $moduleLabel = $this->getModuleLabel($module);
-        $actionLabel = $action ?Str::ucfirst($action) : '';
-
-        // Map common actions to Polish
-        $actionMap = [
-            'edit' => 'Edycja',
-            'create' => 'Nowy',
-            'index' => 'Lista',
-            'show' => 'Podgląd',
-        ];
-        $actionLabel = $actionMap[strtolower($action)] ?? $actionLabel;
+        
+        // If action is same as index, maybe skip it if it's too redundant
+        $actionLabel = '';
+        if ($action && !in_array(strtolower($action), ['index', 'list', 'show'])) {
+            $actionLabel = $this->getModuleLabel($action);
+        }
 
         $entityTitle = $entity ? $this->getEntityTitle($entity) : '';
 
@@ -85,7 +84,9 @@ class SeoService
             $parts[] = $actionLabel;
         if ($moduleLabel)
             $parts[] = $moduleLabel;
-        $parts[] = 'Panel Administracyjny';
+            
+        // Admin Panel label
+        $parts[] = $this->getModuleLabel('admin_panel');
         $parts[] = $brand;
 
         return implode($separator, array_filter($parts));
@@ -132,7 +133,7 @@ class SeoService
             return null;
 
         $locale = App::getLocale();
-        $fallback = config('app.fallback_locale', 'pl');
+        $fallback = config('app.fallback_locale', 'en');
 
         if (is_object($entity)) {
             // Priority: meta_title -> title
@@ -161,7 +162,7 @@ class SeoService
         if (is_array($entity)) {
             $title = $entity['meta_title'][$locale] ?? $entity['title'][$locale] ?? null;
             if (!$title || trim((string)$title) === '') {
-                $title = $entity['meta_title'][$fallback] ?? $entity['title'][$fallback] ?? $entity['meta_title']['pl'] ?? $entity['title']['pl'] ?? null;
+                $title = $entity['meta_title'][$fallback] ?? $entity['title'][$fallback] ?? null;
             }
             return $title ? (string)$title : null;
         }
@@ -175,7 +176,7 @@ class SeoService
     public function getMetaData($entity = null, string $parent = ''): array
     {
         $locale = App::getLocale();
-        $fallback = config('app.fallback_locale', 'pl');
+        $fallback = config('app.fallback_locale', 'en');
         $defaultDesc = $this->getSetting('default_meta_description', '');
         $defaultOgImage = $this->getSetting('default_og_image', '');
 
@@ -185,8 +186,9 @@ class SeoService
             'parent' => $parent,
             'description' => $defaultDesc,
             'og_image' => $defaultOgImage,
-            'canonical' => url()->current(),
             'robots' => 'index, follow',
+            'canonical' => null,
+            'alternate_locales' => $this->getHreflangMap($entity),
         ];
 
         if ($entity && is_object($entity)) {
@@ -200,6 +202,29 @@ class SeoService
         }
 
         return $data;
+    }
+
+    /**
+     * Build hreflang alternate links map.
+     */
+    protected function getHreflangMap($entity): array
+    {
+        if (!$entity || !is_object($entity)) {
+            return [];
+        }
+
+        $locales = \App\Models\Language::where('is_active', true)->pluck('code')->toArray();
+        $map = [];
+
+        foreach ($locales as $locale) {
+            $slug = $entity->getTranslation('slug', $locale);
+            if ($slug) {
+                // This is a simplification. Ideally we'd use route names, but for dynamic pages:
+                $map[$locale] = url("/{$locale}/{$slug}");
+            }
+        }
+
+        return $map;
     }
 
     /**

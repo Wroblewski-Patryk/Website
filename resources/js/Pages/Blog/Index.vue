@@ -2,10 +2,9 @@
 import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SeoHead from '@/Components/SeoHead.vue';
-import DynamicBlock from '@/Components/DynamicBlock.vue';
-import moment from 'moment';
+import DynamicBlock from '@/features/admin/block-builder/components/DynamicBlock.vue';
 import { useTranslations } from '@/Composables/useTranslations';
-
+import { useFormatter } from '@/Composables/useFormatter';
 
 const props = defineProps({
     posts: Object,
@@ -17,6 +16,7 @@ const props = defineProps({
 });
 
 const { t } = useTranslations();
+const { formatDate } = useFormatter();
 </script>
 
 <template>
@@ -51,7 +51,7 @@ const { t } = useTranslations();
                         </div>
                     </div>
                     <div class="flex items-center text-sm font-bold tracking-widest uppercase text-white/60 mb-3">
-                        <span>{{ post.published_at ? moment(post.published_at).format('MMM D, YYYY') : 'Not Published' }}</span>
+                        <span>{{ post.published_at ? formatDate(post.published_at) : 'Not Published' }}</span>
                     </div>
                     <h2 class="text-2xl font-bold mb-3 group-hover:text-gray-300 transition-colors">{{ t(post.title) }}</h2>
                     <p class="text-gray-400 line-clamp-3 leading-relaxed">{{ t(post.excerpt) || (post.content ? 'Content available' : '') }}</p>

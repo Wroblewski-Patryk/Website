@@ -2,6 +2,7 @@
     <AdminLayout :full-width="true">
         <BlockBuilder 
             v-model:title="form.title"
+            :module-label="page?.id ? t('admin.pages.edit_page', 'Edit Page') : t('admin.pages.add_page', 'Add New Page')"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"
@@ -73,7 +74,7 @@
                             <select v-model="form.template_id" class="select select-bordered select-sm text-xs w-full">
                                 <option :value="null">{{ t('admin.pages.layout_default', 'Default Page Layout') }}</option>
                                 <option v-for="t in templates.page || []" :key="t.id" :value="t.id">
-                                    {{ t.title?.[activeLocale.value] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled Page Template' }}
+                                    {{ t.title?.[activeLocale] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled' }}
                                 </option>
                             </select>
                         </div>
@@ -83,7 +84,7 @@
                             <select v-model="form.header_override_id" class="select select-bordered select-sm text-xs w-full">
                                 <option :value="null">{{ t('admin.pages.header_default', 'System Default Header') }}</option>
                                 <option v-for="t in templates.header || []" :key="t.id" :value="t.id">
-                                    {{ t.title?.[activeLocale.value] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled Header' }}
+                                    {{ t.title?.[activeLocale] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled Header' }}
                                 </option>
                             </select>
                         </div>
@@ -93,7 +94,7 @@
                             <select v-model="form.sidebar_override_id" class="select select-bordered select-sm text-xs w-full">
                                 <option :value="null">{{ t('admin.pages.sidebar_default', 'System Default Sidebar') }}</option>
                                 <option v-for="t in templates.sidebar || []" :key="t.id" :value="t.id">
-                                    {{ t.title?.[activeLocale.value] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled Sidebar' }}
+                                    {{ t.title?.[activeLocale] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled Sidebar' }}
                                 </option>
                             </select>
                         </div>
@@ -103,11 +104,19 @@
                             <select v-model="form.footer_override_id" class="select select-bordered select-sm text-xs w-full">
                                 <option :value="null">{{ t('admin.pages.footer_default', 'System Default Footer') }}</option>
                                 <option v-for="t in templates.footer || []" :key="t.id" :value="t.id">
-                                    {{ t.title?.[activeLocale.value] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled Footer' }}
+                                    {{ t.title?.[activeLocale] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled Footer' }}
                                 </option>
                             </select>
                         </div>
                     </div>
+
+                    <div class="divider opacity-10 my-0"></div>
+
+                    <TaxonomySelect 
+                        v-model="form.taxonomies"
+                        :available-taxonomies="availableTaxonomies"
+                        :active-locale="activeLocale"
+                    />
 
                     <div class="divider opacity-10 my-0"></div>
 
@@ -209,20 +218,34 @@ import {
     PhArrowSquareOut
 } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import BlockBuilder from '@/Components/BlockBuilder.vue';
-import DatePicker from '@/Components/DatePicker.vue';
+import BlockBuilder from '@/features/admin/block-builder/components/BlockBuilderMain.vue';
+import TaxonomySelect from '@/features/admin/shared/components/TaxonomySelect.vue';
+import DatePicker from '@/features/admin/shared/components/DatePicker.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useToastStore } from '@/Stores/useToastStore';
 import { useTranslations } from '@/Composables/useTranslations';
 import { computed, onMounted, watch } from 'vue';
 
 const { t } = useTranslations();
 const pageProps = usePage().props;
-const activeLocale = computed(() => store.editingLocale || pageProps.locale || 'pl');
+const activeLocale = computed(() => store.editingLocale || pageProps.locale || 'en');
+
+const getEmptyLocales = () => {
+    const locales = (pageProps.languages || []).map(l => l.code);
+    return locales.reduce((acc, code) => ({ ...acc, [code]: '' }), {});
+};
 
 const props = defineProps({
     page: Object,
+    taxonomies: {
+        type: Array,
+        default: () => []
+    },
+    availableTaxonomies: {
+        type: Array,
+        default: () => []
+    },
     templates: [Array, Object],
     menus: Array
 });
@@ -233,8 +256,8 @@ const toast = useToastStore();
 const isObject = (val) => val && typeof val === 'object' && !Array.isArray(val);
 
 const form = useForm({
-    title: isObject(props.page?.title) ? props.page.title : { pl: '', en: '' },
-    slug: isObject(props.page?.slug) ? props.page.slug : { pl: '', en: '' },
+    title: isObject(props.page?.title) ? props.page.title : getEmptyLocales(),
+    slug: isObject(props.page?.slug) ? props.page.slug : getEmptyLocales(),
     content: props.page?.content || [],
     status: props.page?.status || 'draft',
     published_at: props.page?.published_at ? props.page.published_at.substring(0, 19).replace('T', ' ') : '',
@@ -242,11 +265,12 @@ const form = useForm({
     footer_override_id: props.page?.footer_override_id || null,
     sidebar_override_id: props.page?.sidebar_override_id || null,
     template_id: props.page?.template_id || null,
+    taxonomies: props.taxonomies || [],
     // SEO Fields
-    meta_title: isObject(props.page?.meta_title) ? props.page.meta_title : { pl: '', en: '' },
-    meta_description: isObject(props.page?.meta_description) ? props.page.meta_description : { pl: '', en: '' },
+    meta_title: isObject(props.page?.meta_title) ? props.page.meta_title : getEmptyLocales(),
+    meta_description: isObject(props.page?.meta_description) ? props.page.meta_description : getEmptyLocales(),
     canonical_url: props.page?.canonical_url || '',
-    og_image: isObject(props.page?.og_image) ? props.page.og_image : { pl: '', en: '' },
+    og_image: isObject(props.page?.og_image) ? props.page.og_image : getEmptyLocales(),
     seo_index: props.page?.seo_index ?? true,
     seo_follow: props.page?.seo_follow ?? true,
 });
@@ -254,7 +278,7 @@ const form = useForm({
 const previewUrl = computed(() => form.slug?.[activeLocale.value] ? `/${form.slug[activeLocale.value]}` : null);
 
 onMounted(() => {
-    store.init(props.page?.content || { pl: [], en: [] });
+    store.init(props.page?.content || []);
 });
 
 const generateSlug = (text) => {
@@ -279,7 +303,7 @@ watch(() => form.title[activeLocale.value], (newTitle) => {
 
 const restoreRevision = (rev) => {
     if (confirm(t('admin.common.are_you_sure', 'Are you sure you want to restore this version? Current unsaved changes will be lost.'))) {
-        store.init(rev.content || { pl: [], en: [] });
+        store.init(rev.content || getEmptyLocales());
         store.isDirty = true;
     }
 };

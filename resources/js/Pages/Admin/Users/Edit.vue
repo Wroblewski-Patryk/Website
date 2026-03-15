@@ -3,20 +3,24 @@ import { Head, useForm, Link } from '@inertiajs/vue3';
 import { markRaw } from 'vue';
 import { PhUser, PhHouse, PhUsers, PhFloppyDisk, PhX } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
+import ModuleHeader from '@/features/admin/shared/components/ModuleHeader.vue';
 import { useTranslations } from '@/Composables/useTranslations';
+import { useFormatter } from '@/Composables/useFormatter';
 
 const props = defineProps({
-    user_item: Object
+    user_item: Object,
+    roles: Array
 });
 
 const { t } = useTranslations();
+const { formatDateTime } = useFormatter();
 
 const form = useForm({
     name: props.user_item.name || '',
     email: props.user_item.email || '',
     password: '',
-    password_confirmation: ''
+    password_confirmation: '',
+    roles: props.user_item.roles?.map(r => r.name) || (props.user_item.id ? [] : ['editor'])
 });
 
 const submit = () => {
@@ -163,20 +167,37 @@ const breadcrumbs = [
                 <!-- Sidebar Metadata Column -->
                 <div class="space-y-6">
                     <div class="bg-base-100 rounded-box shadow-sm border border-base-300 p-6">
+                        <h2 class="text-xs font-black uppercase tracking-widest opacity-40 mb-4 pb-2 border-b border-base-200">{{ t('admin.users.role', 'Role') }}</h2>
+                        <div class="form-control w-full">
+                            <select 
+                                :value="form.roles[0]" 
+                                @change="form.roles = [$event.target.value]"
+                                class="select select-bordered w-full bg-base-100 focus:bg-base-100 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                            >
+                                <option disabled value="">{{ t('admin.users.select_role', 'Select role') }}</option>
+                                <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
+                            </select>
+                            <label class="label" v-if="form.errors.roles">
+                                <span class="label-text-alt text-error font-medium">{{ form.errors.roles }}</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="bg-base-100 rounded-box shadow-sm border border-base-300 p-6">
                         <h2 class="text-xs font-black uppercase tracking-widest opacity-40 mb-4 pb-2 border-b border-base-200">{{ t('admin.users.account_status', 'Account Status') }}</h2>
                         
                         <div class="space-y-4">
                             <div class="flex flex-col gap-1">
                                 <span class="text-xs font-semibold opacity-60">{{ t('admin.users.created_at', 'Created At') }}</span>
                                 <span class="text-sm font-mono opacity-80 bg-base-200 p-2 rounded-lg break-all">
-                                    {{ user_item.created_at ? new Date(user_item.created_at).toLocaleString() : '-' }}
+                                    {{ user_item.created_at ? formatDateTime(user_item.created_at) : '-' }}
                                 </span>
                             </div>
                             
                             <div class="flex flex-col gap-1 mt-4">
                                 <span class="text-xs font-semibold opacity-60">{{ t('admin.users.last_updated', 'Last Updated') }}</span>
                                 <span class="text-sm font-mono opacity-80 bg-base-200 p-2 rounded-lg break-all">
-                                    {{ user_item.updated_at ? new Date(user_item.updated_at).toLocaleString() : '-' }}
+                                    {{ user_item.updated_at ? formatDateTime(user_item.updated_at) : '-' }}
                                 </span>
                             </div>
                         </div>

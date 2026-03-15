@@ -15,4 +15,21 @@ class Language extends Model
         'is_default' => 'boolean',
         'is_active' => 'boolean',
     ];
+
+    protected static function booted()
+    {
+        static::saving(function ($language) {
+            if ($language->is_default) {
+                // Ensure only one default language
+                static::where('id', '!=', $language->id)->update(['is_default' => false]);
+                $language->is_active = true; // Default language must be active
+            }
+        });
+
+        static::deleting(function ($language) {
+            if ($language->is_default) {
+                throw new \Exception("Cannot delete the default language.");
+            }
+        });
+    }
 }

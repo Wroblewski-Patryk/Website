@@ -1,6 +1,6 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ResourceTable from '@/Components/ResourceTable.vue';
+import ResourceTable from '@/features/admin/shared/components/ResourceTable.vue';
 import { Head, useForm, router, usePage } from '@inertiajs/vue3';
 import { PhPlus, PhTrash, PhHouse, PhTranslate, PhPencilSimple } from '@phosphor-icons/vue';
 import { ref, markRaw, computed } from 'vue';

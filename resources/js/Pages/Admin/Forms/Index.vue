@@ -3,10 +3,12 @@ import { ref, markRaw, computed } from 'vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { PhPencilSimple, PhTrash, PhHouse, PhTextbox, PhEye, PhCircle, PhClock, PhCheckCircle, PhFileText, PhArchive } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ResourceTable from '@/Components/ResourceTable.vue';
+import ResourceTable from '@/features/admin/shared/components/ResourceTable.vue';
 import { useTranslations } from '@/Composables/useTranslations';
+import { useFormatter } from '@/Composables/useFormatter';
 
 const { t } = useTranslations();
+const { formatDate } = useFormatter();
 
 const props = defineProps(['forms']);
 const activeLocale = computed(() => usePage().props.locale);
@@ -77,13 +79,13 @@ function deleteFormItem(item) {
             <template #cell-published_at="{ item }">
                 <div class="flex items-center gap-2" :class="new Date(item.published_at) > new Date() ? 'text-info font-bold' : 'opacity-60'">
                     <PhClock v-if="new Date(item.published_at) > new Date()" weight="bold" class="w-3 h-3" />
-                    <span class="text-xs">{{ item.published_at ? new Date(item.published_at).toLocaleDateString() : '-' }}</span>
+                    <span class="text-xs">{{ item.published_at ? formatDate(item.published_at) : '-' }}</span>
                 </div>
             </template>
 
             <template #cell-actions="{ item }">
                 <div class="flex justify-end gap-2">
-                    <Link :href="route('forms.preview', item.id)" target="_blank" class="btn btn-sm btn-ghost btn-square hover:bg-info/10 hover:text-info transition-all" :title="t('admin.common.preview', 'Preview')">
+                    <Link :href="`/${activeLocale}/forms/${item.id}/preview`" target="_blank" class="btn btn-sm btn-ghost btn-square hover:bg-info/10 hover:text-info transition-all" :title="t('admin.common.preview', 'Preview')">
                         <PhEye weight="bold" class="w-4 h-4" />
                     </Link>
                     <Link :href="route('admin.forms.edit', item.id)" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all" :title="t('admin.common.edit', 'Edit')">

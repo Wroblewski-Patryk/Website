@@ -9,10 +9,9 @@ use Spatie\Translatable\HasTranslations;
 
 class Form extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, \App\Traits\HasContentFeatures;
 
     public $translatable = ['title'];
-    protected $guarded = [];
 
     protected $fillable = [
         'title',

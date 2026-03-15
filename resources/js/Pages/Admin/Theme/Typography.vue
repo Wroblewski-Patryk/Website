@@ -1,7 +1,7 @@
 <script setup>
 import { markRaw } from 'vue';
 import ConfiguratorLayout from './ConfiguratorLayout.vue';
-import UnitInput from '../../../Components/UnitInput.vue';
+import UnitInput from '@/features/admin/theme/components/UnitInput.vue';
 import { PhTextAa, PhWarning, PhHouse, PhPaintRoller } from '@phosphor-icons/vue';
 import { useTranslations } from '@/Composables/useTranslations';
 

@@ -3,7 +3,7 @@ import { markRaw } from 'vue';
 import { PhHouse, PhCube } from '@phosphor-icons/vue';
 import { Head, Link } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
+import ModuleHeader from '@/features/admin/shared/components/ModuleHeader.vue';
 import { useTranslations } from '@/Composables/useTranslations';
 
 const { t } = useTranslations();

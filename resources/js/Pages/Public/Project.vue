@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import DynamicBlock from '@/Components/DynamicBlock.vue';
+import DynamicBlock from '@/features/admin/block-builder/components/DynamicBlock.vue';
 import SeoHead from '@/Components/SeoHead.vue';
 import { useTranslations } from '@/Composables/useTranslations';
 
@@ -13,6 +13,8 @@ const props = defineProps({
     sidebar: Object,
     page_template: Object,
 });
+
+const { t } = useTranslations();
 </script>
 
 <template>

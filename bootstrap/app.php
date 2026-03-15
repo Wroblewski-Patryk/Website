@@ -31,13 +31,16 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(prepend: [
-            \App\Http\Middleware\LocaleMiddleware::class,
+            // Removed to avoid double execution (assigned in routes/bootstrap then)
         ], append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
         
         $middleware->alias([
             'locale' => \App\Http\Middleware\LocaleMiddleware::class,
+            'permission' => \App\Http\Middleware\PermissionMiddleware::class,
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
 
         $middleware->redirectGuestsTo(fn () => route('auth.login', ['locale' => app()->getLocale()]));

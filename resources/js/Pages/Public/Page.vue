@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import DynamicBlock from '@/Components/DynamicBlock.vue';
+import DynamicBlock from '@/features/admin/block-builder/components/DynamicBlock.vue';
 import SeoHead from '@/Components/SeoHead.vue';
 import { useTranslations } from '@/Composables/useTranslations';
 

@@ -1,20 +1,30 @@
 <script setup>
-import { ref, markRaw } from 'vue';
+import { ref, markRaw, onMounted } from 'vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import { PhPencilSimple, PhPlusCircle, PhGlobe, PhPlus, PhTrash, PhHouse } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ResourceTable from '@/Components/ResourceTable.vue';
+import ResourceTable from '@/features/admin/shared/components/ResourceTable.vue';
 import { useTranslations } from '@/Composables/useTranslations';
 
 const { t } = useTranslations();
 
 const props = defineProps({
-    languages_list: Object // Changed from languages to avoid collision
+    languages_list: Object,
+    is_creating_prop: Boolean,
+    editing_language_prop: Object
 });
 
 const tableRef = ref(null);
-const isCreating = ref(false);
-const editingLanguage = ref(null);
+const isCreating = ref(props.is_creating_prop || false);
+const editingLanguage = ref(props.editing_language_prop || null);
+
+onMounted(() => {
+    if (props.editing_language_prop) {
+        openEdit(props.editing_language_prop);
+    } else if (props.is_creating_prop) {
+        isCreating.value = true;
+    }
+});
 
 const form = useForm({
     code: '',

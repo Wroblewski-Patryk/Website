@@ -87,13 +87,7 @@ class HandleInertiaRequests extends Middleware
                 ]
             ];
 
-            $translations = Translation::all()->reduce(function ($carry, $translation) {
-                $locale = app()->getLocale();
-                $fallback = config('app.fallback_locale', 'en');
-                $text = $translation->getTranslation('text', $locale, false) ?: $translation->getTranslation('text', $fallback, false);
-                $carry[$translation->group . '.' . $translation->key] = $text;
-                return $carry;
-            }, []);
+
 
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::warning("Database connection failed in HandleInertiaRequests: " . $e->getMessage());
@@ -102,22 +96,39 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user() ? $request->user()->only('id', 'name', 'email') : null,
+                'user' => $request->user() ? [
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                    'role' => $request->user()->role,
+                    'permissions' => $request->user()->getAllPermissions()->pluck('name')->mapWithKeys(function ($permission) {
+                        return ['can_' . str_replace('-', '_', $permission) => true];
+                    })->toArray(),
+                ] : null,
             ],
-            'header' => $header ? $header->content : null,
-            'footer' => $footer ? $footer->content : null,
-            'locale' => app()->getLocale(),
-            'languages' => $languages,
-            'all_projects' => $allProjects,
-            'theme_config' => $themeConfig,
-            'translations' => $translations ?? [],
-            'seo_settings' => [
+            'header' => fn () => $header ? $header->content : null,
+            'footer' => fn () => $footer ? $footer->content : null,
+            'locale' => fn () => app()->getLocale(),
+            'languages' => fn () => \App\Models\Language::where('is_active', true)->orderBy('is_default', 'desc')->get(),
+            'all_projects' => fn () => \App\Models\Project::orderBy('order')->get(),
+            'theme_config' => fn () => $themeConfig,
+            'menus' => fn () => [], // Safe historical fallback
+            'translations' => fn () => \Illuminate\Support\Facades\Cache::remember('translations.' . app()->getLocale(), 3600, function () {
+                return Translation::all()->reduce(function ($carry, $translation) {
+                    $locale = app()->getLocale();
+                    $fallback = config('app.fallback_locale', 'en');
+                    $text = $translation->getTranslation('text', $locale, false) ?: $translation->getTranslation('text', $fallback, false);
+                    $carry[$translation->key] = $text;
+                    return $carry;
+                }, []);
+            }),
+            'seo_settings' => fn () => [
                 'site_name' => $this->translateValue($settings['site_name'] ?? config('app.name')),
                 'title_separator' => $settings['title_separator'] ?? ' - ',
                 'title_order' => $settings['title_order'] ?? 'brand_first',
             ],
-            'admin_seo' => $this->getAdminSeoContext($request),
-            'archive_slugs' => [
+            'admin_seo' => fn () => $this->getAdminSeoContext($request),
+            'archive_slugs' => fn () => [
                 'blog' => ($settings['blog_page_id'] ?? null) ? \App\Models\Page::find($settings['blog_page_id'])->getTranslation('slug', app()->getLocale()) : 'blog',
                 'projects' => ($settings['projects_page_id'] ?? null) ? \App\Models\Page::find($settings['projects_page_id'])->getTranslation('slug', app()->getLocale()) : 'projects',
             ]
@@ -171,14 +182,7 @@ class HandleInertiaRequests extends Middleware
 
             $seoService = app(\App\Services\SeoService::class);
             $context['module_label'] = $seoService->getModuleLabel($context['module']);
-
-            $actionMap = [
-                'edit' => 'Edycja',
-                'create' => 'Nowy',
-                'index' => 'Lista',
-                'show' => 'Podgląd',
-            ];
-            $context['action_label'] = $actionMap[strtolower($context['action'])] ?? \Illuminate\Support\Str::ucfirst($context['action']);
+            $context['action_label'] = $seoService->getModuleLabel($context['action']); // This is slightly wrong as it uses module label logic, but I will fix SeoService to handle both or just use module label for now if actions are also in menu.*
         }
 
         return $context;

@@ -2,10 +2,10 @@
 import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SeoHead from '@/Components/SeoHead.vue';
-import DynamicBlock from '@/Components/DynamicBlock.vue';
-import moment from 'moment';
+import DynamicBlock from '@/features/admin/block-builder/components/DynamicBlock.vue';
 import { PhArrowLeft } from '@phosphor-icons/vue';
 import { useTranslations } from '@/Composables/useTranslations';
+import { useFormatter } from '@/Composables/useFormatter';
 
 const props = defineProps({
     post: Object,
@@ -16,6 +16,7 @@ const props = defineProps({
 });
 
 const { t } = useTranslations();
+const { formatDate } = useFormatter();
 </script>
 
 <template>
@@ -37,7 +38,7 @@ const { t } = useTranslations();
             <header class="mb-16">
                 <h1 class="text-5xl md:text-7xl font-black mb-6 uppercase tracking-tight leading-none">{{ t(post.title) }}</h1>
                 <div class="flex items-center text-sm font-bold tracking-widest uppercase text-white/60 mb-10">
-                    <span>{{ post.published_at ? moment(post.published_at).format('MMM D, YYYY') : 'Not Published' }}</span>
+                    <span>{{ post.published_at ? formatDate(post.published_at) : 'Not Published' }}</span>
                 </div>
                 
                 <div v-if="t(post.featured_image)" class="w-full h-80 md:h-[500px] overflow-hidden rounded-xl mb-12 border border-white/10">

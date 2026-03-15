@@ -5,6 +5,9 @@ import { useTranslations } from '@/Composables/useTranslations';
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue';
 import ToastContainer from '@/Components/ToastContainer.vue';
 import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGearSix, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhUsers, PhSignOut, PhLifebuoy, PhPlus, PhCaretDown } from '@phosphor-icons/vue';
+import SidebarGroup from '@/Components/Admin/Sidebar/SidebarGroup.vue';
+import SidebarItem from '@/Components/Admin/Sidebar/SidebarItem.vue';
+import SidebarChild from '@/Components/Admin/Sidebar/SidebarChild.vue';
 
 defineProps({
     fullWidth: {
@@ -18,18 +21,7 @@ const themesList = ['light', 'dark', 'emerald', 'corporate', 'retro', 'cyberpunk
 const currentTheme = ref('light');
 const isSidebarCollapsed = ref(false);
 
-const menuOpen = ref({
-    posts: false,
-    projects: false,
-    theme: false
-});
-
-// Watch for URL changes to keep submenus open
-watch(() => usePage().url, (url) => {
-    if (url.includes('/admin/posts') || url.includes('/admin/categories')) menuOpen.value.posts = true;
-    if (url.includes('/admin/projects') || url.includes('/admin/clients')) menuOpen.value.projects = true;
-    if (url.includes('/admin/theme')) menuOpen.value.theme = true;
-}, { immediate: true });
+// Navigation state managed by watcher on current URL
 
 onMounted(() => {
     // Check localStorage for a saved theme
@@ -64,6 +56,7 @@ watch(isSidebarCollapsed, (newVal) => {
 });
 
 import { useToastStore } from '@/Stores/useToastStore';
+import { navigation } from '@/features/admin/shared/config/adminNav.config';
 
 const toast = useToastStore();
 const page = usePage();
@@ -80,6 +73,63 @@ function applyTheme(themeName) {
 }
 
 const { t } = useTranslations();
+
+const navConfig = computed(() => navigation(t));
+
+const navState = ref({});
+
+watch(() => usePage().url, (url) => {
+    // Strip locale prefix for matching
+    const cleanUrl = url.replace(/^\/(pl|en)/, '') || '/';
+
+    // Determine which groups should be open based on URL
+    navConfig.value.forEach((group, groupIdx) => {
+        group.items.forEach((item, itemIdx) => {
+            if (item.children) {
+                const isActive = Array.isArray(item.active) 
+                    ? item.active.some(a => cleanUrl.startsWith(a))
+                    : cleanUrl.startsWith(item.active);
+                
+                if (isActive) {
+                    navState.value[`${groupIdx}-${itemIdx}`] = true;
+                }
+            }
+        });
+    });
+}, { immediate: true });
+
+const toggleSubmenu = (key) => {
+    navState.value[key] = !navState.value[key];
+};
+
+const hasPermission = (permission) => {
+    if (!permission) return true;
+    return page.props.auth?.user?.permissions?.[permission] || false;
+};
+
+const isItemActive = (item) => {
+    let url = usePage().url;
+    // Strip locale prefix (e.g., /pl, /en)
+    url = url.replace(/^\/(pl|en)/, '');
+    if (url === '') url = '/';
+
+    const itemActive = item.active;
+    
+    if (!itemActive) return false;
+
+    if (item.exact) {
+        if (Array.isArray(itemActive)) {
+            return itemActive.some(a => url === a);
+        }
+        return url === itemActive;
+    }
+
+    if (Array.isArray(itemActive)) {
+        return itemActive.some(a => url.startsWith(a));
+    }
+    return url.startsWith(itemActive);
+};
+
 const adminTitle = computed(() => {
     const brand = t(page.props.seo_settings?.site_name) || 'Featherly';
     const separator = (page.props.seo_settings?.title_separator || ' - ').trim();
@@ -91,7 +141,7 @@ const adminTitle = computed(() => {
     
     // Try to find entity name in props (many edit pages pass the object)
     let entityName = null;
-    const entity = page.props.post || page.props.page || page.props.project || page.props.template || page.props.user || page.props.client;
+    const entity = page.props.post || page.props.page || page.props.project || page.props.template || page.props.user;
     if (entity) {
         // Handle translatable title or simple title/name/label
         entityName = (entity.title && typeof entity.title === 'object' ? t(entity.title) : entity.title) 
@@ -218,7 +268,7 @@ const changeLanguage = (langCode) => {
                             <span class="text-xs font-normal text-base-content/60 w-full whitespace-nowrap overflow-hidden text-ellipsis mt-1">{{ $page.props.auth?.user?.email || 'admin@example.com' }}</span>
                         </li>
                         <li v-if="$page.props.auth?.user?.id"><Link :href="route('admin.users.edit', $page.props.auth.user.id)"><PhUser weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.nav.my_profile', 'My Profile') }}</Link></li>
-                        <li><Link :href="route('admin.settings.index')"><PhGearSix weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.nav.account_settings', 'Account Settings') }}</Link></li>
+                        <li v-if="$page.props.auth?.user?.permissions?.can_manage_settings"><Link :href="route('admin.settings.index')"><PhGearSix weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.nav.account_settings', 'Account Settings') }}</Link></li>
                         <li><Link href="#"><PhLifebuoy weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.nav.support', 'Support') }}</Link></li>
                         <div class="h-[1px] bg-base-200 my-1 mx-2"></div>
                         <li><Link :href="route('auth.logout')" method="post" as="button" class="w-full text-left text-error hover:bg-error/10 hover:text-error"><PhSignOut weight="regular" class="w-4 h-4" /> {{ t('admin.nav.logout', 'Logout') }}</Link></li>
@@ -243,206 +293,38 @@ const changeLanguage = (langCode) => {
                             <PhCaretLeft v-else weight="bold" class="w-4 h-4 text-base-content/70" />
                         </button>
 
-                        <ul class="menu p-4 h-[calc(100vh-4rem)] bg-base-100/80 backdrop-blur-md text-base-content border-r border-base-200 gap-1 overflow-y-auto overflow-x-hidden transition-[width] duration-300 ease-in-out flex-nowrap"
-                            :class="[isSidebarCollapsed ? 'w-[84px] [&_details_summary::after]:hidden' : 'w-64']">
+                        <ul class="menu px-0 py-3 h-[calc(100vh-4rem)] bg-base-100/80 backdrop-blur-md text-base-content border-r border-base-200 gap-0.5 overflow-y-auto overflow-x-hidden transition-[width] duration-300 ease-in-out flex-nowrap"
+                            :class="[isSidebarCollapsed ? 'w-20 [&_details_summary::after]:hidden' : 'w-64']"
+                            :style="{ width: isSidebarCollapsed ? '80px' : '256px' }">
                             
                             <!-- Sidebar content here -->
-                            <li class="menu-title mt-2 mb-2 border-b border-base-200/50 pb-1 pointer-events-none">
-                                <span class="text-[10px] uppercase font-bold tracking-widest text-primary/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
-                                      v-show="!isSidebarCollapsed">{{ t('admin.menu.content', 'Content') }}</span>
-                            </li>
+                            <!-- Dynamic Sidebar Content -->
+                            <template v-for="(group, groupIdx) in navConfig" :key="groupIdx">
+                                <SidebarGroup 
+                                    v-if="hasPermission(group.permission)"
+                                    :title="group.title" 
+                                    :collapsed="isSidebarCollapsed"
+                                    :color="group.items[0]?.color || 'primary'"
+                                />
 
-                            <!-- Pages -->
-                            <li class="relative group/menu-item">
-                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/pages'), 'hover:bg-transparent hover:text-primary': !$page.url.startsWith('/admin/pages')}">
-                                    <Link :href="route('admin.pages.index')" class="flex items-center flex-1">
-                                        <PhFileText weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/pages')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('admin.menu.pages', 'Pages') }}</span>
-                                    </Link>
-                                    <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Link :href="route('admin.pages.create')" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
-                                            <PhPlus weight="bold" class="w-3.5 h-3.5" />
-                                        </Link>
-                                    </div>
-                                </div>
-                            </li>
-
-                            <!-- Posts -->
-                            <li class="relative group/menu-item">
-                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories'), 'hover:bg-transparent hover:text-primary': !($page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories'))}">
-                                    <Link :href="route('admin.posts.index')" class="flex items-center flex-1">
-                                        <PhFeather weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('admin.menu.posts', 'Posts') }}</span>
-                                    </Link>
-                                    <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button @click="menuOpen.posts = !menuOpen.posts" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
-                                            <PhCaretDown weight="bold" class="w-3.5 h-3.5 transition-transform duration-300" :class="{'rotate-180': menuOpen.posts}" />
-                                        </button>
-                                        <Link :href="route('admin.posts.create')" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
-                                            <PhPlus weight="bold" class="w-3.5 h-3.5" />
-                                        </Link>
-                                    </div>
-                                </div>
-                                <ul v-show="menuOpen.posts && !isSidebarCollapsed" class="mt-0.5 ml-4 border-l border-base-300 pl-2 space-y-0.5">
-                                    <li><Link :href="route('admin.categories.index')" class="py-1 px-3 text-xs hover:text-primary hover:bg-transparent transition-colors block" :class="{'text-primary font-medium': $page.url.startsWith('/admin/categories')}">{{ t('admin.menu.categories', 'Categories') }}</Link></li>
-                                </ul>
-                            </li>
-
-                            <!-- Projects -->
-                            <li class="relative group/menu-item">
-                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/projects') || $page.url.startsWith('/admin/clients'), 'hover:bg-transparent hover:text-primary': !($page.url.startsWith('/admin/projects') || $page.url.startsWith('/admin/clients'))}">
-                                    <Link :href="route('admin.projects.index')" class="flex items-center flex-1">
-                                        <PhCards weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/projects') || $page.url.startsWith('/admin/clients')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('admin.menu.projects', 'Projects') }}</span>
-                                    </Link>
-                                    <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button @click="menuOpen.projects = !menuOpen.projects" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
-                                            <PhCaretDown weight="bold" class="w-3.5 h-3.5 transition-transform duration-300" :class="{'rotate-180': menuOpen.projects}" />
-                                        </button>
-                                        <Link :href="route('admin.projects.create')" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
-                                            <PhPlus weight="bold" class="w-3.5 h-3.5" />
-                                        </Link>
-                                    </div>
-                                </div>
-                                <ul v-show="menuOpen.projects && !isSidebarCollapsed" class="mt-0.5 ml-4 border-l border-base-300 pl-2 space-y-0.5">
-                                    <li><Link :href="route('admin.clients.index')" class="py-1 px-3 text-xs hover:text-primary hover:bg-transparent transition-colors block" :class="{'text-primary font-medium': $page.url.startsWith('/admin/clients')}">{{ t('admin.menu.clients', 'Clients') }}</Link></li>
-                                </ul>
-                            </li>
-
-                            <!-- Forms -->
-                            <li class="relative group/menu-item">
-                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/forms'), 'hover:bg-transparent hover:text-primary': !$page.url.startsWith('/admin/forms')}">
-                                    <Link :href="route('admin.forms.index')" class="flex items-center flex-1">
-                                        <PhTextbox weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/forms')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('admin.menu.forms', 'Forms') }}</span>
-                                    </Link>
-                                    <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Link :href="route('admin.forms.create')" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
-                                            <PhPlus weight="bold" class="w-3.5 h-3.5" />
-                                        </Link>
-                                    </div>
-                                </div>
-                            </li>
-
-                            <!-- Library Title -->
-                            <li class="menu-title mt-6 mb-2 border-b border-base-200/50 pb-1 pointer-events-none">
-                                <span class="text-[10px] uppercase font-bold tracking-widest text-secondary/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
-                                      v-show="!isSidebarCollapsed">{{ t('admin.menu.library', 'Library') }}</span>
-                            </li>
-
-                            <!-- Media -->
-                            <li class="relative group/menu-item">
-                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-secondary/5 text-secondary font-medium border-l-2 border-secondary': $page.url.startsWith('/admin/media'), 'hover:bg-transparent hover:text-secondary': !$page.url.startsWith('/admin/media')}">
-                                    <Link :href="route('admin.media.index')" class="flex items-center flex-1">
-                                        <PhImageSquare weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/media')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('admin.menu.media', 'Media') }}</span>
-                                    </Link>
-                                </div>
-                            </li>
-
-                            <!-- Templates -->
-                            <li class="relative group/menu-item">
-                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-secondary/5 text-secondary font-medium border-l-2 border-secondary': $page.url.startsWith('/admin/templates'), 'hover:bg-transparent hover:text-secondary': !$page.url.startsWith('/admin/templates')}">
-                                    <Link :href="route('admin.templates.index')" class="flex items-center flex-1">
-                                        <PhLayout weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/templates')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('admin.menu.templates', 'Templates') }}</span>
-                                    </Link>
-                                </div>
-                            </li>
-
-                            <!-- Design Title -->
-                            <li class="menu-title mt-6 mb-2 border-b border-base-200/50 pb-1 pointer-events-none">
-                                <span class="text-[10px] uppercase font-bold tracking-widest text-accent/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
-                                      v-show="!isSidebarCollapsed">{{ t('admin.menu.design', 'Design') }}</span>
-                            </li>
-
-                            <!-- Theme -->
-                            <li class="relative group/menu-item">
-                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-accent/5 text-accent font-medium border-l-2 border-accent': $page.url.startsWith('/admin/theme'), 'hover:bg-transparent hover:text-accent': !$page.url.startsWith('/admin/theme')}">
-                                    <Link :href="route('admin.theme.index')" class="flex items-center flex-1">
-                                        <PhPaintRoller weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-accent': $page.url.startsWith('/admin/theme')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('admin.menu.theme', 'Theme') }}</span>
-                                    </Link>
-                                    <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button @click="menuOpen.theme = !menuOpen.theme" class="p-1.5 hover:bg-accent/10 hover:text-accent transition-all">
-                                            <PhCaretDown weight="bold" class="w-3.5 h-3.5 transition-transform duration-300" :class="{'rotate-180': menuOpen.theme}" />
-                                        </button>
-                                    </div>
-                                </div>
-                                <ul v-show="menuOpen.theme && !isSidebarCollapsed" class="mt-0.5 ml-4 border-l border-base-300 pl-2 space-y-0.5">
-                                    <li><Link :href="route('admin.theme.colors')" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/colors')}">{{ t('admin.menu.colors', 'Colors') }}</Link></li>
-                                    <li><Link :href="route('admin.theme.fonts')" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/fonts')}">{{ t('admin.menu.fonts', 'Fonts') }}</Link></li>
-                                    <li><Link :href="route('admin.theme.typography')" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/typography')}">{{ t('admin.menu.typography', 'Typography') }}</Link></li>
-                                    <li><Link :href="route('admin.theme.sizes')" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/sizes')}">{{ t('admin.menu.sizes', 'Sizes') }}</Link></li>
-                                    <li><Link :href="route('admin.theme.effects')" class="py-1 px-3 text-xs hover:text-accent hover:bg-transparent transition-colors block" :class="{'text-accent font-medium': $page.url.startsWith('/admin/theme/effects')}">{{ t('admin.menu.effects', 'Effects') }}</Link></li>
-                                </ul>
-                            </li>
-
-                            <!-- Blocks -->
-                            <li class="relative group/menu-item">
-                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-accent/5 text-accent font-medium border-l-2 border-accent': $page.url.startsWith('/admin/blocks'), 'hover:bg-transparent hover:text-accent': !$page.url.startsWith('/admin/blocks')}">
-                                    <Link :href="route('admin.blocks')" class="flex items-center flex-1">
-                                        <PhCube weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-accent': $page.url.startsWith('/admin/blocks')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('admin.menu.blocks', 'Blocks') }}</span>
-                                    </Link>
-                                </div>
-                            </li>
-
-                            <li class="menu-title mt-6 mb-2 border-b border-base-200/50 pb-1 pointer-events-none">
-                                <span class="text-[10px] uppercase font-bold tracking-widest text-info/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
-                                      v-show="!isSidebarCollapsed">{{ t('admin.menu.system', 'System Settings') }}</span>
-                            </li>
-                            <!-- Translations -->
-                            <li class="relative group/menu-item">
-                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/admin/translations' || $page.url.startsWith('/admin/translations/'), 'hover:bg-transparent hover:text-info': !($page.url === '/admin/translations' || $page.url.startsWith('/admin/translations/'))}">
-                                    <Link :href="route('admin.translations.index')" class="flex items-center flex-1">
-                                        <PhTranslate weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url.startsWith('/admin/translations')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('admin.menu.translations', 'Translations') }}</span>
-                                    </Link>
-                                </div>
-                            </li>
-
-                            <!-- Languages -->
-                            <li class="relative group/menu-item">
-                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/admin/languages' || $page.url.startsWith('/admin/languages/'), 'hover:bg-transparent hover:text-info': !($page.url === '/admin/languages' || $page.url.startsWith('/admin/languages/'))}">
-                                    <Link :href="route('admin.languages.index')" class="flex items-center flex-1">
-                                        <PhGlobe weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url.startsWith('/admin/languages')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('admin.menu.languages', 'Languages') }}</span>
-                                    </Link>
-                                </div>
-                            </li>
-
-                            <!-- Users -->
-                            <li class="relative group/menu-item">
-                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/admin/users' || $page.url.startsWith('/admin/users/'), 'hover:bg-transparent hover:text-info': !($page.url === '/admin/users' || $page.url.startsWith('/admin/users/'))}">
-                                    <Link :href="route('admin.users.index')" class="flex items-center flex-1">
-                                        <PhUsers weight="regular" class="w-4 h-4 text-base-content/70" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('admin.menu.users', 'Users') }}</span>
-                                    </Link>
-                                </div>
-                            </li>
-
-                            <!-- Settings -->
-                            <li class="relative group/menu-item">
-                                <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
-                                     :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/admin/settings' || $page.url.startsWith('/admin/settings/'), 'hover:bg-transparent hover:text-info': !($page.url === '/admin/settings' || $page.url.startsWith('/admin/settings/'))}">
-                                    <Link :href="route('admin.settings.index')" class="flex items-center flex-1">
-                                        <PhGearSix weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url === '/admin/settings'}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('admin.menu.settings', 'Settings') }}</span>
-                                    </Link>
-                                </div>
-                            </li>
+                                <template v-for="(item, itemIdx) in group.items" :key="itemIdx">
+                                    <SidebarItem 
+                                        v-if="hasPermission(item.permission)"
+                                        :item="item"
+                                        :collapsed="isSidebarCollapsed"
+                                        :isActive="isItemActive(item)"
+                                    >
+                                        <SidebarChild 
+                                            v-for="(child, childIdx) in item.children" 
+                                            :key="childIdx"
+                                            :child="child"
+                                            :isActive="isItemActive(child)"
+                                            :collapsed="isSidebarCollapsed"
+                                            :color="item.color || 'primary'"
+                                        />
+                                    </SidebarItem>
+                                </template>
+                            </template>
                         </ul>
                     </div>
                 </div>

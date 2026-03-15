@@ -17,7 +17,10 @@ class FormFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => fake()->word() . ' Form',
+            'title' => [
+                'pl' => fake()->word() . ' (Formularz)',
+                'en' => fake()->word() . ' (Form)',
+            ],
             'content' => [
                 ['type' => 'text', 'label' => 'Name', 'required' => true],
                 ['type' => 'email', 'label' => 'Email', 'required' => true],

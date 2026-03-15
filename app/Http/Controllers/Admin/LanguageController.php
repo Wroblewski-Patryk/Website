@@ -26,7 +26,22 @@ class LanguageController extends Controller
         }
 
         return Inertia::render('Admin/Languages/Index', [
-            'languages_list' => $query->paginate(10)->withQueryString()
+            'languages_list' => $query->paginate(10)->withQueryString(),
+            'is_creating_prop' => $request->has('create')
+        ]);
+    }
+
+    public function create()
+    {
+        return redirect()->route('admin.languages.index', ['create' => 1]);
+    }
+
+    public function edit(Language $language)
+    {
+        return Inertia::render('Admin/Languages/Index', [
+            'languages_list' => Language::paginate(10), // Simplification or call index logic
+            'editing_language_prop' => $language,
+            'is_creating_prop' => true
         ]);
     }
 

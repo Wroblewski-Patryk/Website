@@ -16,6 +16,8 @@ Route::get('/forms/{id}/preview', function ($id) {
     ]);
 })->name('forms.preview');
 
+Route::post('/forms/{form}/submit', [\App\Http\Controllers\PublicFormController::class, 'submit'])->name('forms.submit');
+
 Route::get('/{path?}', [PageController::class, 'show'])->where('path', '.*');
 
 // Przeniesiona naprawa kolejności przez wymuszenie manualnego loadu w boot.php

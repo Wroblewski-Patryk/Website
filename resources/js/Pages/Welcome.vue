@@ -3,7 +3,8 @@ import { computed } from 'vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SeoHead from '@/Components/SeoHead.vue';
-import DynamicBlock from '@/Components/DynamicBlock.vue';
+import DynamicBlock from '@/features/admin/block-builder/components/DynamicBlock.vue';
+import { useTranslations } from '@/Composables/useTranslations';
 
 const props = defineProps({
     page: {
@@ -12,22 +13,20 @@ const props = defineProps({
     },
 });
 
+const { t } = useTranslations();
+
 const blocks = computed(() => {
     if (!props.page?.content) return [];
-    // Handle old format: { pl: [], en: [] }
-    if (!Array.isArray(props.page.content) && typeof props.page.content === 'object') {
-        const locale = usePage().props.locale || 'pl';
-        return props.page.content[locale] || props.page.content['pl'] || props.page.content['en'] || Object.values(props.page.content)[0] || [];
-    }
-    return Array.isArray(props.page.content) ? props.page.content : [];
+    // Handle translatable content object or simple array
+    return t(props.page.content) || [];
 });
 </script>
 
 <template>
     <SeoHead 
-        :title="page?.meta_title || page?.title || 'Welcome'" 
-        :description="page?.meta_description" 
-        :image="page?.og_image" 
+        :title="t(page?.meta_title) || t(page?.title) || 'Welcome'" 
+        :description="t(page?.meta_description)" 
+        :image="t(page?.og_image)" 
     />
 
     <AppLayout>
@@ -40,18 +39,18 @@ const blocks = computed(() => {
         </template>
         
         <div v-else-if="!page" class="flex flex-col items-center justify-center min-h-screen p-8 text-white relative z-20">
-            <h1 class="text-4xl font-bold mb-4">Strona nie została znaleziona</h1>
-            <p class="text-white/60 mb-8 max-w-lg text-center">Strona nie istnieje lub nie została jeszcze wybrana w Ustawieniach.</p>
+            <h1 class="text-4xl font-bold mb-4">{{ t('errors.page_not_found') }}</h1>
+            <p class="text-white/60 mb-8 max-w-lg text-center">{{ t('errors.page_not_selected_desc') }}</p>
             <a :href="route('admin.dashboard.index')" class="px-6 py-3 border border-white hover:bg-white hover:text-black font-bold tracking-widest uppercase transition-colors">
-                Przejdź do Panelu Admina
+                {{ t('nav.go_to_admin_panel') }}
             </a>
         </div>
         
         <div v-else class="flex flex-col items-center justify-center min-h-[60vh] py-32 p-8 text-white relative z-20">
-            <h1 class="text-4xl font-bold mb-4 uppercase tracking-wider">{{ page.title }}</h1>
-            <p class="text-white/60 mb-8 max-w-lg text-center">Ta strona nie ma jeszcze żadnych bloków zawartości. Dodaj je w panelu administracyjnym używając Builder'a.</p>
+            <h1 class="text-4xl font-bold mb-4 uppercase tracking-wider">{{ t(page.title) }}</h1>
+            <p class="text-white/60 mb-8 max-w-lg text-center">{{ t('errors.no_blocks_desc') }}</p>
             <a :href="route('admin.pages.edit', page.id)" class="px-6 py-3 border border-white hover:bg-white hover:text-black font-bold tracking-widest uppercase transition-colors">
-                Edytuj tę stronę
+                {{ t('common.edit_this_page') }}
             </a>
         </div>
     </AppLayout>

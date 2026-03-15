@@ -16,7 +16,7 @@ class FormManagementTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::factory()->create();
+        $this->admin = User::factory()->admin()->create();
     }
 
     public function test_admin_can_list_forms(): void
@@ -32,16 +32,16 @@ class FormManagementTest extends TestCase
     public function test_admin_can_store_form(): void
     {
         $data = [
-            'title' => 'Contact Us',
+            'title' => ['pl' => 'Kontakt', 'en' => 'Contact Us'],
             'content' => [['type' => 'text', 'label' => 'Name']],
             'settings' => ['submit_text' => 'Send'],
         ];
 
         $response = $this->actingAs($this->admin)->post(route('admin.forms.store'), $data);
 
-        $form = Form::where('title', 'Contact Us')->first();
+        $form = Form::all()->last();
         $response->assertRedirect(route('admin.forms.edit', $form));
-        $this->assertDatabaseHas('forms', ['title' => 'Contact Us']);
+        $this->assertEquals('Contact Us', $form->getTranslation('title', 'en'));
     }
 
     public function test_admin_can_update_form(): void
@@ -49,7 +49,7 @@ class FormManagementTest extends TestCase
         $form = Form::factory()->create();
 
         $data = [
-            'title' => 'Updated Form',
+            'title' => ['pl' => 'Zaktualizowany', 'en' => 'Updated Form'],
             'content' => $form->content,
             'settings' => $form->settings,
         ];
@@ -59,7 +59,8 @@ class FormManagementTest extends TestCase
             ->put(route('admin.forms.update', $form), $data);
 
         $response->assertRedirect(route('admin.forms.edit', $form));
-        $this->assertDatabaseHas('forms', ['id' => $form->id, 'title' => 'Updated Form']);
+        $form->refresh();
+        $this->assertEquals('Updated Form', $form->getTranslation('title', 'en'));
     }
 
     public function test_admin_can_delete_form(): void

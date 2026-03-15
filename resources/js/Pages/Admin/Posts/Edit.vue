@@ -2,6 +2,7 @@
     <AdminLayout :full-width="true">
         <BlockBuilder 
             v-model:title="form.title"
+            :module-label="post?.id ? t('admin.posts.edit_post', 'Edit Post') : t('admin.posts.add_post', 'Add New Post')"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"
@@ -12,24 +13,24 @@
                 <div class="flex flex-col gap-6">
                     <div class="space-y-4">
                         <div class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug</span></label>
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.posts.url_slug', 'URL Slug') }}</span></label>
                             <div class="join w-full">
-                                <input type="text" v-model="form.slug[activeLocale]" class="input input-bordered input-sm join-item focus:input-primary transition-all flex-1 font-mono text-xs" placeholder="post-slug" />
-                                <button @click="form.slug[activeLocale] = generateSlug(form.title[activeLocale])" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
+                                <input type="text" v-model="form.slug[activeLocale]" class="input input-bordered input-sm join-item focus:input-primary transition-all flex-1 font-mono text-xs" :placeholder="t('admin.posts.slug_placeholder', 'post-slug')" />
+                                <button @click="form.slug[activeLocale] = generateSlug(form.title[activeLocale])" type="button" class="btn btn-sm btn-ghost join-item" :title="t('admin.posts.regenerate_slug', 'Regenerate Slug')">
                                     <PhArrowsClockwise weight="bold" class="w-3 h-3" />
                                 </button>
                             </div>
                         </div>
 
                         <div class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Generated URL</span></label>
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.posts.generated_url', 'Generated URL') }}</span></label>
                             <div class="join w-full">
                                 <input
                                     type="text"
                                     :value="previewUrl || ''"
                                     readonly
                                     class="input input-bordered input-sm join-item w-full font-mono text-[10px]"
-                                    :placeholder="form.slug?.[activeLocale] ? '' : 'Slug required for URL'"
+                                    :placeholder="form.slug?.[activeLocale] ? '' : t('admin.posts.slug_required', 'Slug required for URL')"
                                 />
                                 <a
                                     v-if="previewUrl"
@@ -37,34 +38,34 @@
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     class="btn btn-sm btn-ghost join-item"
-                                    title="Open Preview URL"
+                                    :title="t('admin.posts.open_preview', 'Open Preview URL')"
                                 >
                                     <PhArrowSquareOut weight="bold" class="w-3 h-3" />
                                 </a>
-                                <button v-else type="button" class="btn btn-sm btn-ghost join-item" disabled title="URL unavailable">
+                                <button v-else type="button" class="btn btn-sm btn-ghost join-item" disabled :title="t('admin.posts.url_unavailable', 'URL unavailable')">
                                     <PhArrowSquareOut weight="bold" class="w-3 h-3 opacity-40" />
                                 </button>
                             </div>
                         </div>
 
                         <div class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.common.status', 'Status') }}</span></label>
                             <select v-model="form.status" class="select select-bordered select-sm focus:select-primary transition-all w-full">
-                                <option value="draft">Draft (Private)</option>
-                                <option value="published">Published (Public)</option>
-                                <option value="planned">Planned (Scheduled)</option>
-                                <option value="archived">Archived</option>
+                                <option value="draft">{{ t('admin.posts.status_draft', 'Draft (Private)') }}</option>
+                                <option value="published">{{ t('admin.posts.status_published', 'Published (Public)') }}</option>
+                                <option value="planned">{{ t('admin.posts.status_planned', 'Planned (Scheduled)') }}</option>
+                                <option value="archived">{{ t('admin.common.archived', 'Archived') }}</option>
                             </select>
                         </div>
 
                         <div v-if="form.status === 'planned' || form.status === 'published'" class="form-control animate-in slide-in-from-top-2">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Publish Date & Time</span></label>
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.posts.publish_date_time', 'Publish Date & Time') }}</span></label>
                             <DatePicker v-model="form.published_at" />
                         </div>
 
                         <div class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Excerpt / Summary</span></label>
-                            <textarea v-model="form.excerpt[activeLocale]" class="textarea textarea-bordered textarea-sm focus:border-primary/50 transition-all h-20 font-sans text-xs" placeholder="Brief summary of the post..."></textarea>
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.posts.excerpt', 'Excerpt / Summary') }}</span></label>
+                            <textarea v-model="form.excerpt[activeLocale]" class="textarea textarea-bordered textarea-sm focus:border-primary/50 transition-all h-20 font-sans text-xs" :placeholder="t('admin.posts.excerpt_placeholder', 'Brief summary of the post...')"></textarea>
                         </div>
                     </div>
 
@@ -72,9 +73,9 @@
 
                     <div class="space-y-4">
                         <div class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Featured Image URL</span></label>
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.posts.featured_image', 'Featured Image URL') }}</span></label>
                             <div class="flex flex-col gap-2">
-                                <input type="text" v-model="form.featured_image[activeLocale]" class="input input-bordered input-sm focus:input-primary transition-all w-full" placeholder="Image URL" />
+                                <input type="text" v-model="form.featured_image[activeLocale]" class="input input-bordered input-sm focus:input-primary transition-all w-full" :placeholder="t('admin.posts.image_url', 'Image URL')" />
                                 <div v-if="form.featured_image[activeLocale]" class="rounded-lg overflow-hidden border border-base-content/10 aspect-video bg-base-200 shadow-inner group">
                                     <img :src="form.featured_image[activeLocale]" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 </div>
@@ -84,18 +85,26 @@
 
                     <div class="divider opacity-10 my-0"></div>
 
+                    <TaxonomySelect 
+                        v-model="form.taxonomies"
+                        :available-taxonomies="availableTaxonomies"
+                        :active-locale="activeLocale"
+                    />
+
+                    <div class="divider opacity-10 my-0"></div>
+
                     <div class="space-y-3 bg-base-200/30 p-4 rounded-xl border border-base-content/10">
                         <div class="flex items-center justify-between text-[10px] uppercase tracking-wider opacity-60 font-bold px-1">
-                            <span>Metadata</span>
+                            <span>{{ t('admin.common.metadata', 'Metadata') }}</span>
                             <PhFingerprint weight="bold" class="w-3 h-3 text-primary" />
                         </div>
                         <div class="flex flex-col gap-2 text-[11px]">
                             <div class="flex justify-between items-center bg-base-100/50 p-2 rounded-lg border border-base-content/5">
-                                <span class="opacity-60">Created</span>
-                                <span class="font-mono">{{ post?.created_at ? new Date(post.created_at).toLocaleString() : 'New Content' }}</span>
+                                <span class="opacity-60">{{ t('admin.common.created', 'Created') }}</span>
+                                <span class="font-mono">{{ post?.created_at ? new Date(post.created_at).toLocaleString() : t('admin.common.new_content', 'New Content') }}</span>
                             </div>
                             <div class="flex justify-between items-center bg-base-100/50 p-2 rounded-lg border border-base-content/5">
-                                <span class="opacity-60">Last Edit</span>
+                                <span class="opacity-60">{{ t('admin.common.edited', 'Last Edit') }}</span>
                                 <span class="font-mono">{{ post?.updated_at ? new Date(post.updated_at).toLocaleString() : 'N/A' }}</span>
                             </div>
                         </div>
@@ -108,12 +117,12 @@
                 <div class="flex flex-col gap-6">
                     <div class="space-y-4">
                          <div class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">Meta Title</span></label>
-                            <input type="text" v-model="form.meta_title[activeLocale]" class="input input-bordered input-sm focus:input-primary transition-all" placeholder="SEO Title" />
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">{{ t('admin.common.meta_title', 'Meta Title') }}</span></label>
+                            <input type="text" v-model="form.meta_title[activeLocale]" class="input input-bordered input-sm focus:input-primary transition-all" :placeholder="t('admin.common.meta_title_placeholder', 'SEO Title')" />
                         </div>
                         <div class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">Meta Description</span></label>
-                            <textarea v-model="form.meta_description[activeLocale]" class="textarea textarea-bordered textarea-sm focus:textarea-primary transition-all h-24" placeholder="SEO Description"></textarea>
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">{{ t('admin.common.meta_description', 'Meta Description') }}</span></label>
+                            <textarea v-model="form.meta_description[activeLocale]" class="textarea textarea-bordered textarea-sm focus:textarea-primary transition-all h-24" :placeholder="t('admin.common.meta_description_placeholder', 'SEO Description')"></textarea>
                         </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 transition-colors">Canonical URL</span></label>
@@ -135,15 +144,15 @@
                     </div>
 
                     <!-- Robots Settings -->
-                    <div class="space-y-4 bg-base-200/30 p-4 rounded-2xl border border-base-content/5">
-                        <label class="text-[10px] font-bold uppercase tracking-widest opacity-30">Search Engine Visibility</label>
+                     <div class="space-y-4 bg-base-200/30 p-4 rounded-2xl border border-base-content/5">
+                        <label class="text-[10px] font-bold uppercase tracking-widest opacity-30">{{ t('admin.common.search_engine_visibility', 'Search Engine Visibility') }}</label>
                         <div class="flex flex-col gap-3">
                             <label class="flex items-center justify-between cursor-pointer group">
-                                <span class="text-xs group-hover:text-primary transition-colors">Index Page</span>
+                                <span class="text-xs group-hover:text-primary transition-colors">{{ t('admin.common.index_page', 'Index Page') }}</span>
                                 <input type="checkbox" v-model="form.seo_index" class="toggle toggle-primary toggle-sm" />
                             </label>
                             <label class="flex items-center justify-between cursor-pointer group">
-                                <span class="text-xs group-hover:text-primary transition-colors">Follow Links</span>
+                                <span class="text-xs group-hover:text-primary transition-colors">{{ t('admin.common.follow_links', 'Follow Links') }}</span>
                                 <input type="checkbox" v-model="form.seo_follow" class="toggle toggle-primary toggle-sm" />
                             </label>
                         </div>
@@ -180,18 +189,34 @@ import {
     PhArrowSquareOut
 } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import BlockBuilder from '@/Components/BlockBuilder.vue';
-import DatePicker from '@/Components/DatePicker.vue';
+import BlockBuilder from '@/features/admin/block-builder/components/BlockBuilderMain.vue';
+import TaxonomySelect from '@/features/admin/shared/components/TaxonomySelect.vue';
+import DatePicker from '@/features/admin/shared/components/DatePicker.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useToastStore } from '@/Stores/useToastStore';
+import { useTranslations } from '@/Composables/useTranslations';
 import { computed, onMounted, watch } from 'vue';
 
+const { t } = useTranslations();
 const pageProps = usePage().props;
-const activeLocale = computed(() => store.editingLocale || pageProps.locale || 'pl');
+const activeLocale = computed(() => store.editingLocale || pageProps.locale || 'en');
+
+const getEmptyLocales = () => {
+    const locales = (pageProps.languages || []).map(l => l.code);
+    return locales.reduce((acc, code) => ({ ...acc, [code]: '' }), {});
+};
 
 const props = defineProps({
     post: Object,
+    taxonomies: {
+        type: Array,
+        default: () => []
+    },
+    availableTaxonomies: {
+        type: Array,
+        default: () => []
+    },
     templates: [Array, Object]
 });
 
@@ -201,18 +226,19 @@ const toast = useToastStore();
 const isObject = (val) => val && typeof val === 'object' && !Array.isArray(val);
 
 const form = useForm({
-    title: isObject(props.post?.title) ? props.post.title : { pl: '', en: '' },
-    slug: isObject(props.post?.slug) ? props.post.slug : { pl: '', en: '' },
-    excerpt: isObject(props.post?.excerpt) ? props.post.excerpt : { pl: '', en: '' },
+    title: isObject(props.post?.title) ? props.post.title : getEmptyLocales(),
+    slug: isObject(props.post?.slug) ? props.post.slug : getEmptyLocales(),
+    excerpt: isObject(props.post?.excerpt) ? props.post.excerpt : getEmptyLocales(),
     content: props.post?.content || [],
     status: props.post?.status || 'draft',
     published_at: props.post?.published_at ? props.post.published_at.substring(0, 19).replace('T', ' ') : '',
-    featured_image: isObject(props.post?.featured_image) ? props.post.featured_image : { pl: '', en: '' },
+    featured_image: isObject(props.post?.featured_image) ? props.post.featured_image : getEmptyLocales(),
+    taxonomies: props.taxonomies || [],
     // SEO Fields
-    meta_title: isObject(props.post?.meta_title) ? props.post.meta_title : { pl: '', en: '' },
-    meta_description: isObject(props.post?.meta_description) ? props.post.meta_description : { pl: '', en: '' },
+    meta_title: isObject(props.post?.meta_title) ? props.post.meta_title : getEmptyLocales(),
+    meta_description: isObject(props.post?.meta_description) ? props.post.meta_description : getEmptyLocales(),
     canonical_url: props.post?.canonical_url || '',
-    og_image: isObject(props.post?.og_image) ? props.post.og_image : { pl: '', en: '' },
+    og_image: isObject(props.post?.og_image) ? props.post.og_image : getEmptyLocales(),
     seo_index: props.post?.seo_index ?? true,
     seo_follow: props.post?.seo_follow ?? true,
 });
@@ -244,8 +270,8 @@ watch(() => form.title[activeLocale.value], (newTitle) => {
 });
 
 const restoreRevision = (rev) => {
-    if (confirm('Are you sure you want to restore this version? Current unsaved changes will be lost.')) {
-        store.init(rev.content);
+    if (confirm(t('admin.common.are_you_sure', 'Are you sure you want to restore this version? Current unsaved changes will be lost.'))) {
+        store.init(rev.content || getEmptyLocales());
         store.isDirty = true;
     }
 };

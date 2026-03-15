@@ -1,7 +1,7 @@
 <script setup>
 import { markRaw } from 'vue';
 import ConfiguratorLayout from './ConfiguratorLayout.vue';
-import FontSelect from '@/Components/ThemeConfigurator/FontSelect.vue';
+import FontSelect from '@/features/admin/theme/components/FontSelect.vue';
 import { PhStack, PhTextT, PhHouse, PhPaintRoller } from '@phosphor-icons/vue';
 import { useTranslations } from '@/Composables/useTranslations';
 

@@ -11,9 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('templates_and_pages', function (Blueprint $table) {
-            //
-        });
+        // Neutralized: templates_and_pages table does not exist
     }
 
     /**
@@ -21,8 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('templates_and_pages', function (Blueprint $table) {
-            //
-        });
+        // Neutralized
     }
 };

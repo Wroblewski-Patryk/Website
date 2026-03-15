@@ -16,7 +16,7 @@ class TemplateManagementTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::factory()->create();
+        $this->admin = User::factory()->admin()->create();
     }
 
     public function test_admin_can_list_templates(): void
@@ -32,9 +32,9 @@ class TemplateManagementTest extends TestCase
     public function test_admin_can_store_template(): void
     {
         $data = [
-            'name' => 'Custom Header',
+            'title' => ['pl' => 'Nagłówek', 'en' => 'Custom Header'],
             'type' => 'header',
-            'content' => [],
+            'content' => [['type' => 'text', 'body' => 'Test']],
             'is_active' => true,
             'is_default' => true,
         ];
@@ -42,30 +42,27 @@ class TemplateManagementTest extends TestCase
         $response = $this->actingAs($this->admin)->post(route('admin.templates.store'), $data);
 
         $response->assertRedirect(); // Redirects to edit
-        $this->assertDatabaseHas('templates', [
-            'name' => 'Custom Header',
-            'is_default' => true,
-        ]);
+        $template = Template::all()->last();
+        $this->assertEquals('Custom Header', $template->getTranslation('title', 'en'));
+        $this->assertTrue($template->is_default);
     }
 
     public function test_admin_can_update_template(): void
     {
-        $template = Template::factory()->create(['name' => 'Old Name']);
+        $template = Template::factory()->create(['title' => ['en' => 'Old Name']]);
 
         $data = [
-            'name' => 'Updated Name',
+            'title' => ['pl' => 'Nowa nazwa', 'en' => 'Updated Name'],
             'type' => $template->type,
-            'content' => [],
+            'content' => [['type' => 'text', 'body' => 'Updated']],
             'is_active' => true,
         ];
 
         $response = $this->actingAs($this->admin)->put(route('admin.templates.update', $template), $data);
 
         $response->assertRedirect(); // Redirects back
-        $this->assertDatabaseHas('templates', [
-            'id' => $template->id,
-            'name' => 'Updated Name',
-        ]);
+        $template->refresh();
+        $this->assertEquals('Updated Name', $template->getTranslation('title', 'en'));
     }
 
     public function test_admin_can_delete_template(): void

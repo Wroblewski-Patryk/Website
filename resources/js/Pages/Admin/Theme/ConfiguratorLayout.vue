@@ -2,7 +2,7 @@
 import { ref, markRaw } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
+import ModuleHeader from '@/features/admin/shared/components/ModuleHeader.vue';
 import { PhCheckCircle, PhFloppyDisk, PhPaintRoller } from '@phosphor-icons/vue';
 import { useTranslations } from '@/Composables/useTranslations';
 

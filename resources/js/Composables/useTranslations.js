@@ -9,9 +9,11 @@ export function useTranslations() {
      * @param {Object|string} obj - The object to translate (e.g. {pl: "...", en: "..."})
      * @returns {string} - The translated string
      */
-    const translate = (obj, fallback = null, forceLocale = null) => {
+    const translate = (obj, params = {}, fallback = null, forceLocale = null) => {
         if (!obj) return fallback || '';
         
+        let result = '';
+
         // Handle JSON strings if they slip through
         if (typeof obj === 'string' && obj.startsWith('{') && obj.endsWith('}')) {
             try {
@@ -25,27 +27,40 @@ export function useTranslations() {
         if (typeof obj === 'string') {
             const translations = page.props.translations || {};
             if (translations[obj]) {
-                return translations[obj];
+                result = translations[obj];
+            } else {
+                result = fallback || obj;
             }
-            return fallback || obj;
+        } else {
+            const locale = forceLocale || page.props.locale || 'pl';
+
+            // Try the exact locale
+            if (obj[locale]) {
+                result = obj[locale];
+            } else if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+                result = fallback || (obj !== null && typeof obj !== 'object' ? String(obj) : '');
+            } else {
+                const availableKeys = Object.keys(obj).filter(k => obj[k]);
+                if (availableKeys.length > 0) {
+                    if (obj[locale] === '') {
+                        result = ''; 
+                    } else {
+                        result = obj[availableKeys[0]];
+                    }
+                } else {
+                    result = fallback || '';
+                }
+            }
         }
 
-        const locale = forceLocale || page.props.locale || 'pl';
-
-        // Try the exact locale
-        if (obj[locale]) return obj[locale];
-
-        if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
-            return fallback || (obj !== null && typeof obj !== 'object' ? String(obj) : '');
+        // Apply interpolation
+        if (result && typeof result === 'string' && params && typeof params === 'object') {
+            Object.keys(params).forEach(key => {
+                result = result.replace(new RegExp(`:${key}`, 'g'), params[key]);
+            });
         }
 
-        const availableKeys = Object.keys(obj).filter(k => obj[k]);
-        if (availableKeys.length > 0) {
-            if (obj[locale] === '') return ''; 
-            if (!obj[locale]) return obj[availableKeys[0]];
-        }
-
-        return fallback || '';
+        return result;
     };
 
     return { translate, t: translate };

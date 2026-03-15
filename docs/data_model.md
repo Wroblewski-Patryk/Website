@@ -60,6 +60,12 @@ Uwaga: logika routingu projektow jest juz przygotowana pod slug translatable (`s
 - `contact_messages`
 - `menus` (tabela historyczna, bez aktywnego modulu CRUD)
 
+### `roles` i `permissions` (Spatie)
+- `roles`: `name`, `guard_name`
+- `permissions`: `name`, `guard_name`
+- `model_has_roles`, `role_has_permissions`: Tabele powiązań (RBAC)
+- Model `User` posiada trait `HasRoles`.
+
 ## Istotna uwaga o zgodnosci domenowej
 
 W `routes/admin.php` sa trasy `categories` i `clients`, ale w aktualnym kodzie brak odpowiadajacych modeli/migracji/kontrolerow.

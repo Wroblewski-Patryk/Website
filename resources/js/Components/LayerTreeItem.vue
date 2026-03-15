@@ -122,7 +122,7 @@
 
 <script setup>
 import draggable from 'vuedraggable';
-import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useTranslations } from '@/Composables/useTranslations';
 import { 
     PhDotsSixVertical, PhSlidersHorizontal, PhCopy, PhTrash, PhCube, PhTextT, 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -27,7 +28,8 @@ class UserController extends Controller
     public function create()
     {
         return Inertia::render('Admin/Users/Edit', [
-            'user_item' => new User()
+            'user_item' => new User(),
+            'roles' => Role::all()
         ]);
     }
 
@@ -48,6 +50,14 @@ class UserController extends Controller
             'password' => bcrypt($validatedData['password']),
         ]);
 
+        if ($request->has('roles')) {
+            $user->syncRoles($request->roles);
+            
+            // Sync legacy role column for compatibility
+            $user->role = $user->roles->first()?->name ?? 'editor';
+            $user->save();
+        }
+
         return redirect()->route('admin.users.index')->with('success', 'users.create_success');
     }
 
@@ -57,7 +67,8 @@ class UserController extends Controller
     public function edit(User $user)
     {
         return Inertia::render('Admin/Users/Edit', [
-            'user_item' => $user
+            'user_item' => $user->load('roles'),
+            'roles' => Role::all()
         ]);
     }
 
@@ -80,6 +91,14 @@ class UserController extends Controller
         }
 
         $user->save();
+
+        if ($request->has('roles')) {
+            $user->syncRoles($request->roles);
+            
+            // Sync legacy role column for compatibility
+            $user->role = $user->roles->first()?->name ?? 'editor';
+            $user->save();
+        }
 
         return redirect()->route('admin.users.index')->with('success', 'users.update_success');
     }

@@ -2,7 +2,7 @@
 import { markRaw } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
+import ModuleHeader from '@/features/admin/shared/components/ModuleHeader.vue';
 import { PhChartLineUp, PhFileText, PhArrowRight, PhFeather, PhHouse } from '@phosphor-icons/vue';
 import { useTranslations } from '@/Composables/useTranslations';
 

@@ -19,8 +19,7 @@ class LocaleMiddleware
     {
         $locale = $request->route('locale') ?? $request->segment(1) ?? Session::get('locale') ?? config('app.locale');
         
-        // Log for debugging
-        \Illuminate\Support\Facades\Log::info("Path: " . $request->path() . " | Determined locale: " . $locale);
+
 
         try {
             $activeLanguages = \App\Models\Language::where('is_active', true)->pluck('code')->toArray();
@@ -29,7 +28,7 @@ class LocaleMiddleware
             }
 
             if (in_array($locale, $activeLanguages)) {
-                \Illuminate\Support\Facades\Log::info("Setting locale to: " . $locale);
+
                 App::setLocale($locale);
                 Session::put('locale', $locale);
                 \Illuminate\Support\Facades\URL::defaults(['locale' => $locale]);

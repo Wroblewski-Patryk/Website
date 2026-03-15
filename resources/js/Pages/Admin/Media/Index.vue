@@ -6,17 +6,17 @@ import {
 } from '@phosphor-icons/vue';
 
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
+import ModuleHeader from '@/features/admin/shared/components/ModuleHeader.vue';
 import { useToastStore } from '@/Stores/useToastStore';
 import { useTranslations } from '@/Composables/useTranslations';
 
 // Media Components
-import Uploader from '@/Components/Admin/Media/Uploader.vue';
-import Toolbar from '@/Components/Admin/Media/Toolbar.vue';
-import Browser from '@/Components/Admin/Media/Browser.vue';
-import PreviewModal from '@/Components/Admin/Media/PreviewModal.vue';
-import MoveModal from '@/Components/Admin/Media/MoveModal.vue';
-import FolderModal from '@/Components/Admin/Media/FolderModal.vue';
+import Uploader from '@/features/admin/media/components/Uploader.vue';
+import Toolbar from '@/features/admin/media/components/Toolbar.vue';
+import Browser from '@/features/admin/media/components/Browser.vue';
+import PreviewModal from '@/features/admin/media/components/PreviewModal.vue';
+import MoveModal from '@/features/admin/media/components/MoveModal.vue';
+import FolderModal from '@/features/admin/media/components/FolderModal.vue';
 
 const props = defineProps(['media', 'folders', 'subfolders', 'currentFolder', 'filters']);
 const { t } = useTranslations();

@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, provide } from 'vue'
 import { usePage } from '@inertiajs/vue3'
-import DynamicBlock from '@/Components/DynamicBlock.vue'
+import DynamicBlock from '@/features/admin/block-builder/components/DynamicBlock.vue'
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue'
 import { useTranslations } from '@/Composables/useTranslations'
 

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 // --- 1. Root & Technical Routes ---
 Route::get('sitemap.xml', [\App\Http\Controllers\SeoController::class, 'sitemap'])->name('sitemap');
 Route::get('robots.txt', [\App\Http\Controllers\SeoController::class, 'robots'])->name('robots');
-Route::get('lang/{lang}', [\App\Http\Controllers\LocaleController::class, 'switch'])->name('lang.switch');
+Route::get('lang/{lang}', [\App\Http\Controllers\LocaleController::class, 'switch'])->name('locale.switch');
 
 // --- 2. Fallbacks dla nie-prefixed URLs ---
 // Przekierowania z /login, /admin oraz innych bez prefiksu językowego na lokalizowane wersje
