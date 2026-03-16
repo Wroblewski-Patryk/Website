@@ -24,8 +24,18 @@
 - `languages` (aktywne jezyki)
 - `translations` (flat mapa `group.key -> text`)
 
-## Aktualne ograniczenia
+## Zarządzanie tłumaczeniami panelu admina (`AdminUiTranslationSeeder`)
+
+Tłumaczenia interfejsu administracyjnego są przechowywane w bazie danych (tabela `translations`), ale ich źródłem prawdy są pliki PHP w katalogu:
+`database/seeders/data/translations/`
+
+Pliki są podzielone tematycznie (np. `menu.php`, `clients.php`, `projects.php`, `common.php`). 
+Seeder `AdminUiTranslationSeeder` automatycznie skanuje ten katalog i aktualizuje wpisy w bazie danych.
+
+Wszystkie klucze tłumaczeń dla panelu admina powinny być poprzedzone prefiksem `admin.`.
+
+## Aktualne ograniczenia (Zaktualizowane)
 
 - Frontendowy `LanguageSwitcher.vue` ma obecnie hardcoded opcje `pl` i `en`.
-- `LanguageSwitcher.vue` odwoluje sie do `route('locale.switch', ...)`, podczas gdy backend rejestruje `lang.switch`.
-- W dokumentacji i kodzie trwaja dalsze porzadki i18n po refaktorze.
+- W dokumentacji i kodzie trwają dalsze porządki i18n po refaktorze.
+- Większość modułów (Pages, Posts, Projects, Clients) korzysta już z pełnej translatowalności pól JSON.

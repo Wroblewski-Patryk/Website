@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'admin.menu.dashboard' => ['pl' => 'Pulpit', 'en' => 'Dashboard'],
+    'admin.menu.content' => ['pl' => 'Zawartość', 'en' => 'Content'],
+    'admin.menu.pages' => ['pl' => 'Strony', 'en' => 'Pages'],
+    'admin.menu.posts' => ['pl' => 'Wpisy', 'en' => 'Posts'],
+    'admin.menu.categories' => ['pl' => 'Kategorie', 'en' => 'Categories'],
+    'admin.menu.projects' => ['pl' => 'Projekty', 'en' => 'Projects'],
+    'admin.menu.clients' => ['pl' => 'Klienci', 'en' => 'Clients'],
+    'admin.menu.forms' => ['pl' => 'Formularze', 'en' => 'Forms'],
+    'admin.taxonomy.type_category' => ['pl' => 'Kategorie', 'en' => 'Categories'],
+    'admin.taxonomy.type_tag' => ['pl' => 'Tagi', 'en' => 'Tags'],
+    'admin.taxonomy.categories' => ['pl' => 'Kategorie', 'en' => 'Categories'],
+    'admin.taxonomy.tags' => ['pl' => 'Tagi', 'en' => 'Tags'],
+    'admin.menu.library' => ['pl' => 'Biblioteka', 'en' => 'Library'],
+    'admin.menu.media' => ['pl' => 'Media', 'en' => 'Media'],
+    'admin.menu.templates' => ['pl' => 'Szablony', 'en' => 'Templates'],
+    'admin.menu.design' => ['pl' => 'Wygląd', 'en' => 'Design'],
+    'admin.menu.theme' => ['pl' => 'Motyw', 'en' => 'Theme'],
+    'admin.menu.colors' => ['pl' => 'Kolory', 'en' => 'Colors'],
+    'admin.menu.fonts' => ['pl' => 'Fonty', 'en' => 'Fonts'],
+    'admin.menu.typography' => ['pl' => 'Typografia', 'en' => 'Typography'],
+    'admin.menu.sizes' => ['pl' => 'Wymiary', 'en' => 'Sizes & Metrics'],
+    'admin.menu.effects' => ['pl' => 'Efekty', 'en' => 'Shadows & Effects'],
+    'admin.menu.blocks' => ['pl' => 'Bloki', 'en' => 'Blocks'],
+    'admin.menu.system' => ['pl' => 'System', 'en' => 'System Settings'],
+    'admin.menu.translations' => ['pl' => 'Tłumaczenia', 'en' => 'Translations'],
+    'admin.menu.languages' => ['pl' => 'Języki', 'en' => 'Languages'],
+    'admin.menu.users' => ['pl' => 'Użytkownicy', 'en' => 'Users'],
+    'admin.menu.settings' => ['pl' => 'Ustawienia', 'en' => 'Settings'],
+    'admin.menu.roles' => ['pl' => 'Role', 'en' => 'Roles'], // Dodane dla spójności z Rbac
+];

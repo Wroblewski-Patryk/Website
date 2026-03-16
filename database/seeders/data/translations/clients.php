@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'admin.clients.management_title' => ['pl' => 'Zarządzaj Klientami', 'en' => 'Manage Clients'],
+    'admin.clients.description' => ['pl' => 'Zarządzaj listą swoich klientów i ich danymi.', 'en' => 'Manage your clients list and their details.'],
+    'admin.clients.create_btn' => ['pl' => 'Dodaj klienta', 'en' => 'Add client'],
+    'admin.clients.edit_title' => ['pl' => 'Edytuj Klienta', 'en' => 'Edit Client'],
+    'admin.clients.add_title' => ['pl' => 'Dodaj Nowego Klienta', 'en' => 'Add New Client'],
+    'admin.clients.name' => ['pl' => 'Nazwa Klienta', 'en' => 'Client Name'],
+    'admin.clients.name_label' => ['pl' => 'Nazwa Klienta', 'en' => 'Client Name'],
+    'admin.clients.name_field' => ['pl' => 'Nazwa', 'en' => 'Name'],
+    'admin.clients.website' => ['pl' => 'Strona WWW', 'en' => 'Website'],
+    'admin.clients.website_label' => ['pl' => 'Strona WWW', 'en' => 'Website'],
+    'admin.clients.website_field' => ['pl' => 'Strona WWW', 'en' => 'Website'],
+    'admin.clients.email' => ['pl' => 'E-mail', 'en' => 'E-mail'],
+    'admin.clients.email_label' => ['pl' => 'E-mail', 'en' => 'E-mail'],
+    'admin.clients.phone' => ['pl' => 'Telefon', 'en' => 'Phone'],
+    'admin.clients.phone_label' => ['pl' => 'Telefon', 'en' => 'Phone'],
+    'admin.clients.logo' => ['pl' => 'Logo Klienta', 'en' => 'Client Logo'],
+    'admin.clients.logo_label' => ['pl' => 'Logo Klienta', 'en' => 'Client Logo'],
+    'admin.clients.basic_info' => ['pl' => 'Podstawowe Informacje', 'en' => 'Basic Information'],
+    'admin.clients.contact_info' => ['pl' => 'Dane Kontaktowe', 'en' => 'Contact Details'],
+    'admin.clients.desc_placeholder' => ['pl' => 'Krótki opis firmy...', 'en' => 'Brief company overview...'],
+    'admin.clients.create_success' => ['pl' => 'Klient został utworzony pomyślnie.', 'en' => 'Client created successfully.'],
+    'admin.clients.update_success' => ['pl' => 'Klient został zaktualizowany.', 'en' => 'Client updated successfully.'],
+    'admin.clients.delete_success' => ['pl' => 'Klient został usunięty.', 'en' => 'Client deleted successfully.'],
+];

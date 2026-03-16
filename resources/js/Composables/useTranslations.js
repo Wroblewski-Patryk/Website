@@ -9,9 +9,30 @@ export function useTranslations() {
      * @param {Object|string} obj - The object to translate (e.g. {pl: "...", en: "..."})
      * @returns {string} - The translated string
      */
-    const translate = (obj, params = {}, fallback = null, forceLocale = null) => {
-        if (!obj) return fallback || '';
-        
+    const translate = (obj, fallbackOrParams = null, paramsOrFallback = null, forceLocale = null) => {
+        if (!obj) return typeof fallbackOrParams === 'string' ? fallbackOrParams : '';
+
+        // Backward-compatible argument normalization:
+        // - t(key, 'Fallback')
+        // - t(key, 'Fallback', { name: '...' })
+        // - t(key, { name: '...' })
+        let fallback = null;
+        let params = {};
+
+        if (typeof fallbackOrParams === 'string') {
+            fallback = fallbackOrParams;
+            if (paramsOrFallback && typeof paramsOrFallback === 'object' && !Array.isArray(paramsOrFallback)) {
+                params = paramsOrFallback;
+            }
+        } else if (fallbackOrParams && typeof fallbackOrParams === 'object' && !Array.isArray(fallbackOrParams)) {
+            params = fallbackOrParams;
+            if (typeof paramsOrFallback === 'string') {
+                fallback = paramsOrFallback;
+            }
+        } else if (typeof paramsOrFallback === 'string') {
+            fallback = paramsOrFallback;
+        }
+
         let result = '';
 
         // Handle JSON strings if they slip through

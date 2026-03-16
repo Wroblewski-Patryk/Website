@@ -27,7 +27,7 @@ const form = useForm({
 });
 
 const breadcrumbs = [
-    { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: PhHouse },
+    { label: t('admin.menu.dashboard', 'Dashboard'), url: route('admin.dashboard.index'), icon: PhHouse },
     { label: t('admin.menu.projects', 'Projects'), url: route('admin.projects.index') },
     { label: t('admin.menu.clients', 'Clients'), url: route('admin.projects.clients.index'), icon: PhUsers },
     { label: props.client?.id ? t('admin.common.edit', 'Edit') : t('admin.common.add', 'Add New') }
@@ -164,7 +164,7 @@ function submit() {
                     <div class="card-body gap-6 p-8">
                         <div class="form-control">
                             <label class="label cursor-pointer flex justify-between p-0">
-                                <span class="label-text font-bold opacity-50">{{ t('admin.common.status_active', 'Active') }}</span>
+                                <span class="label-text font-bold opacity-50">{{ t('admin.common.active', 'Active') }}</span>
                                 <input type="checkbox" v-model="form.is_active" class="toggle toggle-primary toggle-sm" />
                             </label>
                         </div>

@@ -30,11 +30,23 @@ class TranslationController extends Controller
         });
 
         if ($request->filled('sort') && $request->filled('direction')) {
-            $sort = $request->sort;
-            if (str_contains($sort, '.')) {
-                $sort = str_replace('.', '->', $sort);
+            $sort = (string) $request->sort;
+            $direction = strtolower((string) $request->direction) === 'asc' ? 'asc' : 'desc';
+
+            $allowedSorts = ['group', 'key', 'created_at', 'updated_at'];
+            $activeCodes = \App\Models\Language::where('is_active', true)->pluck('code')->toArray();
+            foreach ($activeCodes as $code) {
+                $allowedSorts[] = "text.{$code}";
             }
-            $query->orderBy($sort, $request->direction);
+
+            if (in_array($sort, $allowedSorts, true)) {
+                if (str_contains($sort, '.')) {
+                    $sort = str_replace('.', '->', $sort);
+                }
+                $query->orderBy($sort, $direction);
+            } else {
+                $query->orderBy('group')->orderBy('key');
+            }
         } else {
             $query->orderBy('group')->orderBy('key');
         }
@@ -47,8 +59,8 @@ class TranslationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'group' => 'required|string',
-            'key' => 'required|string|unique:translations,key,NULL,id,group,' . $request->group,
+            'group' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9_\-]+$/'],
+            'key' => ['required', 'string', 'max:191', 'regex:/^[a-zA-Z0-9_\-.]+$/', 'unique:translations,key,NULL,id,group,' . $request->group],
             'text' => 'required|array',
         ]);
 

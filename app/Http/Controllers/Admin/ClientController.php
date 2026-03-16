@@ -52,7 +52,7 @@ class ClientController extends BaseAdminContentController
 
         $client = Client::create($validated);
 
-        return redirect()->route('admin.projects.clients.edit', $client->id)->with('success', 'clients.create_success');
+        return redirect()->route('admin.projects.clients.edit', $client->id)->with('success', 'admin.clients.create_success');
     }
 
     public function edit(Client $client)
@@ -80,12 +80,12 @@ class ClientController extends BaseAdminContentController
 
         $client->update($validated);
 
-        return redirect()->back()->with('success', 'clients.update_success');
+        return redirect()->back()->with('success', 'admin.clients.update_success');
     }
 
     public function destroy(Client $client)
     {
         $client->delete();
-        return redirect()->back()->with('success', 'clients.delete_success');
+        return redirect()->back()->with('success', 'admin.clients.delete_success');
     }
 }

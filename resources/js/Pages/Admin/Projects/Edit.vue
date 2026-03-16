@@ -52,8 +52,8 @@
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.common.status', 'Status') }}</span></label>
                             <select v-model="form.status" class="select select-bordered select-sm focus:select-primary transition-all w-full">
-                                <option value="draft">{{ t('admin.common.status_draft', 'Draft') }}</option>
-                                <option value="published">{{ t('admin.common.status_published', 'Published') }}</option>
+                                <option value="draft">{{ t('admin.common.draft', 'Draft') }}</option>
+                                <option value="published">{{ t('admin.common.published', 'Published') }}</option>
                                 <option value="archived">{{ t('admin.common.archived', 'Archived') }}</option>
                             </select>
                         </div>
@@ -210,11 +210,11 @@ function submit() {
         form.put(route('admin.projects.update', props.project.id), {
             onSuccess: () => {
                 store.isDirty = false;
-                toast.success('Projekt został pomyślnie zaktualizowany! 🎉');
+                toast.success(t('admin.projects.update_success', 'Project updated successfully! 🎉'));
             },
             onError: (errors) => {
                 console.error(errors);
-                toast.error('Wystąpił błąd podczas zapisywania projektu. ❌');
+                toast.error(t('admin.common.error_saving', 'Error saving project. ❌'));
             },
             preserveScroll: true,
             preserveState: true
@@ -223,11 +223,11 @@ function submit() {
         form.post(route('admin.projects.store'), {
             onSuccess: () => {
                 store.isDirty = false;
-                toast.success('Projekt został pomyślnie utworzony! ✨');
+                toast.success(t('admin.projects.create_success', 'Project created successfully! ✨'));
             },
             onError: (errors) => {
                 console.error(errors);
-                toast.error('Wystąpił błąd podczas tworzenia projektu. ❌');
+                toast.error(t('admin.common.error_creating', 'Error creating project. ❌'));
             }
         });
     }

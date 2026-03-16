@@ -46,7 +46,8 @@ class ProjectController extends BaseAdminContentController
             'client_id' => 'nullable|exists:clients,id',
             'url' => 'nullable|string',
             'completion_date' => 'nullable|date',
-            'featured_image' => 'nullable|string',
+            'desktop_image' => 'nullable|string',
+            'mobile_image' => 'nullable|string',
         ]));
 
         $this->applyStatusLogic(null, $validated);
@@ -54,7 +55,7 @@ class ProjectController extends BaseAdminContentController
         $project = Project::create(\Illuminate\Support\Arr::except($validated, ['taxonomies']));
         $this->syncTaxonomies($project, $request);
 
-        return redirect()->route('admin.projects.edit', $project->id)->with('success', 'projects.create_success');
+        return redirect()->route('admin.projects.edit', $project->id)->with('success', 'admin.projects.create_success');
     }
 
     public function edit(Project $project)
@@ -73,7 +74,8 @@ class ProjectController extends BaseAdminContentController
             'client_id' => 'nullable|exists:clients,id',
             'url' => 'nullable|string',
             'completion_date' => 'nullable|date',
-            'featured_image' => 'nullable|string',
+            'desktop_image' => 'nullable|string',
+            'mobile_image' => 'nullable|string',
         ]));
 
         $this->applyStatusLogic($project, $validated);
@@ -83,12 +85,12 @@ class ProjectController extends BaseAdminContentController
         $project->update(\Illuminate\Support\Arr::except($validated, ['taxonomies']));
         $this->syncTaxonomies($project, $request);
 
-        return redirect()->back()->with('success', 'projects.update_success');
+        return redirect()->back()->with('success', 'admin.projects.update_success');
     }
 
     public function destroy(Project $project)
     {
         $project->delete();
-        return redirect()->back()->with('success', 'projects.delete_success');
+        return redirect()->back()->with('success', 'admin.projects.delete_success');
     }
 }

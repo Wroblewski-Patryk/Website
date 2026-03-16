@@ -41,8 +41,8 @@ class DatabaseSeeder extends Seeder
 
         // helper to get page id
         $getPageId = function($slug) {
-            $page = \App\Models\Page::whereRaw("json_unquote(json_extract(slug, '$.pl')) = ?", [$slug])
-                ->orWhereRaw("json_unquote(json_extract(slug, '$.en')) = ?", [$slug])
+            $page = \App\Models\Page::where('slug->pl', $slug)
+                ->orWhere('slug->en', $slug)
                 ->first();
             return $page ? $page->id : null;
         };

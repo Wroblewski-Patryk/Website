@@ -16,7 +16,7 @@ const tableRef = ref(null);
 const deleteForm = useForm({});
 
 const breadcrumbs = [
-    { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
+    { label: t('admin.menu.dashboard', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
     { label: t('admin.menu.projects', 'Projects'), url: route('admin.projects.index') },
     { label: t('admin.menu.clients', 'Clients') }
 ];

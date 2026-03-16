@@ -1,0 +1,32 @@
+<?php
+
+return [
+    'admin.posts.status_draft' => ['pl' => 'Szkic', 'en' => 'Draft'],
+    'admin.posts.status_published' => ['pl' => 'Opublikowano', 'en' => 'Published'],
+    'admin.posts.status_planned' => ['pl' => 'Zaplanowano', 'en' => 'Planned'],
+    'admin.posts.status_archived' => ['pl' => 'Zarchiwizowane', 'en' => 'Archived'],
+
+    'admin.posts.management_title' => ['pl' => 'Zarządzaj wpisami', 'en' => 'Manage Posts'],
+    'admin.posts.description' => ['pl' => 'Zarządzaj swoimi wpisami na blogu i ogłoszeniami.', 'en' => 'Manage your blog posts and announcements.'],
+    'admin.posts.create_btn' => ['pl' => 'Utwórz wpis', 'en' => 'Create Post'],
+    'admin.posts.title_field' => ['pl' => 'Tytuł', 'en' => 'Title'],
+    'admin.posts.slug_field' => ['pl' => 'Slug', 'en' => 'Slug'],
+    'admin.posts.status_field' => ['pl' => 'Status', 'en' => 'Status'],
+    'admin.posts.edit_post' => ['pl' => 'Edytuj wpis', 'en' => 'Edit Post'],
+    'admin.posts.add_post' => ['pl' => 'Dodaj nowy wpis', 'en' => 'Add New Post'],
+    'admin.posts.url_slug' => ['pl' => 'URL / Slug', 'en' => 'URL / Slug'],
+    'admin.posts.generated_url' => ['pl' => 'Wygenerowany URL', 'en' => 'Generated URL'],
+    'admin.posts.slug_placeholder' => ['pl' => 'wpisz-slug-wpisu', 'en' => 'post-slug-here'],
+    'admin.posts.regenerate_slug' => ['pl' => 'Odśwież slug', 'en' => 'Regenerate slug'],
+    'admin.posts.excerpt' => ['pl' => 'Zajawka / Streszczenie', 'en' => 'Excerpt / Summary'],
+    'admin.posts.excerpt_placeholder' => ['pl' => 'Krótkie streszczenie wpisu...', 'en' => 'Brief summary...'],
+    'admin.posts.featured_image' => ['pl' => 'Obraz wyróżniający', 'en' => 'Featured Image'],
+    'admin.posts.image_url' => ['pl' => 'Adres URL obrazu', 'en' => 'Image URL'],
+    'admin.posts.create_success' => ['pl' => 'Wpis został utworzony pomyślnie.', 'en' => 'Post created successfully.'],
+    'admin.posts.update_success' => ['pl' => 'Wpis został zaktualizowany.', 'en' => 'Post updated successfully.'],
+    'admin.posts.delete_success' => ['pl' => 'Wpis został usunięty.', 'en' => 'Post deleted successfully.'],
+    'admin.posts.open_preview' => ['pl' => 'Otwórz podgląd', 'en' => 'Open Preview'],
+    'admin.posts.publish_date_time' => ['pl' => 'Data i godzina publikacji', 'en' => 'Publish Date & Time'],
+    'admin.posts.slug_required' => ['pl' => 'Slug jest wymagany', 'en' => 'Slug is required'],
+    'admin.posts.url_unavailable' => ['pl' => 'URL niedostępny', 'en' => 'URL unavailable'],
+];

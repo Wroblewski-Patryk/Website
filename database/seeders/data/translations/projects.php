@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'admin.projects.management_title' => ['pl' => 'Zarządzaj projektami', 'en' => 'Manage Projects'],
+    'admin.projects.description' => ['pl' => 'Zaprezentuj swoje portfolio i prace kreatywne.', 'en' => 'Showcase your portfolio and creative work.'],
+    'admin.projects.create_btn' => ['pl' => 'Utwórz projekt', 'en' => 'Create Project'],
+    'admin.projects.title_field' => ['pl' => 'Tytuł', 'en' => 'Title'],
+    'admin.projects.slug_field' => ['pl' => 'Slug', 'en' => 'Slug'],
+    'admin.projects.status_field' => ['pl' => 'Status', 'en' => 'Status'],
+    'admin.projects.status_draft' => ['pl' => 'Szkic', 'en' => 'Draft'],
+    'admin.projects.status_published' => ['pl' => 'Opublikowano', 'en' => 'Published'],
+    'admin.projects.status_planned' => ['pl' => 'Zaplanowano', 'en' => 'Planned'],
+    'admin.projects.edit_project' => ['pl' => 'Edytuj projekt', 'en' => 'Edit Project'],
+    'admin.projects.add_project' => ['pl' => 'Dodaj nowy projekt', 'en' => 'Add New Project'],
+    'admin.projects.category' => ['pl' => 'Kategoria', 'en' => 'Category'],
+    'admin.projects.category_field' => ['pl' => 'Kategoria', 'en' => 'Category'],
+    'admin.projects.url_slug' => ['pl' => 'URL / Slug', 'en' => 'URL / Slug'],
+    'admin.projects.generated_url' => ['pl' => 'Wygenerowany URL', 'en' => 'Generated URL'],
+    'admin.projects.slug_placeholder' => ['pl' => 'wpisz-slug-projektu', 'en' => 'project-slug'],
+    'admin.projects.regenerate_slug' => ['pl' => 'Odśwież slug', 'en' => 'Regenerate slug'],
+    'admin.projects.client' => ['pl' => 'Nazwa Klienta', 'en' => 'Client Name'],
+    'admin.projects.external_url' => ['pl' => 'URL Projektu', 'en' => 'Project URL'],
+    'admin.projects.completion_date' => ['pl' => 'Data Ukończenia', 'en' => 'Completion Date'],
+    'admin.projects.featured_image' => ['pl' => 'Obraz wyróżniający', 'en' => 'Featured Image'],
+    'admin.projects.create_success' => ['pl' => 'Projekt został utworzony pomyślnie.', 'en' => 'Project created successfully.'],
+    'admin.projects.update_success' => ['pl' => 'Projekt został zaktualizowany.', 'en' => 'Project updated successfully.'],
+    'admin.projects.delete_success' => ['pl' => 'Projekt został usunięty.', 'en' => 'Project deleted successfully.'],
+];

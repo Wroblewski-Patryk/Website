@@ -1,19 +1,20 @@
-# Modul projektow (stan kodu)
+# Moduł projektów (stan kodu)
 
 ## Dane i admin
 
 - Model: `Project`.
-- Tresc projektu jest blokowa (`content` JSON), analogicznie do pages/posts.
-- Dodatkowe pola: `desktop_image`, `mobile_image`, `url`, `category`, `client`, `order`.
-- Pola SEO i status publikacji sa wspierane.
+- Treść projektu jest blokowa (`content` JSON), analogicznie do pages/posts.
+- Relacja: `Project` należy do `Client` (`client_id`).
+- Dodatkowe pola: `desktop_image`, `mobile_image`, `url`, `category`, `order`.
+- Pola SEO i status publikacji są wspierane i translatowalne.
 
-Admin ma CRUD dla `projects`.
-
-## Routing publiczny
-
-Kod `PageController` zawiera `showProject(...)`, ale aktualne publiczne route wiring po refaktorze locale jest jeszcze dopinane w `routes/public.php`.
+Admin ma pełny CRUD dla `projects` zintegrowany z `BlockBuilder`.
 
 ## Uwaga o slug
 
-Model zaklada translatable pola `title/description/SEO`, ale `slug` w tabeli nadal jest stringiem.
-Jednoczesnie logika wyszukiwania projektu po slug jest juz przygotowywana pod locale (`slug->{locale}`).
+- `slug` jest teraz polem translatowalnym (JSON) w tabeli `projects`.
+- Logika wyszukiwania projektu po slug wspiera locale (`slug->{locale}`).
+
+## Powiązania
+
+Każdy projekt może być przypisany do klienta w celu organizacji portfolio.
