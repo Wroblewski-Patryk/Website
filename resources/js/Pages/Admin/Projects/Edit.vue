@@ -76,7 +76,10 @@
                         </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.projects.client', 'Client') }}</span></label>
-                            <input type="text" v-model="form.client" class="input input-bordered input-sm focus:input-primary transition-all" placeholder="Client Name" />
+                            <select v-model="form.client_id" class="select select-bordered select-sm focus:select-primary transition-all">
+                                <option :value="null">{{ t('admin.common.none', 'None') }}</option>
+                                <option v-for="cl in availableClients" :key="cl.id" :value="cl.id">{{ t(cl.title) }}</option>
+                            </select>
                         </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.projects.external_url', 'External URL') }}</span></label>
@@ -139,6 +142,10 @@ const props = defineProps({
         type: Array,
         default: () => []
     },
+    availableClients: {
+        type: Array,
+        default: () => []
+    },
     templates: [Array, Object],
 });
 
@@ -156,7 +163,7 @@ const form = useForm({
     mobile_image: props.project?.mobile_image || '',
     url: props.project?.url || '',
     category: props.project?.category || '',
-    client: props.project?.client || '',
+    client_id: props.project?.client_id || null,
     order: props.project?.order || 0,
     status: props.project?.status || 'draft',
     taxonomies: props.taxonomies || [],

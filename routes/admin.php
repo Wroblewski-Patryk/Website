@@ -26,6 +26,10 @@ Route::middleware('permission:manage-content')->group(function () {
         Route::post('bulk-action', [\App\Http\Controllers\Admin\MediaController::class, 'bulkAction'])->name('bulk-action');
     });
 
+    Route::prefix('projects')->name('projects.')->group(function () {
+        Route::resource('clients', \App\Http\Controllers\Admin\ClientController::class)->except(['show']);
+    });
+    
     Route::resource('projects', \App\Http\Controllers\Admin\ProjectController::class)->except(['show']);
     
     // Modular Taxonomies

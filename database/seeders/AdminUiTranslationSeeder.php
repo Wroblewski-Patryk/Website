@@ -121,6 +121,8 @@ class AdminUiTranslationSeeder extends Seeder
             'admin.dashboard.title' => ['pl' => 'Pulpit', 'en' => 'Dashboard'],
             'admin.common.all' => ['pl' => 'Wszystkie', 'en' => 'All'],
             'admin.common.add' => ['pl' => 'Dodaj nowy', 'en' => 'Add new'],
+            'admin.common.upload' => ['pl' => 'Prześlij', 'en' => 'Upload'],
+            'admin.common.description' => ['pl' => 'Opis', 'en' => 'Description'],
             'admin.pages.add' => ['pl' => 'Dodaj nową', 'en' => 'Add new'],
             'admin.pages.description' => ['pl' => 'Zarządzaj statycznymi stronami swojej witryny.', 'en' => 'Manage static pages of your website.'],
             'admin.pages.create_btn' => ['pl' => 'Dodaj nową stronę', 'en' => 'Add new page'],
@@ -131,8 +133,6 @@ class AdminUiTranslationSeeder extends Seeder
             'admin.pages.status_published' => ['pl' => 'Opublikowano', 'en' => 'Published'],
             'admin.pages.status_draft' => ['pl' => 'Szkic', 'en' => 'Draft'],
             'admin.pages.status_planned' => ['pl' => 'Zaplanowano', 'en' => 'Planned'],
-            'admin.common.preview' => ['pl' => 'Podgląd', 'en' => 'Preview'],
-            'admin.common.actions' => ['pl' => 'Akcje', 'en' => 'Actions'],
 
             // Statuses for Posts/Projects
             'admin.posts.status_draft' => ['pl' => 'Szkic', 'en' => 'Draft'],
@@ -286,6 +286,25 @@ class AdminUiTranslationSeeder extends Seeder
             'projects.completion_date' => ['pl' => 'Data Ukończenia', 'en' => 'Completion Date'],
             'projects.description_field' => ['pl' => 'Opis / Szczegóły', 'en' => 'Description / Details'],
             'projects.featured_image' => ['pl' => 'Obraz wyróżniający', 'en' => 'Featured Image'],
+
+            // Clients Module Additional
+            'admin.clients.management_title' => ['pl' => 'Zarządzaj Klientami', 'en' => 'Manage Clients'],
+            'admin.clients.description' => ['pl' => 'Zarządzaj listą swoich klientów i ich danymi.', 'en' => 'Manage your clients list and their details.'],
+            'admin.clients.create_btn' => ['pl' => 'Dodaj klienta', 'en' => 'Add client'],
+            'admin.clients.edit_title' => ['pl' => 'Edytuj Klienta', 'en' => 'Edit Client'],
+            'admin.clients.add_title' => ['pl' => 'Dodaj Nowego Klienta', 'en' => 'Add New Client'],
+            'admin.clients.name_field' => ['pl' => 'Nazwa', 'en' => 'Name'],
+            'admin.clients.slug_field' => ['pl' => 'Slug', 'en' => 'Slug'],
+            'admin.clients.status_field' => ['pl' => 'Status', 'en' => 'Status'],
+            'admin.clients.name_label' => ['pl' => 'Nazwa Klienta', 'en' => 'Client Name'],
+            'admin.clients.website_label' => ['pl' => 'Strona WWW', 'en' => 'Website'],
+            'admin.clients.email_label' => ['pl' => 'E-mail', 'en' => 'E-mail'],
+            'admin.clients.phone_label' => ['pl' => 'Telefon', 'en' => 'Phone'],
+            'admin.clients.logo_label' => ['pl' => 'Logo Klienta', 'en' => 'Client Logo'],
+            'admin.clients.description_label' => ['pl' => 'Opis', 'en' => 'Description'],
+            'admin.clients.create_success' => ['pl' => 'Klient został utworzony pomyślnie.', 'en' => 'Client created successfully.'],
+            'admin.clients.update_success' => ['pl' => 'Klient został zaktualizowany.', 'en' => 'Client updated successfully.'],
+            'admin.clients.delete_success' => ['pl' => 'Klient został usunięty.', 'en' => 'Client deleted successfully.'],
 
             // Navigation & Global SEO
             'seo.admin_panel' => ['pl' => 'Panel Administratora', 'en' => 'Admin Panel'],

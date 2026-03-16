@@ -34,6 +34,7 @@ class ProjectController extends BaseAdminContentController
         
         return Inertia::render("{$this->viewPath}/Edit", array_merge([
             'project' => $project,
+            'availableClients' => \App\Models\Client::orderBy('title')->get(),
         ], $this->getSharedProps()));
     }
 
@@ -42,15 +43,15 @@ class ProjectController extends BaseAdminContentController
         $validated = $request->validate(array_merge($this->getBaseValidationRules(), [
             'description' => 'required|array',
             'description.*' => 'nullable|string',
-            'client_name' => 'nullable|string',
-            'project_url' => 'nullable|url',
+            'client_id' => 'nullable|exists:clients,id',
+            'url' => 'nullable|string',
             'completion_date' => 'nullable|date',
             'featured_image' => 'nullable|string',
         ]));
 
         $this->applyStatusLogic(null, $validated);
 
-        $project = Project::create($validated);
+        $project = Project::create(\Illuminate\Support\Arr::except($validated, ['taxonomies']));
         $this->syncTaxonomies($project, $request);
 
         return redirect()->route('admin.projects.edit', $project->id)->with('success', 'projects.create_success');
@@ -58,9 +59,10 @@ class ProjectController extends BaseAdminContentController
 
     public function edit(Project $project)
     {
-        return Inertia::render("{$this->viewPath}/Edit", $this->getEditProps($project, [
-            'title', 'slug', 'description', 'meta_title', 'meta_description', 'og_image'
-        ]));
+        return Inertia::render("{$this->viewPath}/Edit", array_merge(
+            $this->getEditProps($project, ['title', 'slug', 'description', 'meta_title', 'meta_description', 'og_image']),
+            ['availableClients' => \App\Models\Client::orderBy('title')->get()]
+        ));
     }
 
     public function update(Request $request, Project $project)
@@ -68,8 +70,8 @@ class ProjectController extends BaseAdminContentController
         $validated = $request->validate(array_merge($this->getBaseValidationRules($project), [
             'description' => 'required|array',
             'description.*' => 'nullable|string',
-            'client_name' => 'nullable|string',
-            'project_url' => 'nullable|url',
+            'client_id' => 'nullable|exists:clients,id',
+            'url' => 'nullable|string',
             'completion_date' => 'nullable|date',
             'featured_image' => 'nullable|string',
         ]));
@@ -78,7 +80,7 @@ class ProjectController extends BaseAdminContentController
 
         $this->saveRevision($project);
 
-        $project->update($validated);
+        $project->update(\Illuminate\Support\Arr::except($validated, ['taxonomies']));
         $this->syncTaxonomies($project, $request);
 
         return redirect()->back()->with('success', 'projects.update_success');

@@ -45,6 +45,7 @@ export const navigation = (t) => [
                 children: [
                     { label: t('admin.common.all', 'All'), route: 'admin.projects.index', active: '/admin/projects', exact: true, icon: PhList },
                     { label: t('admin.common.add', 'Add New'), route: 'admin.projects.create', active: '/admin/projects/create', icon: PhPlus },
+                    { label: t('admin.menu.clients', 'Clients'), route: 'admin.projects.clients.index', active: '/admin/projects/clients', icon: PhUsers },
                     { label: t('admin.taxonomy.type_category', 'Categories'), route: 'admin.projects.categories.index', active: '/admin/projects/categories', icon: PhTag },
                     { label: t('admin.taxonomy.type_tag', 'Tags'), route: 'admin.projects.tags.index', active: '/admin/projects/tags', icon: PhHash }
                 ]
@@ -60,7 +61,7 @@ export const navigation = (t) => [
                     { label: t('admin.common.all', 'All'), route: 'admin.forms.index', active: '/admin/forms', exact: true, icon: PhList },
                     { label: t('admin.common.add', 'Add New'), route: 'admin.forms.create', active: '/admin/forms/create', icon: PhPlus }
                 ]
-            }
+            },
         ]
     },
     {

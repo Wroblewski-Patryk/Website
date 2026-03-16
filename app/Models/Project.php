@@ -21,4 +21,12 @@ class Project extends Model
     ];
 
     public $translatable = ['title', 'slug', 'description', 'meta_title', 'meta_description', 'og_image'];
+
+    /**
+     * Get the client for the project.
+     */
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
 }
