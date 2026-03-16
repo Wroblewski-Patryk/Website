@@ -18,11 +18,12 @@ Sekcje aktywne i routowane:
 12. Settings
 13. Theme
 14. Blocks
+15. Clients
 
 Sekcje zarejestrowane routami, ale niezamkniete implementacyjnie:
 
-- Categories
-- Clients
+- Categories (do domknięcia jako taksonomie)
+- Mediatheque (rozszerzenie Media)
 
 ## Publiczny runtime (obecnie wystawione trasy)
 

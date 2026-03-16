@@ -3,12 +3,13 @@
 ## Dane i admin
 
 - Model: `Project`.
-- Treść projektu jest blokowa (`content` JSON), analogicznie do pages/posts.
-- Relacja: `Project` należy do `Client` (`client_id`).
-- Dodatkowe pola: `desktop_image`, `mobile_image`, `url`, `category`, `order`.
-- Pola SEO i status publikacji są wspierane i translatowalne.
+- Model: `Project`.
+- Treść projektu jest blokowa (`content` JSON), zarządzana przez `BlockBuilder`.
+- Relacja: `Project` należy do `Client` (`client_id`). W panelu admina dostępna jest lista wyboru klientów.
+- Dodatkowe pola: `desktop_image`, `mobile_image`, `url`, `completion_date`.
+- Pola SEO i status publikacji (Draft, Published, Planned) są wspierane i translatowalne.
 
-Admin ma pełny CRUD dla `projects` zintegrowany z `BlockBuilder`.
+Admin ma pełny CRUD dla `projects` wykorzystujący `BaseAdminContentController` dla spójności logiki.
 
 ## Uwaga o slug
 
