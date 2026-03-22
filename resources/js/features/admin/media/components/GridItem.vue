@@ -55,7 +55,7 @@ const formatSize = (bytes) => {
 
              <!-- Media View -->
              <template v-else>
-                 <img v-if="isImage" :src="'/storage/' + item.path" :alt="item.alt_text" class="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110" />
+                 <img v-if="isImage" :src="item.url" :alt="item.alt_text" class="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110" />
                  <div v-else class="w-full h-full flex flex-col items-center justify-center bg-base-200/30">
                     <div class="w-16 h-16 rounded-2xl bg-base-200 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-500">
                         <component :is="getFileIcon(item.mime)" weight="duotone" class="w-8 h-8 opacity-40 text-primary" />

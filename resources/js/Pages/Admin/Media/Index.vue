@@ -216,8 +216,7 @@ function deleteSingle(type, id) {
     }
 }
 
-function copyUrl(path) {
-    const url = window.location.origin + '/storage/' + path;
+function copyUrl(url) {
     navigator.clipboard.writeText(url);
     toastStore.info(t('admin.media.url_copied', 'URL skopiowany do schowka!'));
 }
@@ -312,7 +311,7 @@ const folderTree = computed(() => {
                     @preview="selectedMediaForPreview = $event"
                     @move="openMoveModal"
                     @delete="deleteSingle"
-                    @copy-link="copyUrl"
+                    @copy-link="copyUrl($event.url)"
                     @rename="(type, item) => type === 'folder' ? (editingFolder = item, isFolderModalOpen = true) : (selectedMediaForPreview = item)"
                 />
             </div>
@@ -326,7 +325,7 @@ const folderTree = computed(() => {
             :get-file-icon="getFileIcon"
             :format-size="formatSize"
             @close="selectedMediaForPreview = null"
-            @copy-link="copyUrl(selectedMediaForPreview.path)"
+            @copy-link="copyUrl(selectedMediaForPreview.url)"
             @move="openMoveModal('media', selectedMediaForPreview.id); selectedMediaForPreview = null"
             @delete="deleteSingle('media', selectedMediaForPreview.id); selectedMediaForPreview = null"
             @update-alt="updateMedia(selectedMediaForPreview.id, { alt_text: $event })"

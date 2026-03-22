@@ -15,54 +15,94 @@ class SystemPageSeeder extends Seeder
         $pages = [
             [
                 'key' => 'home',
-                'title' => ['en' => 'Home', 'pl' => 'Strona Główna'],
+                'title' => ['en' => 'Welcome to Featherly', 'pl' => 'Witaj w Featherly'],
                 'slug' => ['en' => 'home', 'pl' => 'home'],
                 'content' => [
                     'pl' => [
                         [
-                            'id' => 'section_1', 'type' => 'container',
-                            'content' => ['htmlTag' => 'section', 'isBoxed' => true, 'flexConfig' => ['gap' => '4', 'wrap' => 'nowrap', 'align' => 'center', 'justify' => 'center', 'direction' => 'col'], 'layoutType' => 'default'],
+                            'id' => 'hero_section', 'type' => 'container',
+                            'content' => ['htmlTag' => 'section', 'isBoxed' => true, 'flexConfig' => ['gap' => '6', 'wrap' => 'nowrap', 'align' => 'center', 'justify' => 'center', 'direction' => 'col'], 'layoutType' => 'default'],
                             'children' => [
-                                ['id' => 'h1_1', 'type' => 'heading', 'content' => ['text' => 'Tworzymy Cyfrowe Doświadczenia', 'level' => 1, 'align' => 'center'], 'children' => [], 'settings' => ['style' => []], 'parent_id' => null],
-                                ['id' => 'p_1', 'type' => 'paragraph', 'content' => ['text' => '<p class="text-center max-w-2xl mx-auto">Nowoczesne strony internetowe, które przyciągają uwagę i realizują cele Twojego biznesu.</p>'], 'children' => [], 'settings' => ['style' => []], 'parent_id' => null],
-                                ['id' => 'btn_1', 'type' => 'button', 'content' => ['label' => 'Nasze Projekty', 'url' => '/projekty', 'align' => 'center', 'style' => 'primary'], 'children' => [], 'settings' => ['style' => []], 'parent_id' => null],
+                                ['id' => 'hero_h1', 'type' => 'heading', 'content' => ['text' => 'Twoja Cyfrowa Kreatywność Bez Granic', 'level' => 1, 'align' => 'center'], 'settings' => ['style' => ['textColor' => 'text-primary']]],
+                                ['id' => 'hero_p', 'type' => 'paragraph', 'content' => ['text' => '<p class="text-center text-xl max-w-3xl mx-auto opacity-80">Poznaj Featherly — nowoczesny system CMS, który daje Ci pełną kontrolę nad designem i treścią. Buduj piękne strony za pomocą wizualnego edytora bloków.</p>'], 'settings' => ['style' => ['marginBottom' => '2rem']]],
+                                ['id' => 'hero_btns', 'type' => 'container', 'content' => ['htmlTag' => 'div', 'isBoxed' => false, 'flexConfig' => ['gap' => '4', 'wrap' => 'nowrap', 'align' => 'center', 'justify' => 'center', 'direction' => 'row'], 'layoutType' => 'flex'], 'children' => [
+                                    ['id' => 'hero_btn_1', 'type' => 'button', 'content' => ['label' => 'Rozpocznij przygodę', 'url' => '/admin', 'align' => 'center', 'style' => 'primary']],
+                                    ['id' => 'hero_btn_2', 'type' => 'button', 'content' => ['label' => 'Zobacz projekty', 'url' => '/projekty', 'align' => 'center', 'style' => 'outline']],
+                                ]],
                             ],
-                            'settings' => ['style' => ['paddingTop' => '10rem', 'paddingBottom' => '10rem']],
-                            'parent_id' => null,
+                            'settings' => ['style' => ['paddingTop' => '12rem', 'paddingBottom' => '8rem'], 'animations' => ['enabled' => true, 'preset' => 'fade-up', 'duration' => 1.2]],
                         ],
                         [
-                            'id' => 'text_1', 'type' => 'heading',
-                            'content' => ['level' => 2, 'text' => 'Dlaczego my?', 'align' => 'center'],
-                            'settings' => ['style' => ['paddingTop' => '4rem', 'marginBottom' => '2rem']]
+                            'id' => 'image_section', 'type' => 'container',
+                            'content' => ['htmlTag' => 'section', 'isBoxed' => true],
+                            'children' => [
+                                ['id' => 'main_image', 'type' => 'image', 'content' => ['url' => '/storage/media/bg.jpg', 'alt' => 'Featherly Dashboard Preview', 'caption' => 'Intuicyjny interfejs edytora']],
+                            ],
+                            'settings' => ['style' => ['paddingBottom' => '8rem'], 'animations' => ['enabled' => true, 'preset' => 'zoom-in', 'delay' => 0.4]],
                         ],
                         [
-                            'id' => 'text_2', 'type' => 'paragraph',
-                            'content' => ['text' => '<p class="text-center max-w-2xl mx-auto">Nasza pasja to technologia i design. Łączymy te dwa światy, aby dostarczać produkty najwyższej jakości.</p>'],
-                            'settings' => ['style' => ['paddingBottom' => '6rem']]
-                        ]
+                            'id' => 'divider_1', 'type' => 'divider', 'content' => ['text' => 'NAJNOWSZE REALIZACJE'], 'settings' => ['style' => ['paddingBottom' => '4rem']]
+                        ],
+                        [
+                            'id' => 'projects_section', 'type' => 'container',
+                            'content' => ['htmlTag' => 'section', 'isBoxed' => true],
+                            'children' => [
+                                ['id' => 'projects_list_1', 'type' => 'projects_list', 'content' => ['count' => 3, 'layout' => 'grid']],
+                            ],
+                            'settings' => ['style' => ['paddingBottom' => '8rem']],
+                        ],
+                        [
+                            'id' => 'posts_section', 'type' => 'container',
+                            'content' => ['htmlTag' => 'section', 'isBoxed' => true, 'style' => ['bgColor' => 'bg-base-200/50']],
+                            'children' => [
+                                ['id' => 'posts_h2', 'type' => 'heading', 'content' => ['text' => 'Wieści z frontu', 'level' => 2, 'align' => 'left'], 'settings' => ['style' => ['marginBottom' => '3rem']]],
+                                ['id' => 'posts_list_1', 'type' => 'posts_list', 'content' => ['count' => 3, 'layout' => 'grid']],
+                            ],
+                            'settings' => ['style' => ['paddingTop' => '8rem', 'paddingBottom' => '8rem']],
+                        ],
                     ],
                     'en' => [
                         [
-                            'id' => 'section_1', 'type' => 'container',
-                            'content' => ['htmlTag' => 'section', 'isBoxed' => true, 'flexConfig' => ['gap' => '4', 'wrap' => 'nowrap', 'align' => 'center', 'justify' => 'center', 'direction' => 'col'], 'layoutType' => 'default'],
+                            'id' => 'hero_section', 'type' => 'container',
+                            'content' => ['htmlTag' => 'section', 'isBoxed' => true, 'flexConfig' => ['gap' => '6', 'wrap' => 'nowrap', 'align' => 'center', 'justify' => 'center', 'direction' => 'col'], 'layoutType' => 'default'],
                             'children' => [
-                                ['id' => 'h1_1', 'type' => 'heading', 'content' => ['text' => 'Crafting Digital Experiences', 'level' => 1, 'align' => 'center'], 'children' => [], 'settings' => ['style' => []], 'parent_id' => null],
-                                ['id' => 'p_1', 'type' => 'paragraph', 'content' => ['text' => '<p class="text-center max-w-2xl mx-auto">Modern websites that capture attention and fulfill your business goals.</p>'], 'children' => [], 'settings' => ['style' => []], 'parent_id' => null],
-                                ['id' => 'btn_1', 'type' => 'button', 'content' => ['label' => 'Our Projects', 'url' => '/projects', 'align' => 'center', 'style' => 'primary'], 'children' => [], 'settings' => ['style' => []], 'parent_id' => null],
+                                ['id' => 'hero_h1', 'type' => 'heading', 'content' => ['text' => 'Your Digital Creativity Unleashed', 'level' => 1, 'align' => 'center'], 'settings' => ['style' => ['textColor' => 'text-primary']]],
+                                ['id' => 'hero_p', 'type' => 'paragraph', 'content' => ['text' => '<p class="text-center text-xl max-w-3xl mx-auto opacity-80">Meet Featherly — the modern CMS that gives you full control over design and content. Build stunning websites with our visual block editor.</p>'], 'settings' => ['style' => ['marginBottom' => '2rem']]],
+                                ['id' => 'hero_btns', 'type' => 'container', 'content' => ['htmlTag' => 'div', 'isBoxed' => false, 'flexConfig' => ['gap' => '4', 'wrap' => 'nowrap', 'align' => 'center', 'justify' => 'center', 'direction' => 'row'], 'layoutType' => 'flex'], 'children' => [
+                                    ['id' => 'hero_btn_1', 'type' => 'button', 'content' => ['label' => 'Start Adventure', 'url' => '/admin', 'align' => 'center', 'style' => 'primary']],
+                                    ['id' => 'hero_btn_2', 'type' => 'button', 'content' => ['label' => 'View Projects', 'url' => '/projects', 'align' => 'center', 'style' => 'outline']],
+                                ]],
                             ],
-                            'settings' => ['style' => ['paddingTop' => '10rem', 'paddingBottom' => '10rem']],
-                            'parent_id' => null,
+                            'settings' => ['style' => ['paddingTop' => '12rem', 'paddingBottom' => '8rem'], 'animations' => ['enabled' => true, 'preset' => 'fade-up', 'duration' => 1.2]],
                         ],
                         [
-                            'id' => 'text_1', 'type' => 'heading',
-                            'content' => ['level' => 2, 'text' => 'Why Us?', 'align' => 'center'],
-                            'settings' => ['style' => ['paddingTop' => '4rem', 'marginBottom' => '2rem']]
+                            'id' => 'image_section', 'type' => 'container',
+                            'content' => ['htmlTag' => 'section', 'isBoxed' => true],
+                            'children' => [
+                                ['id' => 'main_image', 'type' => 'image', 'content' => ['url' => '/storage/media/bg.jpg', 'alt' => 'Featherly Dashboard Preview', 'caption' => 'Intuitive editor interface']],
+                            ],
+                            'settings' => ['style' => ['paddingBottom' => '8rem'], 'animations' => ['enabled' => true, 'preset' => 'zoom-in', 'delay' => 0.4]],
                         ],
                         [
-                            'id' => 'text_2', 'type' => 'paragraph',
-                            'content' => ['text' => '<p class="text-center max-w-2xl mx-auto">Our passion is technology and design. We bridge these worlds to deliver top-quality products.</p>'],
-                            'settings' => ['style' => ['paddingBottom' => '6rem']]
-                        ]
+                            'id' => 'divider_1', 'type' => 'divider', 'content' => ['text' => 'LATEST REALIZATIONS'], 'settings' => ['style' => ['paddingBottom' => '4rem']]
+                        ],
+                        [
+                            'id' => 'projects_section', 'type' => 'container',
+                            'content' => ['htmlTag' => 'section', 'isBoxed' => true],
+                            'children' => [
+                                ['id' => 'projects_list_1', 'type' => 'projects_list', 'content' => ['count' => 3, 'layout' => 'grid']],
+                            ],
+                            'settings' => ['style' => ['paddingBottom' => '8rem']],
+                        ],
+                        [
+                            'id' => 'posts_section', 'type' => 'container',
+                            'content' => ['htmlTag' => 'section', 'isBoxed' => true, 'style' => ['bgColor' => 'bg-base-200/50']],
+                            'children' => [
+                                ['id' => 'posts_h2', 'type' => 'heading', 'content' => ['text' => 'News from the front', 'level' => 2, 'align' => 'left'], 'settings' => ['style' => ['marginBottom' => '3rem']]],
+                                ['id' => 'posts_list_1', 'type' => 'posts_list', 'content' => ['count' => 3, 'layout' => 'grid']],
+                            ],
+                            'settings' => ['style' => ['paddingTop' => '8rem', 'paddingBottom' => '8rem']],
+                        ],
                     ]
                 ]
             ],

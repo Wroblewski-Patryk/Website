@@ -18,11 +18,12 @@ class ProjectFactory extends Factory
      */
     public function definition(): array
     {
-        $title = fake()->sentence(3);
+        $titlePl = fake('pl_PL')->sentence(6);
+        $titleEn = fake('en_US')->catchPhrase();
         return [
-            'title' => ['pl' => $title, 'en' => $title],
-            'slug' => ['pl' => Str::slug($title), 'en' => Str::slug($title)],
-            'description' => ['pl' => fake()->paragraph(), 'en' => fake()->paragraph()],
+            'title' => ['pl' => $titlePl, 'en' => $titleEn],
+            'slug' => ['pl' => Str::slug($titlePl), 'en' => Str::slug($titleEn)],
+            'description' => ['pl' => fake('pl_PL')->paragraph(), 'en' => fake('en_US')->paragraph()],
             'content' => [],
             'status' => 'published',
             'client_id' => Client::factory(),

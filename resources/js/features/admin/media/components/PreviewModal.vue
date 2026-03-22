@@ -39,7 +39,7 @@ watch(() => props.item, (newItem) => {
                 <div class="flex-1 bg-base-200/50 flex items-center justify-center p-8 relative overflow-hidden group">
                     <div class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,#fff,rgba(255,255,255,0.6))] -z-10"></div>
                     
-                    <img v-if="isImage" :src="'/storage/' + item.path" class="max-h-[75vh] w-auto shadow-lg rounded-lg transform transition-transform duration-700 group-hover:scale-[1.02]" />
+                    <img v-if="isImage" :src="item.url" class="max-h-[75vh] w-auto shadow-lg rounded-lg transform transition-transform duration-700 group-hover:scale-[1.02]" />
                     <div v-else class="flex flex-col items-center gap-6 opacity-20">
                         <component :is="getFileIcon(item.mime)" weight="thin" class="w-64 h-64" />
                         <span class="text-3xl font-black tracking-[0.2em] uppercase">{{ item.mime }}</span>

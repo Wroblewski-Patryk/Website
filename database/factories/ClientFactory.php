@@ -17,11 +17,12 @@ class ClientFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->company();
+        $namePl = fake('pl_PL')->company();
+        $nameEn = fake('en_US')->company();
         return [
-            'title' => ['pl' => $name, 'en' => $name],
-            'slug' => ['pl' => Str::slug($name), 'en' => Str::slug($name)],
-            'description' => ['pl' => fake()->sentence(), 'en' => fake()->sentence()],
+            'title' => ['pl' => $namePl, 'en' => $nameEn],
+            'slug' => ['pl' => Str::slug($namePl), 'en' => Str::slug($nameEn)],
+            'description' => ['pl' => fake('pl_PL')->sentence(), 'en' => fake('en_US')->sentence()],
             'website_url' => fake()->url(),
             'email' => fake()->companyEmail(),
             'phone' => fake()->phoneNumber(),

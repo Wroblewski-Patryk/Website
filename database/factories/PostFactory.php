@@ -16,12 +16,19 @@ class PostFactory extends Factory
      */
     public function definition(): array
     {
-        $title = fake()->sentence();
+        $titlePl = fake('pl_PL')->sentence();
+        $titleEn = fake('en_US')->sentence();
         return [
-            'title' => ['pl' => $title, 'en' => $title],
-            'slug' => \Illuminate\Support\Str::slug($title),
-            'content' => ['pl' => fake()->paragraphs(3, true), 'en' => fake()->paragraphs(3, true)],
-            'excerpt' => ['pl' => fake()->sentence(), 'en' => fake()->sentence()],
+            'title' => ['pl' => $titlePl, 'en' => $titleEn],
+            'slug' => ['pl' => \Illuminate\Support\Str::slug($titlePl), 'en' => \Illuminate\Support\Str::slug($titleEn)],
+            'content' => [
+                'pl' => fake('pl_PL')->paragraph(10), 
+                'en' => fake('en_US')->realText(500)
+            ],
+            'excerpt' => [
+                'pl' => fake('pl_PL')->sentence(), 
+                'en' => fake('en_US')->sentence()
+            ],
             'status' => 'published',
             'published_at' => now(),
         ];

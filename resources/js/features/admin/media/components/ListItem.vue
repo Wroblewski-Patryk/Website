@@ -59,7 +59,7 @@ const formatSize = (bytes) => {
                     <PhFolder weight="fill" class="w-5 h-5" />
                 </template>
                 <template v-else>
-                    <img v-if="isImage" :src="'/storage/' + item.path" class="object-cover w-full h-full" />
+                    <img v-if="isImage" :src="item.url" class="object-cover w-full h-full" />
                     <component v-else :is="getFileIcon(item.mime)" weight="regular" class="w-5 h-5 opacity-40" />
                 </template>
             </div>

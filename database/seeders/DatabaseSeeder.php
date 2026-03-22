@@ -103,6 +103,7 @@ class DatabaseSeeder extends Seeder
  
          $this->call([
              AdminUiTranslationSeeder::class,
+             MediaSeeder::class,
              PostSeeder::class,
              ProjectSeeder::class,
              TemplateSeeder::class,
