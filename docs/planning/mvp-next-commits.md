@@ -3,12 +3,12 @@
 ## NOW (max 3)
 - [ ] SCL-027 Add query profiling and remove N+1 in public render paths
 - [ ] SCL-030 Add search strategy for JSON-translated content
-- [ ] SCL-031 Add pagination strategy for very large media collections
+- [ ] SCL-032 Introduce cursor pagination where offset scaling hurts
 
 ## NEXT
-- [ ] SCL-032 Introduce cursor pagination where offset scaling hurts
 - [ ] SCL-034 Add route-level response time budget checks
 - [ ] SCL-035 Build per-module performance smoke script
+- [ ] SCL-037 Add frontend runtime memory/perf watch for block builder
 
 ## LATER
 - [ ] SCL-039 Remove locale hardcodes and use active language source everywhere

@@ -37,7 +37,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-028 (P1, DONE) Index taxonomy-heavy paths (`module`, `type`, `order`).
 - [x] SCL-029 (P1, DONE) Index revisions by morph columns and timestamp.
 - [ ] SCL-030 (P1, IN_PROGRESS) Add search strategy for JSON-translated content.
-- [ ] SCL-031 (P1, TODO) Add pagination strategy for very large media collections.
+- [x] SCL-031 (P1, DONE) Add pagination strategy for very large media collections.
 - [ ] SCL-032 (P1, TODO) Introduce cursor pagination where offset scaling hurts.
 - [x] SCL-033 (P2, DONE) Define cache TTL matrix (what is forever vs expiring).
 - [ ] SCL-034 (P2, TODO) Add route-level response time budget checks.
