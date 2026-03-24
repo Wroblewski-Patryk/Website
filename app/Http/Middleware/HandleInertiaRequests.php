@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Page;
 use App\Support\SharedInertiaCache;
+use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use App\Models\Translation;
@@ -43,6 +45,7 @@ class HandleInertiaRequests extends Middleware
         $languages = collect();
         $allProjects = collect();
         $themeConfig = null;
+        $archivePages = collect();
 
         try {
             $settings = \Illuminate\Support\Facades\Cache::rememberForever(SharedInertiaCache::keySettings(), function () {
@@ -73,6 +76,19 @@ class HandleInertiaRequests extends Middleware
                     ->orderBy('order')
                     ->get();
             });
+
+            $archivePageIds = collect([
+                $settings['blog_page_id'] ?? null,
+                $settings['projects_page_id'] ?? null,
+            ])->filter(fn ($id) => !empty($id))->unique()->values();
+
+            if ($archivePageIds->isNotEmpty()) {
+                $archivePages = Page::query()
+                    ->select(['id', 'slug'])
+                    ->whereIn('id', $archivePageIds->all())
+                    ->get()
+                    ->keyBy('id');
+            }
             
             $themeColors = isset($settings['theme_colors']) ? (is_array($settings['theme_colors']) ? $settings['theme_colors'] : json_decode($settings['theme_colors'], true)) : [];
             $themeRadius = isset($settings['theme_radius']) ? (is_array($settings['theme_radius']) ? $settings['theme_radius'] : json_decode($settings['theme_radius'], true)) : [];
@@ -143,8 +159,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'admin_seo' => fn () => $this->getAdminSeoContext($request),
             'archive_slugs' => fn () => [
-                'blog' => ($settings['blog_page_id'] ?? null) ? \App\Models\Page::find($settings['blog_page_id'])->getTranslation('slug', app()->getLocale()) : 'blog',
-                'projects' => ($settings['projects_page_id'] ?? null) ? \App\Models\Page::find($settings['projects_page_id'])->getTranslation('slug', app()->getLocale()) : 'projects',
+                'blog' => $this->resolveArchiveSlug($archivePages, $settings['blog_page_id'] ?? null, 'blog'),
+                'projects' => $this->resolveArchiveSlug($archivePages, $settings['projects_page_id'] ?? null, 'projects'),
             ]
         ];
     }
@@ -200,5 +216,20 @@ class HandleInertiaRequests extends Middleware
         }
 
         return $context;
+    }
+
+    protected function resolveArchiveSlug(Collection $pages, mixed $pageId, string $fallback): string
+    {
+        if (empty($pageId)) {
+            return $fallback;
+        }
+
+        $page = $pages->get((int) $pageId);
+
+        if (!$page) {
+            return $fallback;
+        }
+
+        return (string) $page->getTranslation('slug', app()->getLocale());
     }
 }
