@@ -76,3 +76,4 @@
 - 2026-03-24: Completed SCL-028 (added composite taxonomy index for module/type/order/id listing paths).
 - 2026-03-24: Completed SCL-029 (added composite revisions index for revisionable lookup + chronological access).
 - 2026-03-24: Completed SCL-033 (documented shared cache TTL policy matrix and invalidation ownership in planning docs).
+- 2026-03-24: SCL-030 in progress (documented DB-aware JSON translated search strategy and staged rollout plan before code-path adoption).
