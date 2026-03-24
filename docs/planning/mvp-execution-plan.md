@@ -27,7 +27,7 @@
 ## Workstream: Phase 2 - Performance and Throughput
 - [x] SCL-026 Reduce heavy global Inertia shared payloads
 - [ ] SCL-027 Add query profiling and remove N+1 in public render paths
-- [ ] SCL-036 Refine Vite chunk strategy to reduce oversized bundles
+- [x] SCL-036 Refine Vite chunk strategy to reduce oversized bundles
 
 ## Workstream: Phase 3 - i18n and SEO Hardening
 - [ ] SCL-039 Remove locale hardcodes and use active language source everywhere
@@ -50,3 +50,4 @@
 - 2026-03-24: Completed SCL-008 (release candidate checklist and ops runbook rollback hardening).
 - 2026-03-24: Completed SCL-009 (task-linked commit and PR naming standard).
 - 2026-03-24: Completed SCL-011 (migrated admin page/post/project store/update validation to dedicated FormRequest classes).
+- 2026-03-24: Completed SCL-036 (refined Vite vendor chunking; reduced largest non-icon vendor chunk footprint).

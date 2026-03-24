@@ -3,12 +3,12 @@
 ## NOW (max 3)
 - [ ] SCL-013 Add optimistic locking strategy for concurrent edits
 - [ ] SCL-027 Add query profiling and remove N+1 in public render paths
-- [ ] SCL-036 Refine Vite chunk strategy to reduce oversized bundles
+- [ ] SCL-014 Standardize API response envelopes for admin endpoints
 
 ## NEXT
-- [ ] SCL-014 Standardize API response envelopes for admin endpoints
 - [ ] SCL-015 Add policy-based authorization for core content models
 - [ ] SCL-016 Add audit logging for RBAC and settings changes
+- [ ] SCL-023 Normalize cache invalidation for shared Inertia data
 
 ## LATER
 - [ ] SCL-039 Remove locale hardcodes and use active language source everywhere
