@@ -25,7 +25,7 @@
                         class="btn btn-xs join-item h-7 px-2.5 gap-2 border-none"
                         :class="store.editingLocale === lang.code ? 'btn-primary shadow-sm' : 'btn-ghost opacity-60 hover:opacity-100'"
                     >
-                        <span :class="`fi fi-${lang.code === 'en' ? 'gb' : lang.code} rounded-sm w-3 h-2`"></span>
+                        <span class="inline-flex w-3.5 justify-center text-[10px] leading-none">{{ getLanguageFlagEmoji(lang.code) }}</span>
                         <span class="text-[9px] font-black tracking-widest uppercase">{{ lang.code }}</span>
                     </button>
                 </div>
@@ -426,6 +426,24 @@ const cloneBlock = (block) => {
     return store.createBlockObject(block.type);
 };
 
+const getLanguageFlagEmoji = (localeCode) => {
+    const countryOverrides = {
+        en: 'GB',
+    };
+
+    const normalized = String(localeCode || '').trim().toLowerCase();
+    const countryCode = (countryOverrides[normalized] || normalized).slice(0, 2).toUpperCase();
+
+    if (!/^[A-Z]{2}$/.test(countryCode)) {
+        return '🏳️';
+    }
+
+    return String.fromCodePoint(
+        0x1f1e6 + countryCode.charCodeAt(0) - 65,
+        0x1f1e6 + countryCode.charCodeAt(1) - 65
+    );
+};
+
 // --- AUTO-FIT ZOOM LOGIC ---
 const scrollerRef = ref(null);
 
@@ -574,4 +592,3 @@ onUnmounted(() => {
     opacity: 0 !important; /* Visually empty out the ghost block to make it a clear target */
 }
 </style>
-
