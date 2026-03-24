@@ -21,7 +21,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [ ] SCL-014 (P1, IN_PROGRESS) Standardize API response envelopes for admin endpoints.
 - [x] SCL-015 (P1, DONE) Add policy-based authorization for core content models.
 - [x] SCL-016 (P1, DONE) Add audit logging for RBAC and settings changes.
-- [ ] SCL-017 (P1, TODO) Remove legacy dual-source role ambiguity (`users.role` vs Spatie).
+- [x] SCL-017 (P1, DONE) Remove legacy dual-source role ambiguity (`users.role` vs Spatie).
 - [x] SCL-018 (P1, DONE) Add status value constraints at DB level.
 - [x] SCL-019 (P1, DONE) Enforce single default language invariant in DB.
 - [ ] SCL-020 (P2, TODO) Add idempotency handling for duplicate-prone submissions.

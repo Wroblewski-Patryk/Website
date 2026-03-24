@@ -3,12 +3,12 @@
 ## NOW (max 3)
 - [ ] SCL-027 Add query profiling and remove N+1 in public render paths
 - [ ] SCL-014 Standardize API response envelopes for admin endpoints
-- [ ] SCL-017 Remove legacy dual-source role ambiguity (`users.role` vs Spatie)
+- [ ] SCL-021 Harden media upload validation (MIME sniff + file checks)
 
 ## NEXT
-- [ ] SCL-021 Harden media upload validation (MIME sniff + file checks)
 - [ ] SCL-061 Add request correlation IDs in logs
 - [ ] SCL-028 Index taxonomy-heavy paths (`module`, `type`, `order`)
+- [ ] SCL-029 Index revisions by morph columns and timestamp
 
 ## LATER
 - [ ] SCL-039 Remove locale hardcodes and use active language source everywhere
