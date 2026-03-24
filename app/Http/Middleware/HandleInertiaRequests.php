@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\SharedInertiaCache;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use App\Models\Translation;
@@ -44,29 +45,29 @@ class HandleInertiaRequests extends Middleware
         $themeConfig = null;
 
         try {
-            $settings = \Illuminate\Support\Facades\Cache::rememberForever('global_settings', function () {
+            $settings = \Illuminate\Support\Facades\Cache::rememberForever(SharedInertiaCache::keySettings(), function () {
                 return \App\Models\Setting::pluck('value', 'key')->toArray();
             });
 
             $headerId = $settings['default_header_id'] ?? null;
             $footerId = $settings['default_footer_id'] ?? null;
 
-            $header = \Illuminate\Support\Facades\Cache::rememberForever('global_header_' . ($headerId ?: 'default'), function () use ($headerId) {
+            $header = \Illuminate\Support\Facades\Cache::rememberForever(SharedInertiaCache::keyHeader($headerId ?: 'default'), function () use ($headerId) {
                 return $headerId
                     ? \App\Models\Template::find($headerId)
                     : \App\Models\Template::where('type', 'header')->where('is_active', true)->first();
             });
 
-            $footer = \Illuminate\Support\Facades\Cache::rememberForever('global_footer_' . ($footerId ?: 'default'), function () use ($footerId) {
+            $footer = \Illuminate\Support\Facades\Cache::rememberForever(SharedInertiaCache::keyFooter($footerId ?: 'default'), function () use ($footerId) {
                 return $footerId
                     ? \App\Models\Template::find($footerId)
                     : \App\Models\Template::where('type', 'footer')->where('is_active', true)->first();
             });
 
-            $languages = \Illuminate\Support\Facades\Cache::rememberForever('active_languages', function () {
+            $languages = \Illuminate\Support\Facades\Cache::rememberForever(SharedInertiaCache::keyLanguages(), function () {
                 return \App\Models\Language::where('is_active', true)->orderBy('is_default', 'desc')->get();
             });
-            $allProjects = \Illuminate\Support\Facades\Cache::rememberForever('all_projects', function () {
+            $allProjects = \Illuminate\Support\Facades\Cache::rememberForever(SharedInertiaCache::keyProjects(), function () {
                 return \App\Models\Project::query()
                     ->select(['id', 'title', 'slug', 'category', 'desktop_image', 'mobile_image', 'order'])
                     ->orderBy('order')
@@ -126,7 +127,7 @@ class HandleInertiaRequests extends Middleware
             'all_projects' => fn () => $allProjects,
             'theme_config' => fn () => $themeConfig,
             'menus' => fn () => [], // Safe historical fallback
-            'translations' => fn () => \Illuminate\Support\Facades\Cache::remember('translations.' . app()->getLocale(), 3600, function () {
+            'translations' => fn () => \Illuminate\Support\Facades\Cache::remember(SharedInertiaCache::keyTranslations(app()->getLocale()), 3600, function () {
                 return Translation::query()->select(['key', 'text'])->get()->reduce(function ($carry, $translation) {
                     $locale = app()->getLocale();
                     $fallback = config('app.fallback_locale', 'en');
