@@ -88,3 +88,5 @@
 - 2026-03-24: Completed SCL-034 (added opt-in route response budget checks middleware with latency header + warning logs and feature tests).
 - 2026-03-24: Completed SCL-035 (added `perf:smoke` command with configurable path set, latency threshold, and regression test coverage).
 - 2026-03-24: SCL-039 in progress (replaced multiple hardcoded locale fallbacks with active/default language resolution in public controllers and taxonomy validation locale source).
+- 2026-03-24: SCL-039 in progress (replaced frontend locale hardcodes in shared layout/composables/public page + block builder and added shared `default_locale` Inertia prop).
+- 2026-03-24: SCL-039 in progress (continued locale hardcode cleanup across admin clients/forms/templates and template reference settings using dynamic default/active locale resolution).
