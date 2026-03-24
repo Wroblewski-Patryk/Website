@@ -8,7 +8,7 @@
 ## NEXT
 - [ ] SCL-015 Add policy-based authorization for core content models
 - [ ] SCL-016 Add audit logging for RBAC and settings changes
-- [ ] SCL-023 Normalize cache invalidation for shared Inertia data
+- [ ] SCL-018 Add status value constraints at DB level
 
 ## LATER
 - [ ] SCL-039 Remove locale hardcodes and use active language source everywhere

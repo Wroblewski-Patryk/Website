@@ -51,3 +51,4 @@
 - 2026-03-24: Completed SCL-009 (task-linked commit and PR naming standard).
 - 2026-03-24: Completed SCL-011 (migrated admin page/post/project store/update validation to dedicated FormRequest classes).
 - 2026-03-24: Completed SCL-036 (refined Vite vendor chunking; reduced largest non-icon vendor chunk footprint).
+- 2026-03-24: Completed SCL-023 (centralized cache invalidation helper for shared Inertia datasets).

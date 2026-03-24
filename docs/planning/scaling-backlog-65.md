@@ -27,7 +27,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [ ] SCL-020 (P2, TODO) Add idempotency handling for duplicate-prone submissions.
 - [ ] SCL-021 (P1, TODO) Harden media upload validation (MIME sniff + file checks).
 - [ ] SCL-022 (P2, TODO) Evaluate private media storage with signed access paths.
-- [ ] SCL-023 (P1, TODO) Normalize cache invalidation for shared Inertia data.
+- [x] SCL-023 (P1, DONE) Normalize cache invalidation for shared Inertia data.
 - [ ] SCL-024 (P2, TODO) Add cache key versioning strategy for global datasets.
 - [ ] SCL-025 (P2, TODO) Introduce domain services for repetitive controller workflows.
 
