@@ -47,3 +47,4 @@
 - 2026-03-24: Completed SCL-026 (trimmed global Inertia payload for projects and translation query shape).
 - 2026-03-24: Completed SCL-006 (bundle-size report generation and CI artifact upload in frontend build job).
 - 2026-03-24: Completed SCL-007 (regression-safe PR checklist template and engineering checklist document).
+- 2026-03-24: Completed SCL-008 (release candidate checklist and ops runbook rollback hardening).

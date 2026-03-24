@@ -3,12 +3,12 @@
 ## NOW (max 3)
 - [ ] SCL-011 Migrate CRUD validation to dedicated FormRequest classes
 - [ ] SCL-013 Add optimistic locking strategy for concurrent edits
-- [ ] SCL-008 Introduce release checklist with rollback section
+- [ ] SCL-009 Define commit/task naming standard with IDs
 
 ## NEXT
 - [ ] SCL-027 Add query profiling and remove N+1 in public render paths
 - [ ] SCL-036 Refine Vite chunk strategy to reduce oversized bundles
-- [ ] SCL-009 Define commit/task naming standard with IDs
+- [ ] SCL-014 Standardize API response envelopes for admin endpoints
 
 ## LATER
 - [ ] SCL-039 Remove locale hardcodes and use active language source everywhere
