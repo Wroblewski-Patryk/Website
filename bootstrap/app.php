@@ -31,7 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(prepend: [
-            // Removed to avoid double execution (assigned in routes/bootstrap then)
+            \App\Http\Middleware\RequestCorrelationIdMiddleware::class,
         ], append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
