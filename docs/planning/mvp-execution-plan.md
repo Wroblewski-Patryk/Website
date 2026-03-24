@@ -20,7 +20,7 @@
 
 ## Workstream: Phase 1 - Core Stability
 - [ ] SCL-011 Migrate CRUD validation to dedicated FormRequest classes
-- [ ] SCL-012 Add DB transactions for multi-step content writes
+- [x] SCL-012 Add DB transactions for multi-step content writes
 - [ ] SCL-013 Add optimistic locking strategy for concurrent edits
 - [ ] SCL-015 Add policy-based authorization for core content models
 
@@ -43,3 +43,4 @@
 - 2026-03-24: Introduced scaling execution documentation and 65-item backlog.
 - 2026-03-24: Completed SCL-001/SCL-003/SCL-004 (PHPStan baseline, split CI jobs, security audit gates).
 - 2026-03-24: Completed SCL-002/SCL-005 (frontend lint+format CI gate, migration smoke job with sqlite seeding).
+- 2026-03-24: Completed SCL-012 (transaction boundaries for create/update flows in page/post/project admin controllers).

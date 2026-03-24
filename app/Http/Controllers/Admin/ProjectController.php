@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Project;
 use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ProjectController extends BaseAdminContentController
@@ -52,8 +53,12 @@ class ProjectController extends BaseAdminContentController
 
         $this->applyStatusLogic(null, $validated);
 
-        $project = Project::create(\Illuminate\Support\Arr::except($validated, ['taxonomies']));
-        $this->syncTaxonomies($project, $request);
+        $project = DB::transaction(function () use ($validated, $request) {
+            $project = Project::create(\Illuminate\Support\Arr::except($validated, ['taxonomies']));
+            $this->syncTaxonomies($project, $request);
+
+            return $project;
+        });
 
         return redirect()->route('admin.projects.edit', $project->id)->with('success', 'admin.projects.create_success');
     }
@@ -80,10 +85,11 @@ class ProjectController extends BaseAdminContentController
 
         $this->applyStatusLogic($project, $validated);
 
-        $this->saveRevision($project);
-
-        $project->update(\Illuminate\Support\Arr::except($validated, ['taxonomies']));
-        $this->syncTaxonomies($project, $request);
+        DB::transaction(function () use ($project, $validated, $request) {
+            $this->saveRevision($project);
+            $project->update(\Illuminate\Support\Arr::except($validated, ['taxonomies']));
+            $this->syncTaxonomies($project, $request);
+        });
 
         return redirect()->back()->with('success', 'admin.projects.update_success');
     }

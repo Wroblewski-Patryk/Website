@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Post;
 use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class PostController extends BaseAdminContentController
@@ -49,8 +50,12 @@ class PostController extends BaseAdminContentController
 
         $this->applyStatusLogic(null, $validated);
 
-        $post = Post::create($validated);
-        $this->syncTaxonomies($post, $request);
+        $post = DB::transaction(function () use ($validated, $request) {
+            $post = Post::create($validated);
+            $this->syncTaxonomies($post, $request);
+
+            return $post;
+        });
 
         return redirect()->route('admin.posts.edit', $post->id)->with('success', 'posts.create_success');
     }
@@ -73,10 +78,11 @@ class PostController extends BaseAdminContentController
 
         $this->applyStatusLogic($post, $validated);
 
-        $this->saveRevision($post);
-
-        $post->update($validated);
-        $this->syncTaxonomies($post, $request);
+        DB::transaction(function () use ($post, $validated, $request) {
+            $this->saveRevision($post);
+            $post->update($validated);
+            $this->syncTaxonomies($post, $request);
+        });
 
         return redirect()->back()->with('success', 'posts.update_success');
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Page;
 use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class PageController extends BaseAdminContentController
@@ -44,8 +45,12 @@ class PageController extends BaseAdminContentController
 
         $this->applyStatusLogic(null, $validated);
 
-        $page = Page::create($validated);
-        $this->syncTaxonomies($page, $request);
+        $page = DB::transaction(function () use ($validated, $request) {
+            $page = Page::create($validated);
+            $this->syncTaxonomies($page, $request);
+
+            return $page;
+        });
 
         return redirect()->route('admin.pages.edit', $page->id)->with('success', 'pages.create_success');
     }
@@ -68,10 +73,11 @@ class PageController extends BaseAdminContentController
 
         $this->applyStatusLogic($page, $validated);
 
-        $this->saveRevision($page);
-
-        $page->update($validated);
-        $this->syncTaxonomies($page, $request);
+        DB::transaction(function () use ($page, $validated, $request) {
+            $this->saveRevision($page);
+            $page->update($validated);
+            $this->syncTaxonomies($page, $request);
+        });
 
         return redirect()->back()->with('success', 'pages.update_success');
     }

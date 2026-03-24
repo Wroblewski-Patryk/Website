@@ -2,8 +2,8 @@
 
 ## NOW (max 3)
 - [ ] SCL-011 Migrate CRUD validation to dedicated FormRequest classes
-- [ ] SCL-012 Add DB transactions for multi-step content writes
 - [ ] SCL-026 Reduce heavy global Inertia shared payloads
+- [ ] SCL-013 Add optimistic locking strategy for concurrent edits
 
 ## NEXT
 - [ ] SCL-006 Add bundle-size report artifact in CI
