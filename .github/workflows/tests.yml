@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  tests:
+  php-tests:
     runs-on: ubuntu-latest
 
     strategy:
@@ -20,7 +20,7 @@ jobs:
       matrix:
         php: [8.2, 8.3, 8.4]
 
-    name: PHP ${{ matrix.php }}
+    name: PHP Tests (${{ matrix.php }})
 
     steps:
       - name: Checkout code
@@ -45,6 +45,35 @@ jobs:
       - name: Execute tests
         run: php artisan test
 
+  php-static-analysis:
+    runs-on: ubuntu-latest
+    name: PHP Static Analysis (PHPStan)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Run static analysis
+        run: composer analyse
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    name: Frontend Build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -55,6 +84,35 @@ jobs:
 
       - name: Build frontend assets
         run: npm run build
+
+  security-audit:
+    runs-on: ubuntu-latest
+    name: Security Audit
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Run Composer Audit
+        run: composer audit
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install NPM dependencies
+        run: npm ci
 
       - name: Run NPM Audit
         run: npm audit --omit=dev
