@@ -41,6 +41,7 @@
 - [x] SCL-032 Introduce cursor pagination where offset scaling hurts
 - [x] SCL-033 Define cache TTL matrix (what is forever vs expiring)
 - [x] SCL-034 Add route-level response time budget checks
+- [x] SCL-035 Build per-module performance smoke script
 - [x] SCL-036 Refine Vite chunk strategy to reduce oversized bundles
 
 ## Workstream: Phase 3 - i18n and SEO Hardening
@@ -84,3 +85,4 @@
 - 2026-03-24: Completed SCL-031 (added bounded media listing pagination controls with validated `per_page` cap and regression tests for JSON listing contract).
 - 2026-03-24: Completed SCL-032 (added opt-in cursor pagination mode for media JSON listing with deterministic ordering and regression coverage).
 - 2026-03-24: Completed SCL-034 (added opt-in route response budget checks middleware with latency header + warning logs and feature tests).
+- 2026-03-24: Completed SCL-035 (added `perf:smoke` command with configurable path set, latency threshold, and regression test coverage).

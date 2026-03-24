@@ -41,7 +41,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-032 (P1, DONE) Introduce cursor pagination where offset scaling hurts.
 - [x] SCL-033 (P2, DONE) Define cache TTL matrix (what is forever vs expiring).
 - [x] SCL-034 (P2, DONE) Add route-level response time budget checks.
-- [ ] SCL-035 (P2, TODO) Build per-module performance smoke script.
+- [x] SCL-035 (P2, DONE) Build per-module performance smoke script.
 - [x] SCL-036 (P1, DONE) Refine Vite chunk strategy to reduce oversized bundles.
 - [ ] SCL-037 (P2, TODO) Add frontend runtime memory/perf watch for block builder.
 - [ ] SCL-038 (P2, TODO) Add virtualized rendering for large admin lists/tables.
