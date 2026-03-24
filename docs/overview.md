@@ -27,4 +27,6 @@ Enable fast content delivery by non-technical editors while preserving strong ar
 - Product: `docs/product/product.md`
 - Architecture: `docs/architecture/system-architecture.md`
 - Planning: `docs/planning/mvp-execution-plan.md`
+- Scaling roadmap: `docs/planning/scaling-roadmap.md`
+- Scaling backlog (65): `docs/planning/scaling-backlog-65.md`
 - Ops: `docs/operations/mvp-ops-runbook.md`

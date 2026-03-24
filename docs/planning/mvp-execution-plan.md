@@ -1,23 +1,43 @@
-﻿# MVP Execution Plan
+# MVP Execution Plan
 
 ## Rules
 - Keep tasks tiny and reversible.
 - Sequence by dependencies.
 - Record progress log after each completed task.
+- Validate each task with tests/build/smoke checks.
 
-## Workstream: Runtime Completion
-- [ ] FEA-001 Finalize public dynamic routes for page/post/project in `routes/public.php`
-- [ ] FEA-002 Add route-level smoke tests for localized public runtime
-- [ ] FEA-003 Verify and document slug resolution strategy for localized entities
+## Active Program
+- Primary roadmap: `docs/planning/scaling-roadmap.md`
+- Primary backlog: `docs/planning/scaling-backlog-65.md`
+- Active short queue: `docs/planning/mvp-next-commits.md`
 
-## Workstream: Content and Domain Consistency
-- [ ] FEA-010 Validate category/taxonomy implementation and remove stale route assumptions
-- [ ] FEA-011 Audit module contracts for pages/posts/projects/forms/templates
-- [ ] FEA-012 Normalize remaining documentation in root `docs/*.md` into structured sections
+## Workstream: Phase 0 - Guardrails and Delivery Safety
+- [ ] SCL-001 Add PHP static analysis baseline (PHPStan/Psalm) and CI gate
+- [ ] SCL-002 Add frontend lint/format validation in CI
+- [ ] SCL-003 Split CI into isolated jobs (tests/build/lint/audit/migrations)
+- [ ] SCL-004 Add `composer audit` CI gate
+- [ ] SCL-005 Add migration smoke workflow (`migrate:fresh --seed`)
 
-## Workstream: Quality and Release Readiness
-- [ ] FEA-020 Run translation integrity and core feature smoke suite
-- [ ] FEA-021 Prepare release candidate checklist evidence for current MVP baseline
+## Workstream: Phase 1 - Core Stability
+- [ ] SCL-011 Migrate CRUD validation to dedicated FormRequest classes
+- [ ] SCL-012 Add DB transactions for multi-step content writes
+- [ ] SCL-013 Add optimistic locking strategy for concurrent edits
+- [ ] SCL-015 Add policy-based authorization for core content models
+
+## Workstream: Phase 2 - Performance and Throughput
+- [ ] SCL-026 Reduce heavy global Inertia shared payloads
+- [ ] SCL-027 Add query profiling and remove N+1 in public render paths
+- [ ] SCL-036 Refine Vite chunk strategy to reduce oversized bundles
+
+## Workstream: Phase 3 - i18n and SEO Hardening
+- [ ] SCL-039 Remove locale hardcodes and use active language source everywhere
+- [ ] SCL-042 Improve canonical URL validation/normalization
+- [ ] SCL-046 Add route-level locale edge-case tests
+
+## Workstream: Phase 4 - Product Scalability Features
+- [ ] SCL-049 Add revision diff view (content comparison)
+- [ ] SCL-051 Add publication calendar view for planned content
+- [ ] SCL-055 Prepare read-only headless API contract for public content
 
 ## Progress Log
-- 2026-03-24: Migrated docs and agent structure to template-aligned layout with Featherly-specific content.
+- 2026-03-24: Introduced scaling execution documentation and 65-item backlog.
