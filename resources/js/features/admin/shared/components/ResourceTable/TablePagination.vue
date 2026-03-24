@@ -1,6 +1,7 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
 import { useTranslations } from '@/Composables/useTranslations';
+import { sanitizeHtml } from '@/Utils/sanitizeHtml';
 
 const { t } = useTranslations();
 
@@ -29,6 +30,8 @@ const cleanPaginationLabel = (label) => {
     
     return cleaned;
 };
+
+const safeHtml = (value) => sanitizeHtml(cleanPaginationLabel(value));
 </script>
 
 <template>
@@ -48,7 +51,7 @@ const cleanPaginationLabel = (label) => {
                 :preserve-state="true"
                 :preserve-scroll="true"
                 :data="filters"
-                v-html="cleanPaginationLabel(link.label)" 
+                v-html="safeHtml(link.label)" 
             />
         </div>
     </div>

@@ -5,6 +5,7 @@ import SeoHead from '@/Components/SeoHead.vue';
 import DynamicBlock from '@/features/admin/block-builder/components/DynamicBlock.vue';
 import { useTranslations } from '@/Composables/useTranslations';
 import { useFormatter } from '@/Composables/useFormatter';
+import { sanitizeHtml } from '@/Utils/sanitizeHtml';
 
 const props = defineProps({
     posts: Object,
@@ -17,6 +18,7 @@ const props = defineProps({
 
 const { t } = useTranslations();
 const { formatDate } = useFormatter();
+const safeHtml = (value) => sanitizeHtml(String(value ?? ''));
 </script>
 
 <template>
@@ -66,9 +68,9 @@ const { formatDate } = useFormatter();
                         :href="link.url" 
                         class="px-5 py-3 border font-bold text-sm tracking-widest transition"
                         :class="link.active ? 'bg-white text-black border-white' : 'border-white/20 text-white/50 hover:border-white hover:text-white'"
-                        v-html="link.label"
+                        v-html="safeHtml(link.label)"
                     />
-                    <span v-else class="px-5 py-3 border border-white/5 text-white/20 font-bold text-sm" v-html="link.label"></span>
+                    <span v-else class="px-5 py-3 border border-white/5 text-white/20 font-bold text-sm" v-html="safeHtml(link.label)"></span>
                 </template>
             </div>
         </div>

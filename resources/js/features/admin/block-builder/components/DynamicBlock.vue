@@ -10,6 +10,7 @@ import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBl
 import { useTranslations } from '@/Composables/useTranslations';
 import placeholderImg from '@/../images/placeholder.png';
 import { useToastStore } from '@/Stores/useToastStore';
+import { sanitizeHtml } from '@/Utils/sanitizeHtml';
 import moment from 'moment';
 
 const props = defineProps(['block']);
@@ -466,6 +467,8 @@ const openModal = (id) => {
     }
 };
 
+const safeHtml = (value) => sanitizeHtml(String(value ?? ''));
+
 
 </script>
 
@@ -556,7 +559,7 @@ const openModal = (id) => {
              class="leading-relaxed" 
              :class="[{'opacity-80': !isEditor}, block.settings?.style?.textColor]" 
              :style="textStyleObj" 
-             v-html="resolvedContent?.text || t(resolvedContent?.text)"></div>
+             v-html="safeHtml(resolvedContent?.text || t(resolvedContent?.text))"></div>
         
         <div v-else-if="block.type === 'heading'">
             <component :is="'h' + (resolvedContent?.level || 2)" 
@@ -567,7 +570,7 @@ const openModal = (id) => {
                            resolvedContent?.align === 'center' ? 'text-center' : '',
                            block.settings?.style?.textColor
                        ]"
-                       v-html="resolvedContent?.text || t(resolvedContent?.text) || 'Heading'">
+                       v-html="safeHtml(resolvedContent?.text || t(resolvedContent?.text) || 'Heading')">
             </component>
         </div>
 
@@ -594,7 +597,7 @@ const openModal = (id) => {
         </div>
 
         <div v-else-if="block.type === 'custom_code'" class="w-full">
-            <div v-html="resolvedContent.html"></div>
+            <div v-html="safeHtml(resolvedContent.html)"></div>
         </div>
 
         <!-- 2. Actions -->
