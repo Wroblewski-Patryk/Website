@@ -139,6 +139,8 @@ class HandleInertiaRequests extends Middleware
             'header' => fn () => $header ? $header->content : null,
             'footer' => fn () => $footer ? $footer->content : null,
             'locale' => fn () => app()->getLocale(),
+            'default_locale' => fn () => $languages->firstWhere('is_default', true)->code
+                ?? config('app.fallback_locale', 'en'),
             'languages' => fn () => $languages,
             'all_projects' => fn () => $allProjects,
             'theme_config' => fn () => $themeConfig,

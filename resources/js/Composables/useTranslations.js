@@ -3,6 +3,16 @@ import { usePage } from '@inertiajs/vue3';
 
 export function useTranslations() {
     const page = usePage();
+    const resolveLocale = (forceLocale = null) => {
+        return (
+            forceLocale
+            || page.props.locale
+            || page.props.default_locale
+            || page.props.languages?.find?.(lang => lang?.is_default)?.code
+            || page.props.languages?.[0]?.code
+            || 'en'
+        );
+    };
 
     /**
      * Translates a given object based on current locale.
@@ -53,7 +63,7 @@ export function useTranslations() {
                 result = fallback || obj;
             }
         } else {
-            const locale = forceLocale || page.props.locale || 'pl';
+            const locale = resolveLocale(forceLocale);
 
             // Try the exact locale
             if (obj[locale]) {

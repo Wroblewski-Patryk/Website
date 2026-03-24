@@ -1,6 +1,6 @@
 <script setup>
 import { ref, markRaw, onMounted, computed, watch } from 'vue';
-import { Head, useForm, router } from '@inertiajs/vue3';
+import { Head, useForm, router, usePage } from '@inertiajs/vue3';
 import { PhPencilSimple, PhPlusCircle, PhTag, PhPlus, PhTrash, PhHouse, PhTextT, PhFileText, PhHash } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ResourceTable from '@/features/admin/shared/components/ResourceTable.vue';
@@ -17,19 +17,33 @@ const props = defineProps({
 const tableRef = ref(null);
 const isCreating = ref(false);
 const editingTaxonomy = ref(null);
-const currentLocale = ref(document.documentElement.lang || 'pl');
-const locales = ['pl', 'en'];
+const page = usePage();
+const locales = computed(() => {
+    const codes = Array.isArray(page.props.languages)
+        ? page.props.languages.map(lang => lang.code).filter(Boolean)
+        : [];
+    return codes.length ? codes : ['en'];
+});
+const defaultLocale = computed(() => {
+    return page.props.default_locale
+        || page.props.locale
+        || locales.value[0]
+        || 'en';
+});
+const currentLocale = ref(document.documentElement.lang || defaultLocale.value);
 
 function initForm() {
+    const translations = Object.fromEntries(locales.value.map(lang => [lang, '']));
+
     return {
         type: props.currentType || 'category',
         module: props.currentModule || 'posts',
         order: 0,
         color: '#3b82f6',
         icon: '',
-        title: { pl: '', en: '' },
-        slug: { pl: '', en: '' },
-        description: { pl: '', en: '' }
+        title: { ...translations },
+        slug: { ...translations },
+        description: { ...translations }
     };
 }
 
@@ -224,12 +238,12 @@ watch(() => form.title[currentLocale.value], (newVal) => {
             <template #cell-title="{ item }">
                 <div class="flex items-center gap-3">
                     <div v-if="item.color" class="w-3 h-3 rounded-full shadow-sm" :style="{ backgroundColor: item.color }"></div>
-                    <span class="font-bold">{{ item.title[currentLocale] || item.title['pl'] }}</span>
+                    <span class="font-bold">{{ item.title[currentLocale] || item.title[defaultLocale] || Object.values(item.title || {})[0] || '' }}</span>
                 </div>
             </template>
 
             <template #cell-slug="{ item }">
-                <span class="text-xs font-mono opacity-50">{{ item.slug[currentLocale] || item.slug['pl'] }}</span>
+                <span class="text-xs font-mono opacity-50">{{ item.slug[currentLocale] || item.slug[defaultLocale] || Object.values(item.slug || {})[0] || '' }}</span>
             </template>
 
             <template #cell-actions="{ item }">

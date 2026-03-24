@@ -3,7 +3,15 @@ import { usePage } from '@inertiajs/vue3';
 
 export function useFormatter() {
     const page = usePage();
-    const locale = computed(() => page.props.locale || 'pl');
+    const locale = computed(() => {
+        return (
+            page.props.locale
+            || page.props.default_locale
+            || page.props.languages?.find?.(lang => lang?.is_default)?.code
+            || page.props.languages?.[0]?.code
+            || 'en'
+        );
+    });
 
     /**
      * Formats a date string or object based on the current locale.

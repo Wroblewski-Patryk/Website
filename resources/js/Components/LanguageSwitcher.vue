@@ -23,7 +23,15 @@ import { computed } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 
 const page = usePage();
-const activeLocale = computed(() => page.props.locale || 'pl');
+const activeLocale = computed(() => {
+    return (
+        page.props.locale
+        || page.props.default_locale
+        || page.props.languages?.find?.(lang => lang?.is_default)?.code
+        || page.props.languages?.[0]?.code
+        || 'en'
+    );
+});
 
 const switchLocale = (lang) => {
     router.get(route('locale.switch', lang), {}, { preserveScroll: true });

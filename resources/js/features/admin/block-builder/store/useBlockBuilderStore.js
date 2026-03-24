@@ -153,7 +153,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
             if (initialContent && !Array.isArray(initialContent) && typeof initialContent === 'object') {
                 // Migration logic: merge { pl: [], en: [] } into a single structure
                 const locales = Object.keys(initialContent);
-                const firstLocale = locales[0] || 'pl';
+                const firstLocale = locales[0] || 'en';
                 const baseBlocks = JSON.parse(JSON.stringify(initialContent[firstLocale] || []));
 
                 // Helper to merge content from other locales

@@ -22,8 +22,13 @@ const blocks = computed(() => {
     if (!props.page?.content) return [];
     // Handle old format: { pl: [], en: [] }
     if (!Array.isArray(props.page.content) && typeof props.page.content === 'object') {
-        const locale = usePage().props.locale || 'pl';
-        return props.page.content[locale] || props.page.content['pl'] || props.page.content['en'] || Object.values(props.page.content)[0] || [];
+        const page = usePage();
+        const locale = page.props.locale
+            || page.props.default_locale
+            || page.props.languages?.find?.(lang => lang?.is_default)?.code
+            || page.props.languages?.[0]?.code
+            || 'en';
+        return props.page.content[locale] || Object.values(props.page.content)[0] || [];
     }
     return Array.isArray(props.page.content) ? props.page.content : [];
 });

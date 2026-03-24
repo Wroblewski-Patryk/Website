@@ -284,6 +284,12 @@ const store = useBlockBuilderStore();
 const page = usePage();
 const { t } = useTranslations();
 const viewport = ref('desktop');
+const fallbackLocale = computed(() => {
+    return page.props.default_locale
+        || page.props.languages?.find?.(lang => lang?.is_default)?.code
+        || page.props.languages?.[0]?.code
+        || 'en';
+});
 
 const paletteCategories = computed(() => {
     const baseCategories = Array.isArray(props.categories) && props.categories.length
@@ -326,14 +332,14 @@ const paletteCategories = computed(() => {
 
 const docTitle = computed({
     get: () => {
-        const locale = store.editingLocale || page.props.locale || 'pl';
+        const locale = store.editingLocale || page.props.locale || fallbackLocale.value;
         if (props.title && typeof props.title === 'object') {
             return props.title[locale] || props.title[Object.keys(props.title)[0]] || '';
         }
         return props.title;
     },
     set: (val) => {
-        const locale = store.editingLocale || page.props.locale || 'pl';
+        const locale = store.editingLocale || page.props.locale || fallbackLocale.value;
         const newTitle = (props.title && typeof props.title === 'object' && !Array.isArray(props.title)) ? { ...props.title } : {};
         newTitle[locale] = val;
         emit('update:title', newTitle);

@@ -23,6 +23,12 @@ import { usePage } from '@inertiajs/vue3';
 const { t } = useTranslations();
 const store = useBlockBuilderStore();
 const page = usePage();
+const defaultLocale = computed(() => {
+    return page.props.default_locale
+        || page.props.languages?.find?.(lang => lang?.is_default)?.code
+        || page.props.languages?.[0]?.code
+        || 'en';
+});
 
 const props = defineProps({
     activeBlock: Object,
@@ -97,12 +103,11 @@ const localizedContent = computed(() => {
                     target[key][locale] = value;
                 } else {
                     // Convert from string to object if we are in a non-default locale OR if another translation exists
-                    const defaultLocale = page.props.locale || 'pl';
                     const newVal = {};
                     
                     // If the old value was a string, we assume it's for the default locale
-                    if (typeof val === 'string' && locale !== defaultLocale) {
-                        newVal[defaultLocale] = val;
+                    if (typeof val === 'string' && locale !== defaultLocale.value) {
+                        newVal[defaultLocale.value] = val;
                     }
                     
                     newVal[locale] = value;

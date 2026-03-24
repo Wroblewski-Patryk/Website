@@ -20,14 +20,20 @@ const props = defineProps({
 });
 
 const pageProps = usePage().props;
+const fallbackLocale = computed(() => {
+  return pageProps.default_locale
+    || pageProps.languages?.find?.(lang => lang?.is_default)?.code
+    || pageProps.languages?.[0]?.code
+    || 'en';
+});
 
 // Compute winning content for each section (Page Override > Global Default)
-const activeLocale = computed(() => pageProps.locale || 'pl');
+const activeLocale = computed(() => pageProps.locale || fallbackLocale.value);
 
 const activeHeaderContent = computed(() => {
   const content = props.header?.content || pageProps.header?.content || pageProps.settings?.default_header_content;
   if (content && typeof content === 'object' && !Array.isArray(content)) {
-    return content[activeLocale.value] || content['pl'] || [];
+    return content[activeLocale.value] || content[fallbackLocale.value] || Object.values(content)[0] || [];
   }
   return content || [];
 });
@@ -35,7 +41,7 @@ const activeHeaderContent = computed(() => {
 const activeFooterContent = computed(() => {
   const content = props.footer?.content || pageProps.footer?.content || pageProps.settings?.default_footer_content;
   if (content && typeof content === 'object' && !Array.isArray(content)) {
-    return content[activeLocale.value] || content['pl'] || [];
+    return content[activeLocale.value] || content[fallbackLocale.value] || Object.values(content)[0] || [];
   }
   return content || [];
 });
@@ -43,7 +49,7 @@ const activeFooterContent = computed(() => {
 const activeSidebarContent = computed(() => {
   const content = props.sidebar?.content || pageProps.sidebar?.content || pageProps.settings?.default_sidebar_content;
   if (content && typeof content === 'object' && !Array.isArray(content)) {
-    return content[activeLocale.value] || content['pl'] || [];
+    return content[activeLocale.value] || content[fallbackLocale.value] || Object.values(content)[0] || [];
   }
   return content || [];
 });
@@ -53,7 +59,7 @@ provide('isEditor', false);
 provide('mainContent', computed(() => {
   const content = props.page?.content;
   if (content && typeof content === 'object' && !Array.isArray(content)) {
-    return content[activeLocale.value] || content['pl'] || [];
+    return content[activeLocale.value] || content[fallbackLocale.value] || Object.values(content)[0] || [];
   }
   return content || [];
 }));
