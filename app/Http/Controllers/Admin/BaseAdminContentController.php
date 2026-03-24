@@ -47,13 +47,7 @@ abstract class BaseAdminContentController extends Controller
         $locale = app()->getLocale();
 
         $query->when($request->search, function ($q, $search) use ($locale) {
-            $q->where(function ($sq) use ($search, $locale) {
-                $sq->where("title->{$locale}", 'like', "%{$search}%");
-                
-                if ($this->useSlug) {
-                    $sq->orWhere("slug->{$locale}", 'like', "%{$search}%");
-                }
-            });
+            $this->applyLocaleJsonLikeSearch($q, (string) $search, $locale);
         });
 
         if ($request->has('sort') && $request->has('direction')) {
@@ -71,6 +65,20 @@ abstract class BaseAdminContentController extends Controller
         }
 
         return $query;
+    }
+
+    /**
+     * Apply locale-scoped translated JSON search for index listings.
+     */
+    protected function applyLocaleJsonLikeSearch($query, string $search, string $locale): void
+    {
+        $query->where(function ($sq) use ($search, $locale) {
+            $sq->where("title->{$locale}", 'like', "%{$search}%");
+
+            if ($this->useSlug) {
+                $sq->orWhere("slug->{$locale}", 'like', "%{$search}%");
+            }
+        });
     }
 
     /**
