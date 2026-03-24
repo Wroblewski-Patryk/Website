@@ -10,9 +10,29 @@ use Inertia\Inertia;
 
 use App\Models\MediaFolder;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\ValidationException;
 
 class MediaController extends Controller
 {
+    /**
+     * MIME types accepted after server-side content sniffing.
+     *
+     * @var array<int, string>
+     */
+    private array $allowedUploadMimeTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+        'image/svg+xml',
+        'application/pdf',
+        'video/mp4',
+        'application/zip',
+        'application/x-zip-compressed',
+        'multipart/x-zip',
+    ];
+
     public function index(Request $request)
     {
         $query = Media::query();
@@ -76,6 +96,7 @@ class MediaController extends Controller
 
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
+                $this->validateUploadedFile($file);
                 $path = $file->store('media', 'public');
 
                 Media::create([
@@ -89,6 +110,22 @@ class MediaController extends Controller
         }
 
         return redirect()->back()->with('success', 'media.upload_success');
+    }
+
+    private function validateUploadedFile(UploadedFile $file): void
+    {
+        if (!$file->isValid() || $file->getSize() <= 0) {
+            throw ValidationException::withMessages([
+                'files' => ['One of the uploaded files is invalid.'],
+            ]);
+        }
+
+        $detectedMimeType = (string) $file->getMimeType();
+        if (!in_array($detectedMimeType, $this->allowedUploadMimeTypes, true)) {
+            throw ValidationException::withMessages([
+                'files' => ['One of the uploaded files has an unsupported MIME type.'],
+            ]);
+        }
     }
 
     public function update(Request $request, Media $media)
