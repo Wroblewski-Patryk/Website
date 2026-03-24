@@ -53,3 +53,4 @@
 - 2026-03-24: Completed SCL-036 (refined Vite vendor chunking; reduced largest non-icon vendor chunk footprint).
 - 2026-03-24: Completed SCL-023 (centralized cache invalidation helper for shared Inertia datasets).
 - 2026-03-24: Completed SCL-013 (optimistic lock field + stale-write guard for admin page/post/project edits).
+- 2026-03-24: SCL-027 in progress (removed template-reference N+1 in `BlockContentService` via batched template preload; query profiling pass remains).
