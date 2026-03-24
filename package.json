@@ -4,9 +4,12 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "lint": "eslint resources/js --ext .js,.vue",
+        "format:check": "prettier --check \"resources/js/app.js\" \"resources/js/bootstrap.js\" \"resources/js/ziggy.js\" \"resources/css/app.css\""
     },
     "devDependencies": {
+        "@eslint/js": "^10.0.1",
         "@tailwindcss/postcss": "^4.2.1",
         "@tailwindcss/vite": "^4.0.0",
         "@vitejs/plugin-vue": "^6.0.5",
@@ -14,8 +17,12 @@
         "axios": "^1.11.0",
         "concurrently": "^9.0.1",
         "daisyui": "^5.5.19",
+        "eslint": "^10.1.0",
+        "eslint-plugin-vue": "^10.8.0",
+        "globals": "^17.4.0",
         "laravel-vite-plugin": "^2.0.0",
         "postcss": "^8.5.8",
+        "prettier": "^3.8.1",
         "tailwindcss": "^4.2.1",
         "vite": "^7.0.7"
     },

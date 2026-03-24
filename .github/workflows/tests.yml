@@ -85,6 +85,28 @@ jobs:
       - name: Build frontend assets
         run: npm run build
 
+  frontend-lint-format:
+    runs-on: ubuntu-latest
+    name: Frontend Lint and Format
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install NPM dependencies
+        run: npm ci
+
+      - name: Run frontend lint
+        run: npm run lint
+
+      - name: Run frontend format check
+        run: npm run format:check
+
   security-audit:
     runs-on: ubuntu-latest
     name: Security Audit
@@ -116,3 +138,34 @@ jobs:
 
       - name: Run NPM Audit
         run: npm audit --omit=dev
+
+  migration-smoke:
+    runs-on: ubuntu-latest
+    name: Migration Smoke
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Prepare sqlite database
+        run: |
+          cp .env.example .env
+          mkdir -p database
+          touch database/database.sqlite
+          php artisan key:generate
+
+      - name: Run migration smoke with seed
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: php artisan migrate:fresh --seed --force

@@ -1,7 +1,14 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @plugin "daisyui" {
-    themes: light --default, dark --prefersdark, emerald, corporate, retro, cyberpunk, dracula;
+    themes:
+        light --default,
+        dark --prefersdark,
+        emerald,
+        corporate,
+        retro,
+        cyberpunk,
+        dracula;
 }
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -10,8 +17,10 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans:
+        "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
 
     /* Custom Design Tokens */
     --rounded-box: 1rem;
