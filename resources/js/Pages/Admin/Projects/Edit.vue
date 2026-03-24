@@ -159,6 +159,7 @@ const form = useForm({
     slug: isObject(props.project?.slug) ? props.project.slug : getEmptyLocales(),
     description: isObject(props.project?.description) ? props.project.description : getEmptyLocales(),
     content: props.project?.content || [],
+    optimistic_lock: props.project?.updated_at || null,
     desktop_image: props.project?.desktop_image || '',
     mobile_image: props.project?.mobile_image || '',
     url: props.project?.url || '',
@@ -210,6 +211,7 @@ function submit() {
         form.put(route('admin.projects.update', props.project.id), {
             onSuccess: () => {
                 store.isDirty = false;
+                form.optimistic_lock = new Date().toISOString();
                 toast.success(t('admin.projects.update_success', 'Project updated successfully! 🎉'));
             },
             onError: (errors) => {

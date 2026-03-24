@@ -67,6 +67,7 @@ class PostController extends BaseAdminContentController
     public function update(UpdatePostRequest $request, Post $post)
     {
         $validated = $request->validated();
+        $this->assertOptimisticLock($post, $request);
 
         $this->applyStatusLogic($post, $validated);
 

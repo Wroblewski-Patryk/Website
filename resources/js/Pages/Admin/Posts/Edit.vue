@@ -230,6 +230,7 @@ const form = useForm({
     slug: isObject(props.post?.slug) ? props.post.slug : getEmptyLocales(),
     excerpt: isObject(props.post?.excerpt) ? props.post.excerpt : getEmptyLocales(),
     content: props.post?.content || [],
+    optimistic_lock: props.post?.updated_at || null,
     status: props.post?.status || 'draft',
     published_at: props.post?.published_at ? props.post.published_at.substring(0, 19).replace('T', ' ') : '',
     featured_image: isObject(props.post?.featured_image) ? props.post.featured_image : getEmptyLocales(),
@@ -282,6 +283,7 @@ const save = () => {
         form.put(route('admin.posts.update', props.post.id), {
             onSuccess: () => {
                 store.isDirty = false;
+                form.optimistic_lock = new Date().toISOString();
                 toast.success('Post został pomyślnie zaktualizowany! 🎉');
             },
             onError: (errors) => {

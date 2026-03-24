@@ -259,6 +259,7 @@ const form = useForm({
     title: isObject(props.page?.title) ? props.page.title : getEmptyLocales(),
     slug: isObject(props.page?.slug) ? props.page.slug : getEmptyLocales(),
     content: props.page?.content || [],
+    optimistic_lock: props.page?.updated_at || null,
     status: props.page?.status || 'draft',
     published_at: props.page?.published_at ? props.page.published_at.substring(0, 19).replace('T', ' ') : '',
     header_override_id: props.page?.header_override_id || null,
@@ -315,6 +316,7 @@ const save = () => {
         form.put(route('admin.pages.update', props.page.id), {
             onSuccess: () => {
                 store.isDirty = false;
+                form.optimistic_lock = new Date().toISOString();
                 toast.success('Strona została pomyślnie zaktualizowana! 🎉');
             },
             onError: (errors) => {

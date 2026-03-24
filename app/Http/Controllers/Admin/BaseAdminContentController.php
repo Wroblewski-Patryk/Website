@@ -7,7 +7,9 @@ use App\Models\Language;
 use App\Models\Taxonomy;
 use App\Models\Template;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\ValidationException;
 
 abstract class BaseAdminContentController extends Controller
 {
@@ -148,6 +150,34 @@ abstract class BaseAdminContentController extends Controller
             $model->getTable() === 'posts' ? 'post' : ($model->getTable() === 'projects' ? 'project' : ($model->getTable() === 'pages' ? 'page' : 'item')) => $modelData,
             'taxonomies' => $this->getModelTaxonomyIds($model),
         ], $this->getSharedProps());
+    }
+
+    /**
+     * Ensure the incoming write request is not based on stale data.
+     */
+    protected function assertOptimisticLock(Model $model, Request $request): void
+    {
+        $lock = $request->input('optimistic_lock');
+        if (!$lock) {
+            return;
+        }
+
+        $updatedAt = $model->getAttribute('updated_at');
+        if (!$updatedAt instanceof Carbon) {
+            return;
+        }
+
+        try {
+            $clientTimestamp = Carbon::parse($lock);
+        } catch (\Throwable) {
+            return;
+        }
+
+        if ($updatedAt->gt($clientTimestamp)) {
+            throw ValidationException::withMessages([
+                'optimistic_lock' => 'This content was updated by another user. Please refresh and retry.',
+            ]);
+        }
     }
 
     /**

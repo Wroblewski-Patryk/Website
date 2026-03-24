@@ -40,6 +40,7 @@ class UpdatePostRequest extends FormRequest
             ],
             'content' => 'required|array',
             'status' => 'nullable|string',
+            'optimistic_lock' => 'nullable|date',
             'published_at' => 'nullable|date',
             'meta_title' => 'nullable|array',
             'meta_title.*' => 'nullable|string',

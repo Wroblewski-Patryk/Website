@@ -68,6 +68,7 @@ class ProjectController extends BaseAdminContentController
     public function update(UpdateProjectRequest $request, Project $project)
     {
         $validated = $request->validated();
+        $this->assertOptimisticLock($project, $request);
 
         $this->applyStatusLogic($project, $validated);
 

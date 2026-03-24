@@ -62,6 +62,7 @@ class PageController extends BaseAdminContentController
     public function update(UpdatePageRequest $request, Page $page)
     {
         $validated = $request->validated();
+        $this->assertOptimisticLock($page, $request);
 
         $this->applyStatusLogic($page, $validated);
 
