@@ -9,4 +9,12 @@ return [
         'enabled' => (bool) env('RESPONSE_BUDGET_ENABLED', false),
         'threshold_ms' => (int) env('RESPONSE_BUDGET_THRESHOLD_MS', 800),
     ],
+    'perf_smoke' => [
+        'threshold_ms' => (int) env('PERF_SMOKE_THRESHOLD_MS', 1200),
+        'default_paths' => [
+            '/en',
+            '/en/blog',
+            '/en/projects',
+        ],
+    ],
 ];
