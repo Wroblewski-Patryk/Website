@@ -21,7 +21,7 @@
 ## Workstream: Phase 1 - Core Stability
 - [x] SCL-011 Migrate CRUD validation to dedicated FormRequest classes
 - [x] SCL-012 Add DB transactions for multi-step content writes
-- [ ] SCL-013 Add optimistic locking strategy for concurrent edits
+- [x] SCL-013 Add optimistic locking strategy for concurrent edits
 - [ ] SCL-015 Add policy-based authorization for core content models
 
 ## Workstream: Phase 2 - Performance and Throughput
@@ -52,3 +52,4 @@
 - 2026-03-24: Completed SCL-011 (migrated admin page/post/project store/update validation to dedicated FormRequest classes).
 - 2026-03-24: Completed SCL-036 (refined Vite vendor chunking; reduced largest non-icon vendor chunk footprint).
 - 2026-03-24: Completed SCL-023 (centralized cache invalidation helper for shared Inertia datasets).
+- 2026-03-24: Completed SCL-013 (optimistic lock field + stale-write guard for admin page/post/project edits).
