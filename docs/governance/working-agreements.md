@@ -10,3 +10,4 @@
 - Delegate via subagents only with explicit ownership and non-overlapping scope.
 - Keep root directory minimal; project documentation belongs in `docs/`.
 - Do not use references to files outside the current repository.
+- Use task-linked commit naming from `docs/governance/commit-task-naming-standard.md`.

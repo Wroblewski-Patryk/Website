@@ -11,7 +11,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-006 (P1, DONE) Add bundle-size report artifact in CI.
 - [x] SCL-007 (P1, DONE) Introduce PR checklist for regression-safe delivery.
 - [x] SCL-008 (P1, DONE) Introduce release checklist with rollback section.
-- [ ] SCL-009 (P1, TODO) Define commit/task naming standard with IDs.
+- [x] SCL-009 (P1, DONE) Define commit/task naming standard with IDs.
 - [ ] SCL-010 (P2, TODO) Add architecture dependency checks (layer boundaries).
 
 ## Phase 1 - Core Stability

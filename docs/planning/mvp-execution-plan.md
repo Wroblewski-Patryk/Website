@@ -48,3 +48,4 @@
 - 2026-03-24: Completed SCL-006 (bundle-size report generation and CI artifact upload in frontend build job).
 - 2026-03-24: Completed SCL-007 (regression-safe PR checklist template and engineering checklist document).
 - 2026-03-24: Completed SCL-008 (release candidate checklist and ops runbook rollback hardening).
+- 2026-03-24: Completed SCL-009 (task-linked commit and PR naming standard).
