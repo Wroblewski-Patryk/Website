@@ -45,3 +45,4 @@
 - 2026-03-24: Completed SCL-002/SCL-005 (frontend lint+format CI gate, migration smoke job with sqlite seeding).
 - 2026-03-24: Completed SCL-012 (transaction boundaries for create/update flows in page/post/project admin controllers).
 - 2026-03-24: Completed SCL-026 (trimmed global Inertia payload for projects and translation query shape).
+- 2026-03-24: Completed SCL-006 (bundle-size report generation and CI artifact upload in frontend build job).

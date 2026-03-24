@@ -85,6 +85,17 @@ jobs:
       - name: Build frontend assets
         run: npm run build
 
+      - name: Generate bundle size report
+        run: node scripts/report-bundle-size.mjs
+
+      - name: Upload bundle size artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-size-report
+          path: |
+            bundle-size-report.md
+            bundle-size-report.json
+
   frontend-lint-format:
     runs-on: ubuntu-latest
     name: Frontend Lint and Format

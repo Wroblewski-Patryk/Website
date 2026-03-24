@@ -8,7 +8,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-003 (P0, DONE) Split CI into isolated jobs (tests/build/lint/audit/migrations).
 - [x] SCL-004 (P0, DONE) Add `composer audit` CI gate.
 - [x] SCL-005 (P1, DONE) Add migration smoke workflow (`migrate:fresh --seed`).
-- [ ] SCL-006 (P1, TODO) Add bundle-size report artifact in CI.
+- [x] SCL-006 (P1, DONE) Add bundle-size report artifact in CI.
 - [ ] SCL-007 (P1, TODO) Introduce PR checklist for regression-safe delivery.
 - [ ] SCL-008 (P1, TODO) Introduce release checklist with rollback section.
 - [ ] SCL-009 (P1, TODO) Define commit/task naming standard with IDs.
