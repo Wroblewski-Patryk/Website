@@ -12,7 +12,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-007 (P1, DONE) Introduce PR checklist for regression-safe delivery.
 - [x] SCL-008 (P1, DONE) Introduce release checklist with rollback section.
 - [x] SCL-009 (P1, DONE) Define commit/task naming standard with IDs.
-- [ ] SCL-010 (P2, TODO) Add architecture dependency checks (layer boundaries).
+- [x] SCL-010 (P2, DONE) Add architecture dependency checks (layer boundaries).
 
 ## Phase 1 - Core Stability
 - [x] SCL-011 (P0, DONE) Migrate CRUD validation to dedicated FormRequest classes.

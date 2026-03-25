@@ -1,7 +1,9 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] Refill from backlog after NOW completion
+- [ ] SCL-020 Add idempotency handling for duplicate-prone submissions
+- [ ] SCL-022 Evaluate private media storage with signed access paths
+- [ ] SCL-025 Introduce domain services for repetitive controller workflows
 
 ## NEXT
 - [ ] Prioritize next P1/P2 items from backlog

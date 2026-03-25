@@ -90,6 +90,7 @@
 - 2026-03-25: Completed SCL-063 operational metrics snapshot (queue lag, slow-query event count, and cache hit probe command + scheduler hook).
 - 2026-03-25: Completed SCL-064 operational readiness checks (db/cache/queue health command with structured JSON output and scheduler hook).
 - 2026-03-25: Completed SCL-065 production alerting baseline (threshold matrix, ownership map, escalation timers, and ops doc linkage).
+- 2026-03-25: Completed SCL-010 architecture boundary checks (Deptrac config, composer script, CI job for layer dependency enforcement).
 - 2026-03-24: Completed SCL-001/SCL-003/SCL-004 (PHPStan baseline, split CI jobs, security audit gates).
 - 2026-03-24: Completed SCL-002/SCL-005 (frontend lint+format CI gate, migration smoke job with sqlite seeding).
 - 2026-03-24: Completed SCL-012 (transaction boundaries for create/update flows in page/post/project admin controllers).
