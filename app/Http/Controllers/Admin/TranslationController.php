@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Language;
 use App\Models\Translation;
+use App\Rules\TranslationKeyConsistency;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -64,7 +65,13 @@ class TranslationController extends Controller
     {
         $validated = $request->validate([
             'group' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9_\-]+$/'],
-            'key' => ['required', 'string', 'max:191', 'regex:/^[a-zA-Z0-9_\-.]+$/', 'unique:translations,key,NULL,id,group,' . $request->group],
+            'key' => [
+                'required',
+                'string',
+                'max:191',
+                new TranslationKeyConsistency((string) $request->group),
+                'unique:translations,key,NULL,id,group,' . $request->group,
+            ],
             'text' => 'required|array',
         ]);
 
