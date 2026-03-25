@@ -36,6 +36,8 @@ class TemplateController extends BaseAdminContentController
 
     public function store(Request $request)
     {
+        $this->normalizeCanonicalUrlPayload($request);
+
         $validated = $request->validate(array_merge($this->getBaseValidationRules(), [
             'type' => 'required|in:header,footer,sidebar,page',
             'is_active' => 'boolean',
@@ -66,6 +68,8 @@ class TemplateController extends BaseAdminContentController
 
     public function update(Request $request, Template $template)
     {
+        $this->normalizeCanonicalUrlPayload($request);
+
         $validated = $request->validate(array_merge($this->getBaseValidationRules($template), [
             'type' => 'required|in:header,footer,sidebar,page',
             'is_active' => 'boolean',

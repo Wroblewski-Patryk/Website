@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Language;
 use App\Models\Taxonomy;
 use App\Models\Template;
+use App\Support\CanonicalUrlNormalizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -226,7 +227,7 @@ abstract class BaseAdminContentController extends Controller
             'meta_title.*' => 'nullable|string',
             'meta_description' => 'nullable|array',
             'meta_description.*' => 'nullable|string',
-            'canonical_url' => 'nullable|string',
+            'canonical_url' => 'nullable|string|max:2048|url:http,https',
             'og_image' => 'nullable|array',
             'og_image.*' => 'nullable|string',
             'seo_index' => 'nullable|boolean',
@@ -239,5 +240,19 @@ abstract class BaseAdminContentController extends Controller
         }
 
         return $rules;
+    }
+
+    /**
+     * Normalize SEO canonical URL payload before validation/persistence.
+     */
+    protected function normalizeCanonicalUrlPayload(Request $request): void
+    {
+        if (!$request->has('canonical_url')) {
+            return;
+        }
+
+        $request->merge([
+            'canonical_url' => CanonicalUrlNormalizer::normalize($request->input('canonical_url')),
+        ]);
     }
 }

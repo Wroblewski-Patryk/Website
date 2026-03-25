@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Post;
 
 use App\Models\Post;
+use App\Support\CanonicalUrlNormalizer;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePostRequest extends FormRequest
@@ -39,7 +40,7 @@ class StorePostRequest extends FormRequest
             'meta_title.*' => 'nullable|string',
             'meta_description' => 'nullable|array',
             'meta_description.*' => 'nullable|string',
-            'canonical_url' => 'nullable|string',
+            'canonical_url' => 'nullable|string|max:2048|url:http,https',
             'og_image' => 'nullable|array',
             'og_image.*' => 'nullable|string',
             'seo_index' => 'nullable|boolean',
@@ -51,5 +52,14 @@ class StorePostRequest extends FormRequest
             'featured_image' => 'nullable|array',
             'featured_image.*' => 'nullable|string',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('canonical_url')) {
+            $this->merge([
+                'canonical_url' => CanonicalUrlNormalizer::normalize($this->input('canonical_url')),
+            ]);
+        }
     }
 }

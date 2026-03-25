@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Page;
 
 use App\Models\Page;
+use App\Support\CanonicalUrlNormalizer;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePageRequest extends FormRequest
@@ -46,7 +47,7 @@ class UpdatePageRequest extends FormRequest
             'meta_title.*' => 'nullable|string',
             'meta_description' => 'nullable|array',
             'meta_description.*' => 'nullable|string',
-            'canonical_url' => 'nullable|string',
+            'canonical_url' => 'nullable|string|max:2048|url:http,https',
             'og_image' => 'nullable|array',
             'og_image.*' => 'nullable|string',
             'seo_index' => 'nullable|boolean',
@@ -56,5 +57,14 @@ class UpdatePageRequest extends FormRequest
             'sidebar_override_id' => 'nullable|exists:templates,id',
             'template_id' => 'nullable|exists:templates,id',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('canonical_url')) {
+            $this->merge([
+                'canonical_url' => CanonicalUrlNormalizer::normalize($this->input('canonical_url')),
+            ]);
+        }
     }
 }
