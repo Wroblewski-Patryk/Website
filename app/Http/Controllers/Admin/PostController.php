@@ -6,10 +6,10 @@ use App\Http\Requests\Admin\Post\StorePostRequest;
 use App\Http\Requests\Admin\Post\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\Revision;
+use App\Services\AdminContentPersistenceService;
 use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class PostController extends BaseAdminContentController
@@ -47,7 +47,7 @@ class PostController extends BaseAdminContentController
         ], $this->getSharedProps()));
     }
 
-    public function store(StorePostRequest $request)
+    public function store(StorePostRequest $request, AdminContentPersistenceService $persistence)
     {
         Gate::authorize('create', Post::class);
 
@@ -55,12 +55,13 @@ class PostController extends BaseAdminContentController
 
         $this->applyStatusLogic(null, $validated);
 
-        $post = DB::transaction(function () use ($validated, $request) {
-            $post = Post::create($validated);
-            $this->syncTaxonomies($post, $request);
-
-            return $post;
-        });
+        $post = $persistence->createWithTaxonomies(
+            Post::class,
+            $validated,
+            $request,
+            fn (Post $post, Request $request) => $this->syncTaxonomies($post, $request),
+        );
+        /** @var Post $post */
 
         return redirect()->route('admin.posts.edit', $post->id)->with('success', 'posts.create_success');
     }
@@ -74,7 +75,7 @@ class PostController extends BaseAdminContentController
         ]));
     }
 
-    public function update(UpdatePostRequest $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post, AdminContentPersistenceService $persistence)
     {
         Gate::authorize('update', $post);
 
@@ -83,11 +84,13 @@ class PostController extends BaseAdminContentController
 
         $this->applyStatusLogic($post, $validated);
 
-        DB::transaction(function () use ($post, $validated, $request) {
-            $this->saveRevision($post);
-            $post->update($validated);
-            $this->syncTaxonomies($post, $request);
-        });
+        $persistence->updateWithRevisionAndTaxonomies(
+            $post,
+            $validated,
+            $request,
+            fn (Post $post) => $this->saveRevision($post),
+            fn (Post $post, Request $request) => $this->syncTaxonomies($post, $request),
+        );
 
         return redirect()->back()->with('success', 'posts.update_success');
     }

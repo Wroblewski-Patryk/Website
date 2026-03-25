@@ -6,10 +6,10 @@ use App\Http\Requests\Admin\Page\StorePageRequest;
 use App\Http\Requests\Admin\Page\UpdatePageRequest;
 use App\Models\Page;
 use App\Models\Revision;
+use App\Services\AdminContentPersistenceService;
 use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class PageController extends BaseAdminContentController
@@ -42,7 +42,7 @@ class PageController extends BaseAdminContentController
         ], $this->getSharedProps()));
     }
 
-    public function store(StorePageRequest $request)
+    public function store(StorePageRequest $request, AdminContentPersistenceService $persistence)
     {
         Gate::authorize('create', Page::class);
 
@@ -50,12 +50,13 @@ class PageController extends BaseAdminContentController
 
         $this->applyStatusLogic(null, $validated);
 
-        $page = DB::transaction(function () use ($validated, $request) {
-            $page = Page::create($validated);
-            $this->syncTaxonomies($page, $request);
-
-            return $page;
-        });
+        $page = $persistence->createWithTaxonomies(
+            Page::class,
+            $validated,
+            $request,
+            fn (Page $page, Request $request) => $this->syncTaxonomies($page, $request),
+        );
+        /** @var Page $page */
 
         return redirect()->route('admin.pages.edit', $page->id)->with('success', 'pages.create_success');
     }
@@ -69,7 +70,7 @@ class PageController extends BaseAdminContentController
         ]));
     }
 
-    public function update(UpdatePageRequest $request, Page $page)
+    public function update(UpdatePageRequest $request, Page $page, AdminContentPersistenceService $persistence)
     {
         Gate::authorize('update', $page);
 
@@ -78,11 +79,13 @@ class PageController extends BaseAdminContentController
 
         $this->applyStatusLogic($page, $validated);
 
-        DB::transaction(function () use ($page, $validated, $request) {
-            $this->saveRevision($page);
-            $page->update($validated);
-            $this->syncTaxonomies($page, $request);
-        });
+        $persistence->updateWithRevisionAndTaxonomies(
+            $page,
+            $validated,
+            $request,
+            fn (Page $page) => $this->saveRevision($page),
+            fn (Page $page, Request $request) => $this->syncTaxonomies($page, $request),
+        );
 
         return redirect()->back()->with('success', 'pages.update_success');
     }
