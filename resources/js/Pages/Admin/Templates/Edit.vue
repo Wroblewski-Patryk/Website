@@ -224,7 +224,7 @@ import {
 } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/features/admin/block-builder/components/BlockBuilderMain.vue';
-import { useForm, usePage } from '@inertiajs/vue3';
+import { useForm, usePage, router } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useToastStore } from '@/Stores/useToastStore';
 import { useTranslations } from '@/Composables/useTranslations';
@@ -313,8 +313,15 @@ onMounted(() => {
 
 const restoreRevision = (rev) => {
     if (confirm(t('admin.common.restore_confirm', 'Are you sure you want to restore this version? Current unsaved changes will be lost.'))) {
-        store.init(rev.content || getEmptyLocales());
-        store.isDirty = true;
+        router.post(route('admin.templates.revisions.restore', { template: props.template.id, revision: rev.id }), {}, {
+            onSuccess: () => {
+                toast.success('Revision restored successfully.');
+                store.isDirty = false;
+            },
+            onError: () => {
+                toast.error('Could not restore revision.');
+            },
+        });
     }
 };
 

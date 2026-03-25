@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\Admin\Page\StorePageRequest;
 use App\Http\Requests\Admin\Page\UpdatePageRequest;
 use App\Models\Page;
+use App\Models\Revision;
 use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -92,5 +93,14 @@ class PageController extends BaseAdminContentController
 
         $page->delete();
         return redirect()->back()->with('success', 'pages.delete_success');
+    }
+
+    public function restoreRevision(Request $request, Page $page, Revision $revision)
+    {
+        Gate::authorize('update', $page);
+
+        $this->restoreRevisionContent($page, $revision, $request);
+
+        return redirect()->back()->with('success', 'pages.update_success');
     }
 }

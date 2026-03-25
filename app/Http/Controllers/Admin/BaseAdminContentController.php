@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Language;
+use App\Models\Revision;
 use App\Models\Taxonomy;
 use App\Models\Template;
 use App\Rules\UniqueLocalizedSlug;
@@ -131,6 +132,31 @@ abstract class BaseAdminContentController extends Controller
                 'user_id' => auth()->id(),
             ]);
         }
+    }
+
+    /**
+     * Restore model content from a specific revision with safety checks.
+     */
+    protected function restoreRevisionContent(Model $model, Revision $revision, Request $request): void
+    {
+        $sameModel = $revision->revisionable_type === $model::class
+            && (int) $revision->revisionable_id === (int) $model->getKey();
+
+        if (!$sameModel) {
+            abort(404);
+        }
+
+        $this->assertOptimisticLock($model, $request);
+
+        $restoredContent = $revision->content;
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($model, $restoredContent) {
+            // Keep a backup snapshot of current content before applying restore.
+            $this->saveRevision($model);
+            $model->update([
+                'content' => $restoredContent,
+            ]);
+        });
     }
 
     /**

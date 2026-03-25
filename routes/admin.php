@@ -12,6 +12,8 @@ Route::middleware('permission:view-admin')->name('dashboard.')->group(function (
 Route::middleware('permission:manage-content')->group(function () {
     Route::resource('pages', AdminPageController::class)->except(['show']);
     Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->except(['show']);
+    Route::post('pages/{page}/revisions/{revision}/restore', [AdminPageController::class, 'restoreRevision'])->name('pages.revisions.restore');
+    Route::post('posts/{post}/revisions/{revision}/restore', [\App\Http\Controllers\Admin\PostController::class, 'restoreRevision'])->name('posts.revisions.restore');
 
     Route::name('media.')->prefix('media')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\MediaController::class, 'index'])->name('index');
@@ -55,6 +57,7 @@ Route::middleware('permission:manage-settings')->group(function () {
     Route::resource('languages', \App\Http\Controllers\Admin\LanguageController::class)->except(['show']);
     Route::resource('forms', \App\Http\Controllers\Admin\FormController::class)->except(['show']);
     Route::resource('templates', \App\Http\Controllers\Admin\TemplateController::class)->except(['show']);
+    Route::post('templates/{template}/revisions/{revision}/restore', [\App\Http\Controllers\Admin\TemplateController::class, 'restoreRevision'])->name('templates.revisions.restore');
 
     Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
     Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class, 'store'])->name('settings.store');

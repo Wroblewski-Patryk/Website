@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Revision;
 use App\Models\Template;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -91,5 +92,12 @@ class TemplateController extends BaseAdminContentController
 
         $template->delete();
         return redirect()->back()->with('success', 'templates.delete_success');
+    }
+
+    public function restoreRevision(Request $request, Template $template, Revision $revision)
+    {
+        $this->restoreRevisionContent($template, $revision, $request);
+
+        return redirect()->back()->with('success', 'templates.update_success');
     }
 }

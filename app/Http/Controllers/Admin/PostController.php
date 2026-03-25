@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\Admin\Post\StorePostRequest;
 use App\Http\Requests\Admin\Post\UpdatePostRequest;
 use App\Models\Post;
+use App\Models\Revision;
 use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -97,5 +98,14 @@ class PostController extends BaseAdminContentController
 
         $post->delete();
         return redirect()->back()->with('success', 'posts.delete_success');
+    }
+
+    public function restoreRevision(Request $request, Post $post, Revision $revision)
+    {
+        Gate::authorize('update', $post);
+
+        $this->restoreRevisionContent($post, $revision, $request);
+
+        return redirect()->back()->with('success', 'posts.update_success');
     }
 }

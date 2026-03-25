@@ -221,7 +221,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/features/admin/block-builder/components/BlockBuilderMain.vue';
 import TaxonomySelect from '@/features/admin/shared/components/TaxonomySelect.vue';
 import DatePicker from '@/features/admin/shared/components/DatePicker.vue';
-import { useForm, usePage } from '@inertiajs/vue3';
+import { useForm, usePage, router } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useToastStore } from '@/Stores/useToastStore';
 import { useTranslations } from '@/Composables/useTranslations';
@@ -304,8 +304,17 @@ watch(() => form.title[activeLocale.value], (newTitle) => {
 
 const restoreRevision = (rev) => {
     if (confirm(t('admin.common.are_you_sure', 'Are you sure you want to restore this version? Current unsaved changes will be lost.'))) {
-        store.init(rev.content || getEmptyLocales());
-        store.isDirty = true;
+        router.post(route('admin.pages.revisions.restore', { page: props.page.id, revision: rev.id }), {
+            optimistic_lock: form.optimistic_lock,
+        }, {
+            onSuccess: () => {
+                toast.success('Revision restored successfully.');
+                store.isDirty = false;
+            },
+            onError: () => {
+                toast.error('Could not restore revision.');
+            },
+        });
     }
 };
 
