@@ -71,6 +71,7 @@
 - [x] SCL-057 Add content export endpoint for external consumption
 - [x] SCL-058 Draft multi-tenant readiness architecture baseline
 - [x] SCL-059 Add tenant-aware key strategy for cache/session design
+- [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
 - 2026-03-24: Introduced scaling execution documentation and 65-item backlog.
@@ -84,6 +85,7 @@
 - 2026-03-25: Completed SCL-058 multi-tenant readiness architecture baseline document (isolation principles, rollout, risk controls).
 - 2026-03-25: Completed SCL-059 tenant-aware key strategy baseline for cache/session/queue contexts.
 - 2026-03-25: Completed SCL-056 token-scoped headless access control (hashed bearer token lookup, scope middleware guard, and feature tests).
+- 2026-03-25: Completed SCL-060 media lifecycle policy foundation (archive/retention/purge metadata columns, lifecycle command with dry-run default, and feature tests).
 - 2026-03-24: Completed SCL-001/SCL-003/SCL-004 (PHPStan baseline, split CI jobs, security audit gates).
 - 2026-03-24: Completed SCL-002/SCL-005 (frontend lint+format CI gate, migration smoke job with sqlite seeding).
 - 2026-03-24: Completed SCL-012 (transaction boundaries for create/update flows in page/post/project admin controllers).

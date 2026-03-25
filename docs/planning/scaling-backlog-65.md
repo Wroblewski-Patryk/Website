@@ -70,7 +70,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-057 (P2, DONE) Add content export endpoint for external consumption.
 - [x] SCL-058 (P2, DONE) Draft multi-tenant readiness architecture baseline.
 - [x] SCL-059 (P2, DONE) Add tenant-aware key strategy for cache/session design.
-- [ ] SCL-060 (P3, TODO) Add media lifecycle policy (archive, retention, purge).
+- [x] SCL-060 (P3, DONE) Add media lifecycle policy (archive, retention, purge).
 
 ## Cross-Cutting Observability and Operations
 - [x] SCL-061 (P1, DONE) Add request correlation IDs in logs.
