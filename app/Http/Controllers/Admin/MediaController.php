@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Media;
+use App\Services\MediaSafeReplaceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 use App\Models\MediaFolder;
@@ -259,5 +261,50 @@ class MediaController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function safeReplace(Request $request, Media $media, MediaSafeReplaceService $service)
+    {
+        $validated = $request->validate([
+            'target_media_id' => ['required', 'exists:media,id'],
+            'delete_source' => ['nullable', 'boolean'],
+        ]);
+
+        $targetMedia = Media::findOrFail($validated['target_media_id']);
+        $deleteSource = (bool) ($validated['delete_source'] ?? false);
+
+        if ((int) $targetMedia->id === (int) $media->id) {
+            return $this->jsonError('Source and target media must be different.', [], 422);
+        }
+
+        $sourceChecksum = $media->checksum;
+        $targetChecksum = $targetMedia->checksum;
+        if (!$sourceChecksum || !$targetChecksum || $sourceChecksum !== $targetChecksum) {
+            return $this->jsonError('Safe replace requires matching checksum on source and target media.', [], 422);
+        }
+
+        $summary = DB::transaction(function () use ($service, $media, $targetMedia, $deleteSource) {
+            $result = $service->replacePathReferences($media->path, $targetMedia->path);
+
+            $media->duplicate_of_id = $targetMedia->id;
+            $media->save();
+
+            if ($deleteSource) {
+                if ($media->path !== $targetMedia->path && Storage::disk('public')->exists($media->path)) {
+                    Storage::disk('public')->delete($media->path);
+                }
+                $media->delete();
+            }
+
+            return $result;
+        });
+
+        if ($request->wantsJson()) {
+            return $this->jsonSuccess([
+                'replaced_models' => $summary,
+            ], 'media.safe_replace_success');
+        }
+
+        return redirect()->back()->with('success', 'media.update_success');
     }
 }

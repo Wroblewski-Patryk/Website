@@ -22,6 +22,7 @@ Route::middleware('permission:manage-content')->group(function () {
         Route::post('/', [\App\Http\Controllers\Admin\MediaController::class, 'store'])->name('store');
         Route::patch('{media}', [\App\Http\Controllers\Admin\MediaController::class, 'update'])->name('update');
         Route::delete('{media}', [\App\Http\Controllers\Admin\MediaController::class, 'destroy'])->name('destroy');
+        Route::post('{media}/safe-replace', [\App\Http\Controllers\Admin\MediaController::class, 'safeReplace'])->name('safe-replace');
         Route::post('folders', [\App\Http\Controllers\Admin\MediaController::class, 'storeFolder'])->name('folders.store');
         Route::patch('folders/{folder}', [\App\Http\Controllers\Admin\MediaController::class, 'updateFolder'])->name('folders.update');
         Route::delete('folders/{folder}', [\App\Http\Controllers\Admin\MediaController::class, 'destroyFolder'])->name('folders.destroy');
