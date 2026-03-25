@@ -65,7 +65,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [ ] SCL-052 (P2, TODO) Add scheduler observability for publish command execution.
 - [ ] SCL-053 (P2, TODO) Add media deduplication by checksum.
 - [ ] SCL-054 (P2, TODO) Add safe replace workflow for duplicate assets.
-- [ ] SCL-055 (P1, TODO) Prepare read-only headless API contract for public content.
+- [x] SCL-055 (P1, DONE) Prepare read-only headless API contract for public content.
 - [ ] SCL-056 (P2, TODO) Add token-scoped access model for headless read API.
 - [ ] SCL-057 (P2, TODO) Add content export endpoint for external consumption.
 - [ ] SCL-058 (P2, TODO) Draft multi-tenant readiness architecture baseline.

@@ -1,13 +1,13 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-055 Prepare read-only headless API contract for public content
 - [ ] SCL-052 Add scheduler observability for publish command execution
 - [ ] SCL-057 Add content export endpoint for external consumption
+- [ ] SCL-053 Add media deduplication by checksum
 
 ## NEXT
-- [ ] SCL-053 Add media deduplication by checksum
 - [ ] SCL-054 Add safe replace workflow for duplicate assets
+- [ ] SCL-056 Add token-scoped access model for headless read API
 - [ ] SCL-058 Draft multi-tenant readiness architecture baseline
 
 ## LATER
