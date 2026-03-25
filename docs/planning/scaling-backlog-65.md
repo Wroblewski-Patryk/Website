@@ -60,7 +60,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 
 ## Phase 4 - Product Scalability Features
 - [x] SCL-049 (P1, DONE) Add revision diff view (content comparison).
-- [ ] SCL-050 (P1, TODO) Add revision restore workflow with safeguards.
+- [x] SCL-050 (P1, DONE) Add revision restore workflow with safeguards.
 - [ ] SCL-051 (P1, TODO) Add publication calendar view for planned content.
 - [ ] SCL-052 (P2, TODO) Add scheduler observability for publish command execution.
 - [ ] SCL-053 (P2, TODO) Add media deduplication by checksum.

@@ -1,14 +1,14 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-050 Add revision restore workflow with safeguards
 - [ ] SCL-051 Add publication calendar view for planned content
 - [ ] SCL-052 Add scheduler observability for publish command execution
+- [ ] SCL-055 Prepare read-only headless API contract for public content
 
 ## NEXT
-- [ ] SCL-051 Add publication calendar view for planned content
-- [ ] SCL-055 Prepare read-only headless API contract for public content
 - [ ] SCL-057 Add content export endpoint for external consumption
+- [ ] SCL-058 Draft multi-tenant readiness architecture baseline
+- [ ] SCL-059 Add tenant-aware key strategy for cache/session design
 
 ## LATER
 - [ ] SCL-062 Integrate backend+frontend error tracking platform
