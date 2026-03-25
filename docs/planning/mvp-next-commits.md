@@ -1,14 +1,14 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-039 Remove locale hardcodes and use active language source everywhere
 - [ ] SCL-046 Add route-level locale edge-case tests
 - [ ] SCL-049 Add revision diff view (content comparison)
+- [ ] SCL-040 Standardize localized slug conflict policy
 
 ## NEXT
-- [ ] SCL-040 Standardize localized slug conflict policy
 - [ ] SCL-041 Add slug normalization and reserved-path safeguards
 - [ ] SCL-043 Improve hreflang generation for nested and archive routes
+- [ ] SCL-045 Add fallback-locale behavior test matrix
 
 ## LATER
 - [ ] SCL-062 Integrate backend+frontend error tracking platform
