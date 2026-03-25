@@ -7,6 +7,7 @@ import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createPinia } from "pinia";
 import { gsap } from "gsap";
 import { ZiggyVue } from "ziggy-js";
+import * as Sentry from "@sentry/vue";
 
 const appName =
     window.document.getElementsByTagName("title")[0]?.innerText || "Featherly";
@@ -32,11 +33,23 @@ createInertiaApp({
             import.meta.glob("./Pages/**/*.vue"),
         ),
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
+        const vueApp = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(createPinia())
-            .use(ZiggyVue)
-            .mount(el);
+            .use(ZiggyVue);
+
+        if (import.meta.env.VITE_SENTRY_DSN) {
+            Sentry.init({
+                app: vueApp,
+                dsn: import.meta.env.VITE_SENTRY_DSN,
+                environment: import.meta.env.MODE,
+                tracesSampleRate: Number(
+                    import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE ?? 0,
+                ),
+            });
+        }
+
+        vueApp.mount(el);
     },
     progress: {
         color: "#4B5563",
