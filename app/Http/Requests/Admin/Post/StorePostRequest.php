@@ -3,8 +3,10 @@
 namespace App\Http\Requests\Admin\Post;
 
 use App\Models\Post;
+use App\Rules\NotReservedRouteSlug;
 use App\Rules\UniqueLocalizedSlug;
 use App\Support\CanonicalUrlNormalizer;
+use App\Support\LocalizedSlugNormalizer;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePostRequest extends FormRequest
@@ -23,6 +25,7 @@ class StorePostRequest extends FormRequest
             'slug.*' => [
                 'nullable',
                 'string',
+                new NotReservedRouteSlug(),
                 new UniqueLocalizedSlug(Post::class),
             ],
             'content' => 'required|array',
@@ -48,10 +51,18 @@ class StorePostRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $payload = [];
+
+        if ($this->has('slug')) {
+            $payload['slug'] = LocalizedSlugNormalizer::normalizeTranslations($this->input('slug'));
+        }
+
         if ($this->has('canonical_url')) {
-            $this->merge([
-                'canonical_url' => CanonicalUrlNormalizer::normalize($this->input('canonical_url')),
-            ]);
+            $payload['canonical_url'] = CanonicalUrlNormalizer::normalize($this->input('canonical_url'));
+        }
+
+        if (!empty($payload)) {
+            $this->merge($payload);
         }
     }
 }

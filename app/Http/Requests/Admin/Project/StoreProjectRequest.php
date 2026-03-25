@@ -3,8 +3,10 @@
 namespace App\Http\Requests\Admin\Project;
 
 use App\Models\Project;
+use App\Rules\NotReservedRouteSlug;
 use App\Rules\UniqueLocalizedSlug;
 use App\Support\CanonicalUrlNormalizer;
+use App\Support\LocalizedSlugNormalizer;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProjectRequest extends FormRequest
@@ -23,6 +25,7 @@ class StoreProjectRequest extends FormRequest
             'slug.*' => [
                 'nullable',
                 'string',
+                new NotReservedRouteSlug(),
                 new UniqueLocalizedSlug(Project::class),
             ],
             'content' => 'required|array',
@@ -51,10 +54,18 @@ class StoreProjectRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $payload = [];
+
+        if ($this->has('slug')) {
+            $payload['slug'] = LocalizedSlugNormalizer::normalizeTranslations($this->input('slug'));
+        }
+
         if ($this->has('canonical_url')) {
-            $this->merge([
-                'canonical_url' => CanonicalUrlNormalizer::normalize($this->input('canonical_url')),
-            ]);
+            $payload['canonical_url'] = CanonicalUrlNormalizer::normalize($this->input('canonical_url'));
+        }
+
+        if (!empty($payload)) {
+            $this->merge($payload);
         }
     }
 }
