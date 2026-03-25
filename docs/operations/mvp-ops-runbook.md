@@ -4,6 +4,7 @@
 - Start core services (app, queue worker, scheduler, cache) with environment-specific commands.
 - Verify app health endpoint and database/cache connectivity.
 - Verify queue worker is consuming jobs.
+- Use `docs/operations/production-alerting-thresholds-and-ownership.md` as the primary threshold/ownership reference.
 
 ## Incident Triage
 - Capture timestamp, environment, and first failing symptom.
