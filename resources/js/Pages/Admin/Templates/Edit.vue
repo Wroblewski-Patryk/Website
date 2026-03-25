@@ -132,13 +132,85 @@
                     <div v-for="rev in template.revisions" :key="rev.id" class="p-3 bg-base-200/50 rounded-xl border border-base-content/5 flex flex-col gap-2 hover:border-primary/30 transition-all group">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold opacity-70">{{ formatDateTime(rev.created_at) }}</span>
-                            <button @click="restoreRevision(rev)" class="btn btn-xs btn-outline btn-primary opacity-0 group-hover:opacity-100 scale-90 transition-all">Restore</button>
+                            <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 scale-90 transition-all">
+                                <button @click="openRevisionDiff(rev)" class="btn btn-xs btn-outline">Compare</button>
+                                <button @click="restoreRevision(rev)" class="btn btn-xs btn-outline btn-primary">Restore</button>
+                            </div>
                         </div>
                         <span class="text-[10px] opacity-40">{{ rev.content?.length || 0 }} blocks total</span>
                     </div>
                 </div>
             </template>
         </BlockBuilder>
+
+        <div v-if="showRevisionDiffModal" class="fixed inset-0 z-[100] bg-base-content/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="w-full max-w-3xl bg-base-100 rounded-2xl border border-base-300 shadow-2xl">
+                <div class="p-5 border-b border-base-300 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-black uppercase tracking-widest opacity-80">Revision Diff</h3>
+                        <p class="text-xs opacity-50 mt-1">
+                            Comparing revision from {{ selectedRevision ? formatDateTime(selectedRevision.created_at) : '-' }} with current unsaved canvas state.
+                        </p>
+                    </div>
+                    <button class="btn btn-sm btn-ghost" @click="closeRevisionDiff">Close</button>
+                </div>
+
+                <div class="p-5 space-y-5">
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+                        <div class="rounded-xl border border-base-300 p-3 bg-base-200/40">
+                            <p class="opacity-50">Previous</p>
+                            <p class="font-black text-lg">{{ revisionDiff.counts.previous }}</p>
+                        </div>
+                        <div class="rounded-xl border border-base-300 p-3 bg-base-200/40">
+                            <p class="opacity-50">Current</p>
+                            <p class="font-black text-lg">{{ revisionDiff.counts.current }}</p>
+                        </div>
+                        <div class="rounded-xl border border-success/30 p-3 bg-success/10">
+                            <p class="opacity-60">Added</p>
+                            <p class="font-black text-lg">{{ revisionDiff.counts.added }}</p>
+                        </div>
+                        <div class="rounded-xl border border-error/30 p-3 bg-error/10">
+                            <p class="opacity-60">Removed</p>
+                            <p class="font-black text-lg">{{ revisionDiff.counts.removed }}</p>
+                        </div>
+                        <div class="rounded-xl border border-warning/30 p-3 bg-warning/10">
+                            <p class="opacity-60">Changed</p>
+                            <p class="font-black text-lg">{{ revisionDiff.counts.changed }}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-4 text-xs">
+                        <div>
+                            <h4 class="font-black uppercase tracking-widest opacity-60 mb-2">Added Blocks</h4>
+                            <ul class="space-y-1 max-h-40 overflow-auto">
+                                <li v-for="row in revisionDiff.added.slice(0, 30)" :key="`added-${row.id}`" class="font-mono opacity-80">
+                                    + {{ row.type }} ({{ row.id }})
+                                </li>
+                                <li v-if="revisionDiff.added.length === 0" class="opacity-30 italic">No additions</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-black uppercase tracking-widest opacity-60 mb-2">Removed Blocks</h4>
+                            <ul class="space-y-1 max-h-40 overflow-auto">
+                                <li v-for="row in revisionDiff.removed.slice(0, 30)" :key="`removed-${row.id}`" class="font-mono opacity-80">
+                                    - {{ row.type }} ({{ row.id }})
+                                </li>
+                                <li v-if="revisionDiff.removed.length === 0" class="opacity-30 italic">No removals</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-black uppercase tracking-widest opacity-60 mb-2">Changed Blocks</h4>
+                            <ul class="space-y-1 max-h-40 overflow-auto">
+                                <li v-for="row in revisionDiff.changed.slice(0, 30)" :key="`changed-${row.id}`" class="font-mono opacity-80">
+                                    ~ {{ row.type }} ({{ row.id }})
+                                </li>
+                                <li v-if="revisionDiff.changed.length === 0" class="opacity-30 italic">No content changes</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </AdminLayout>
 </template>
 
@@ -157,6 +229,7 @@ import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBl
 import { useToastStore } from '@/Stores/useToastStore';
 import { useTranslations } from '@/Composables/useTranslations';
 import { useFormatter } from '@/Composables/useFormatter';
+import { compareRevisionContent } from '@/features/admin/shared/utils/revisionDiff';
 import { computed, onMounted, ref, watch } from 'vue';
 
 const { t } = useTranslations();
@@ -217,6 +290,16 @@ const generateSlug = (text) => {
 };
 
 const templateSlug = ref(generateSlug(form.title[activeLocale.value]));
+const showRevisionDiffModal = ref(false);
+const selectedRevision = ref(null);
+
+const revisionDiff = computed(() => {
+    if (!selectedRevision.value) {
+        return compareRevisionContent([], store.blocks || []);
+    }
+
+    return compareRevisionContent(selectedRevision.value.content || [], store.blocks || []);
+});
 
 watch(() => form.title[activeLocale.value], (newTitle) => {
     if (newTitle && (!props.template?.id || !templateSlug.value)) {
@@ -233,6 +316,16 @@ const restoreRevision = (rev) => {
         store.init(rev.content || getEmptyLocales());
         store.isDirty = true;
     }
+};
+
+const openRevisionDiff = (rev) => {
+    selectedRevision.value = rev;
+    showRevisionDiffModal.value = true;
+};
+
+const closeRevisionDiff = () => {
+    showRevisionDiffModal.value = false;
+    selectedRevision.value = null;
 };
 
 const save = () => {
