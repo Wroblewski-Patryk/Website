@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Form;
 use App\Models\FormSubmission;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -60,27 +61,76 @@ class PublicFormController extends Controller
             ? Validator::make($input, $rules)->validate()
             : $input;
 
+        $idempotencyKey = $this->resolveIdempotencyKey($request);
+
+        if ($idempotencyKey !== null) {
+            $duplicate = FormSubmission::query()
+                ->where('form_id', $form->id)
+                ->where('idempotency_key', $idempotencyKey)
+                ->exists();
+
+            if ($duplicate) {
+                return redirect()->back()->with('success', $this->resolveSuccessMessage($form));
+            }
+        }
+
         try {
             FormSubmission::create([
                 'form_id' => $form->id,
+                'idempotency_key' => $idempotencyKey,
                 'data' => $data,
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]);
-
-            $successMessage = $form->settings['success_message'] ?? 'Thank you! Your message has been sent.';
-
-            if (is_array($successMessage)) {
-                $locale = app()->getLocale();
-                $fallbackLocale = (string) config('app.fallback_locale', $locale);
-                $successMessage = $successMessage[$locale] ?? $successMessage[$fallbackLocale] ?? collect($successMessage)->first() ?? 'Sent!';
+        } catch (QueryException $e) {
+            if (!$this->isIdempotencyConflict($e, $idempotencyKey)) {
+                Log::error('Error saving form submission: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'There was an error sending your message. Please try again later.');
             }
-
-            return redirect()->back()->with('success', $successMessage);
         } catch (\Exception $e) {
             Log::error('Error saving form submission: ' . $e->getMessage());
             return redirect()->back()->with('error', 'There was an error sending your message. Please try again later.');
         }
+
+        return redirect()->back()->with('success', $this->resolveSuccessMessage($form));
+    }
+
+    private function resolveSuccessMessage(Form $form): string
+    {
+        $successMessage = $form->settings['success_message'] ?? 'Thank you! Your message has been sent.';
+
+        if (is_array($successMessage)) {
+            $locale = app()->getLocale();
+            $fallbackLocale = (string) config('app.fallback_locale', $locale);
+            $successMessage = $successMessage[$locale] ?? $successMessage[$fallbackLocale] ?? collect($successMessage)->first() ?? 'Sent!';
+        }
+
+        return (string) $successMessage;
+    }
+
+    private function resolveIdempotencyKey(Request $request): ?string
+    {
+        $raw = $request->header('Idempotency-Key') ?? $request->input('idempotency_key');
+        if (!is_string($raw)) {
+            return null;
+        }
+
+        $trimmed = trim($raw);
+        if ($trimmed === '') {
+            return null;
+        }
+
+        return hash('sha256', $trimmed);
+    }
+
+    private function isIdempotencyConflict(QueryException $exception, ?string $idempotencyKey): bool
+    {
+        if ($idempotencyKey === null) {
+            return false;
+        }
+
+        $sqlState = (string) ($exception->errorInfo[0] ?? '');
+        return in_array($sqlState, ['23000', '23505'], true);
     }
 
     private function resolveFieldKey(array $field): ?string

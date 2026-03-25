@@ -11,6 +11,7 @@
   
       protected $fillable = [
           'form_id',
+          'idempotency_key',
           'data',
           'ip_address',
           'user_agent'
