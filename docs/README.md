@@ -31,6 +31,7 @@
 - `architecture/modules.md`
 - `architecture/tech-stack.md`
 - `architecture/admin-frontend-architecture.md`
+- `architecture/seo-route-contracts.md`
 
 ## Module Deep Dives
 - `modules/README.md`
