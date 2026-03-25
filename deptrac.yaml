@@ -1,0 +1,29 @@
+deptrac:
+  paths:
+    - ./app
+  exclude_files:
+    - '#.*Test\.php$#'
+  layers:
+    - name: Delivery
+      collectors:
+        - type: className
+          regex: '^App\\(Http|Console)\\'
+    - name: Domain
+      collectors:
+        - type: className
+          regex: '^App\\(Models|Services|Policies)\\'
+    - name: Infrastructure
+      collectors:
+        - type: className
+          regex: '^App\\Providers\\'
+  ruleset:
+    Delivery:
+      - Delivery
+      - Domain
+      - Infrastructure
+    Domain:
+      - Domain
+      - Infrastructure
+    Infrastructure:
+      - Domain
+      - Infrastructure
