@@ -62,12 +62,13 @@
 ## Workstream: Phase 4 - Product Scalability Features
 - [x] SCL-049 Add revision diff view (content comparison)
 - [x] SCL-050 Add revision restore workflow with safeguards
-- [ ] SCL-051 Add publication calendar view for planned content
+- [x] SCL-051 Add publication calendar view for planned content
 - [ ] SCL-055 Prepare read-only headless API contract for public content
 
 ## Progress Log
 - 2026-03-24: Introduced scaling execution documentation and 65-item backlog.
 - 2026-03-25: Completed SCL-050 revision restore workflow with server-side safeguards and tests.
+- 2026-03-25: Completed SCL-051 publication calendar view for planned content across pages, posts, and projects.
 - 2026-03-24: Completed SCL-001/SCL-003/SCL-004 (PHPStan baseline, split CI jobs, security audit gates).
 - 2026-03-24: Completed SCL-002/SCL-005 (frontend lint+format CI gate, migration smoke job with sqlite seeding).
 - 2026-03-24: Completed SCL-012 (transaction boundaries for create/update flows in page/post/project admin controllers).
