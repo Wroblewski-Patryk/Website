@@ -34,6 +34,7 @@
 - `architecture/seo-route-contracts.md`
 - `architecture/headless-read-api-contract.md`
 - `architecture/multi-tenant-readiness-baseline.md`
+- `architecture/tenant-aware-key-strategy.md`
 
 ## Module Deep Dives
 - `modules/README.md`
