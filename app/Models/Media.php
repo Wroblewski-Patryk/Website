@@ -10,6 +10,12 @@ class Media extends Model
 
     protected $appends = ['url'];
 
+    protected $casts = [
+        'archived_at' => 'datetime',
+        'retention_until' => 'datetime',
+        'purge_after' => 'datetime',
+    ];
+
     public function getUrlAttribute()
     {
         // If path is absolute (starts with http or /), return as is
