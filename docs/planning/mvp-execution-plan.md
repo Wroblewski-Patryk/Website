@@ -53,7 +53,7 @@
 - [x] SCL-046 Add route-level locale edge-case tests
 
 ## Workstream: Phase 4 - Product Scalability Features
-- [ ] SCL-049 Add revision diff view (content comparison)
+- [x] SCL-049 Add revision diff view (content comparison)
 - [ ] SCL-051 Add publication calendar view for planned content
 - [ ] SCL-055 Prepare read-only headless API contract for public content
 
@@ -97,3 +97,4 @@
 - 2026-03-25: Completed SCL-042 (added shared canonical URL normalizer, strict `http/https` validation, and request-level canonical payload normalization across admin content forms).
 - 2026-03-25: Completed SCL-039 (removed remaining locale hardcoded branching from the public 404 view; locale copy now resolves from current locale context without hardcoded equality checks).
 - 2026-03-25: Completed SCL-046 (added route-level locale edge-case coverage for root fallback, locale switch validation, session-locale fallback safety, and dashboard/admin fallback redirects).
+- 2026-03-25: Completed SCL-049 (added revision-to-current content diff view in Template editor History tab with block-level added/removed/changed summaries).

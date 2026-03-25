@@ -59,7 +59,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [ ] SCL-048 (P2, TODO) Add validation for translation key consistency and namespaces.
 
 ## Phase 4 - Product Scalability Features
-- [ ] SCL-049 (P1, TODO) Add revision diff view (content comparison).
+- [x] SCL-049 (P1, DONE) Add revision diff view (content comparison).
 - [ ] SCL-050 (P1, TODO) Add revision restore workflow with safeguards.
 - [ ] SCL-051 (P1, TODO) Add publication calendar view for planned content.
 - [ ] SCL-052 (P2, TODO) Add scheduler observability for publish command execution.
