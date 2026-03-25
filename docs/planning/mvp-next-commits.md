@@ -1,14 +1,14 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-046 Add route-level locale edge-case tests
 - [ ] SCL-049 Add revision diff view (content comparison)
 - [ ] SCL-040 Standardize localized slug conflict policy
+- [ ] SCL-041 Add slug normalization and reserved-path safeguards
 
 ## NEXT
-- [ ] SCL-041 Add slug normalization and reserved-path safeguards
 - [ ] SCL-043 Improve hreflang generation for nested and archive routes
 - [ ] SCL-045 Add fallback-locale behavior test matrix
+- [ ] SCL-047 Document SEO route contracts and locale behavior
 
 ## LATER
 - [ ] SCL-062 Integrate backend+frontend error tracking platform

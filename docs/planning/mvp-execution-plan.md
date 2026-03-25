@@ -50,7 +50,7 @@
 ## Workstream: Phase 3 - i18n and SEO Hardening
 - [x] SCL-039 Remove locale hardcodes and use active language source everywhere
 - [x] SCL-042 Improve canonical URL validation/normalization
-- [ ] SCL-046 Add route-level locale edge-case tests
+- [x] SCL-046 Add route-level locale edge-case tests
 
 ## Workstream: Phase 4 - Product Scalability Features
 - [ ] SCL-049 Add revision diff view (content comparison)
@@ -96,3 +96,4 @@
 - 2026-03-25: Completed SCL-038 (added threshold-based virtualized table windowing in shared admin `ResourceTable` with overscan/spacer strategy for large lists).
 - 2026-03-25: Completed SCL-042 (added shared canonical URL normalizer, strict `http/https` validation, and request-level canonical payload normalization across admin content forms).
 - 2026-03-25: Completed SCL-039 (removed remaining locale hardcoded branching from the public 404 view; locale copy now resolves from current locale context without hardcoded equality checks).
+- 2026-03-25: Completed SCL-046 (added route-level locale edge-case coverage for root fallback, locale switch validation, session-locale fallback safety, and dashboard/admin fallback redirects).
