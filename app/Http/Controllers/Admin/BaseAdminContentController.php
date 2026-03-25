@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Language;
 use App\Models\Taxonomy;
 use App\Models\Template;
+use App\Rules\UniqueLocalizedSlug;
 use App\Support\CanonicalUrlNormalizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -204,17 +205,7 @@ abstract class BaseAdminContentController extends Controller
             $rules['slug.*'] = [
                 'nullable',
                 'string',
-                function ($attribute, $value, $fail) use ($model) {
-                    if (!$value) return;
-                    $locale = str_replace('slug.', '', $attribute);
-                    $query = $this->modelClass::where("slug->{$locale}", $value);
-                    if ($model) {
-                        $query->where('id', '!=', $model->id);
-                    }
-                    if ($query->exists()) {
-                        $fail("The slug for locale {$locale} is already taken.");
-                    }
-                }
+                new UniqueLocalizedSlug($this->modelClass, $model?->id)
             ];
         }
 

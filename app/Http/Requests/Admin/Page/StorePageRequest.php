@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Page;
 
 use App\Models\Page;
+use App\Rules\UniqueLocalizedSlug;
 use App\Support\CanonicalUrlNormalizer;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -22,16 +23,7 @@ class StorePageRequest extends FormRequest
             'slug.*' => [
                 'nullable',
                 'string',
-                function ($attribute, $value, $fail) {
-                    if (!$value) {
-                        return;
-                    }
-                    $locale = str_replace('slug.', '', $attribute);
-                    $exists = Page::where("slug->{$locale}", $value)->exists();
-                    if ($exists) {
-                        $fail("The slug for locale {$locale} is already taken.");
-                    }
-                },
+                new UniqueLocalizedSlug(Page::class),
             ],
             'content' => 'required|array',
             'status' => 'nullable|string',

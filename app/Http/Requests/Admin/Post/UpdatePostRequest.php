@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Post;
 
 use App\Models\Post;
+use App\Rules\UniqueLocalizedSlug;
 use App\Support\CanonicalUrlNormalizer;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -25,19 +26,7 @@ class UpdatePostRequest extends FormRequest
             'slug.*' => [
                 'nullable',
                 'string',
-                function ($attribute, $value, $fail) use ($ignoreId) {
-                    if (!$value) {
-                        return;
-                    }
-                    $locale = str_replace('slug.', '', $attribute);
-                    $query = Post::where("slug->{$locale}", $value);
-                    if ($ignoreId) {
-                        $query->where('id', '!=', $ignoreId);
-                    }
-                    if ($query->exists()) {
-                        $fail("The slug for locale {$locale} is already taken.");
-                    }
-                },
+                new UniqueLocalizedSlug(Post::class, $ignoreId),
             ],
             'content' => 'required|array',
             'status' => 'nullable|string',

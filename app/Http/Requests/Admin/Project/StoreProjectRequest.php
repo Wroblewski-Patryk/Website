@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Project;
 
 use App\Models\Project;
+use App\Rules\UniqueLocalizedSlug;
 use App\Support\CanonicalUrlNormalizer;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -22,16 +23,7 @@ class StoreProjectRequest extends FormRequest
             'slug.*' => [
                 'nullable',
                 'string',
-                function ($attribute, $value, $fail) {
-                    if (!$value) {
-                        return;
-                    }
-                    $locale = str_replace('slug.', '', $attribute);
-                    $exists = Project::where("slug->{$locale}", $value)->exists();
-                    if ($exists) {
-                        $fail("The slug for locale {$locale} is already taken.");
-                    }
-                },
+                new UniqueLocalizedSlug(Project::class),
             ],
             'content' => 'required|array',
             'status' => 'nullable|string',
