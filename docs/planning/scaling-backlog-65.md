@@ -68,7 +68,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-055 (P1, DONE) Prepare read-only headless API contract for public content.
 - [ ] SCL-056 (P2, TODO) Add token-scoped access model for headless read API.
 - [x] SCL-057 (P2, DONE) Add content export endpoint for external consumption.
-- [ ] SCL-058 (P2, TODO) Draft multi-tenant readiness architecture baseline.
+- [x] SCL-058 (P2, DONE) Draft multi-tenant readiness architecture baseline.
 - [ ] SCL-059 (P2, TODO) Add tenant-aware key strategy for cache/session design.
 - [ ] SCL-060 (P3, TODO) Add media lifecycle policy (archive, retention, purge).
 
