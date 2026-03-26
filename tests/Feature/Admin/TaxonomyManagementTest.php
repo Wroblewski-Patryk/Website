@@ -86,5 +86,47 @@ class TaxonomyManagementTest extends TestCase
             'slug->en' => 'zmieniona',
         ]);
     }
-}
 
+    public function test_admin_can_bulk_delete_taxonomies_from_shared_resource_table_contract(): void
+    {
+        $toDelete = Taxonomy::query()->create([
+            'type' => 'category',
+            'module' => 'posts',
+            'order' => 1,
+            'title' => ['pl' => 'A', 'en' => 'A'],
+            'slug' => ['pl' => 'a', 'en' => 'a'],
+            'description' => ['pl' => '', 'en' => ''],
+        ]);
+
+        $alsoDelete = Taxonomy::query()->create([
+            'type' => 'category',
+            'module' => 'posts',
+            'order' => 2,
+            'title' => ['pl' => 'B', 'en' => 'B'],
+            'slug' => ['pl' => 'b', 'en' => 'b'],
+            'description' => ['pl' => '', 'en' => ''],
+        ]);
+
+        $keep = Taxonomy::query()->create([
+            'type' => 'tag',
+            'module' => 'posts',
+            'order' => 3,
+            'title' => ['pl' => 'C', 'en' => 'C'],
+            'slug' => ['pl' => 'c', 'en' => 'c'],
+            'description' => ['pl' => '', 'en' => ''],
+        ]);
+
+        $response = $this->actingAs($this->admin)->postJson(route('admin.taxonomies.bulk-action'), [
+            'action' => 'delete',
+            'ids' => [$toDelete->id, $alsoDelete->id],
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('data.action', 'delete')
+            ->assertJsonPath('data.count', 2);
+
+        $this->assertDatabaseMissing('taxonomies', ['id' => $toDelete->id]);
+        $this->assertDatabaseMissing('taxonomies', ['id' => $alsoDelete->id]);
+        $this->assertDatabaseHas('taxonomies', ['id' => $keep->id]);
+    }
+}

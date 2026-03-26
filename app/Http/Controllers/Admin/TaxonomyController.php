@@ -130,6 +130,46 @@ class TaxonomyController extends Controller
         return back()->with('success', 'admin.taxonomy.deleted');
     }
 
+    public function bulkAction(Request $request)
+    {
+        $validated = $request->validate([
+            'action' => ['required', 'string', 'in:delete'],
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:taxonomies,id'],
+            'type' => ['nullable', 'string'],
+            'module' => ['nullable', 'string'],
+        ]);
+
+        $query = Taxonomy::query()->whereIn('id', $validated['ids']);
+
+        if (filled($validated['type'] ?? null)) {
+            $query->where('type', $validated['type']);
+        }
+
+        if (filled($validated['module'] ?? null)) {
+            $query->where('module', $validated['module']);
+        }
+
+        $count = (clone $query)->count();
+
+        if ($count === 0) {
+            return response()->json([
+                'message' => 'No matching taxonomy rows found for selected ids.',
+            ], 422);
+        }
+
+        $query->delete();
+
+        return response()->json([
+            'message' => 'Taxonomies updated successfully.',
+            'data' => [
+                'action' => $validated['action'],
+                'count' => $count,
+                'ids' => $validated['ids'],
+            ],
+        ]);
+    }
+
     private function resolveActiveLocales(): array
     {
         $codes = Language::query()

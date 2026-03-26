@@ -54,6 +54,7 @@ Route::middleware('permission:manage-content')->group(function () {
     Route::post('taxonomies', [\App\Http\Controllers\Admin\TaxonomyController::class, 'store'])->name('taxonomies.store');
     Route::put('taxonomies/{taxonomy}', [\App\Http\Controllers\Admin\TaxonomyController::class, 'update'])->name('taxonomies.update');
     Route::delete('taxonomies/{taxonomy}', [\App\Http\Controllers\Admin\TaxonomyController::class, 'destroy'])->name('taxonomies.destroy');
+    Route::post('taxonomies/bulk-action', [\App\Http\Controllers\Admin\TaxonomyController::class, 'bulkAction'])->name('taxonomies.bulk-action');
     
     Route::get('blocks', [\App\Http\Controllers\Admin\DashboardController::class, 'blocks'])->name('blocks');
 });

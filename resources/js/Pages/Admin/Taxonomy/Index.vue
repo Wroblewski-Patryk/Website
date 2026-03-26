@@ -75,6 +75,10 @@ const columns = [
     { key: 'actions', label: t('admin.common.actions', 'Actions'), sortable: false, align: 'right' }
 ];
 
+const bulkActions = [
+    { value: 'delete', label: t('admin.common.delete', 'Delete') }
+];
+
 const types = [
     { id: 'category', label: t('admin.taxonomy.type_category', 'Categories'), icon: markRaw(PhFileText) },
     { id: 'tag', label: t('admin.taxonomy.type_tag', 'Tags'), icon: markRaw(PhTag) }
@@ -236,6 +240,8 @@ watch(() => form.title[currentLocale.value], (newVal) => {
             :resources="taxonomies"
             :columns="columns"
             :search-placeholder="t('admin.common.search_placeholder', 'Search...')"
+            :bulk-route="route('admin.taxonomies.bulk-action')"
+            :bulk-actions="bulkActions"
             :persistence-key="'taxonomy-' + currentType"
             ref="tableRef"
             @create="openCreate"
