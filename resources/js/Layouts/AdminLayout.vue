@@ -4,7 +4,7 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import { useTranslations } from '@/Composables/useTranslations';
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue';
 import ToastContainer from '@/Components/ToastContainer.vue';
-import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGearSix, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhUsers, PhSignOut, PhLifebuoy, PhPlus, PhCaretDown, PhUserCircle } from '@phosphor-icons/vue';
+import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGearSix, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhUsers, PhSignOut, PhLifebuoy, PhPlus, PhCaretDown } from '@phosphor-icons/vue';
 import SidebarGroup from '@/Components/Admin/Sidebar/SidebarGroup.vue';
 import SidebarItem from '@/Components/Admin/Sidebar/SidebarItem.vue';
 import SidebarChild from '@/Components/Admin/Sidebar/SidebarChild.vue';
@@ -234,10 +234,10 @@ const userAvatarUrl = computed(() => {
                     <li v-for="theme in themesList" :key="theme">
                         <a :class="['flex items-center justify-between gap-3', { 'active': currentTheme === theme }]" @click="currentTheme = theme">
                             <span class="capitalize">{{ theme }}</span>
-                            <span class="flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 rounded-full bg-primary border border-base-300/40"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-secondary border border-base-300/40"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-accent border border-base-300/40"></span>
+                            <span :data-theme="theme" class="flex items-center gap-1.5 rounded-full px-1.5 py-1 bg-base-100/80 border border-base-300/60">
+                                <span class="w-2.5 h-2.5 rounded-full bg-primary border border-base-300/50"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-secondary border border-base-300/50"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-accent border border-base-300/50"></span>
                             </span>
                         </a>
                     </li>
@@ -268,14 +268,14 @@ const userAvatarUrl = computed(() => {
                 <!-- Admin Profile/Logout Dropdown -->
                 <TopbarDropdown trigger-class="btn-circle h-10 w-10 min-h-10 p-0 ml-1 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1" menu-class="w-56 gap-1">
                     <template #trigger>
-                        <div class="w-9 h-9 rounded-full overflow-hidden bg-base-200 text-base-content/70 flex items-center justify-center">
+                        <div class="w-9 h-9 rounded-full overflow-hidden bg-base-200 text-base-content/70 flex items-center justify-center pointer-events-none">
                             <img
                                 v-if="userAvatarUrl"
                                 :src="userAvatarUrl"
                                 :alt="$page.props.auth?.user?.name || 'User avatar'"
                                 class="w-full h-full object-cover"
                             />
-                            <PhUserCircle v-else weight="fill" class="w-6 h-6" />
+                            <PhUser v-else weight="regular" class="w-5 h-5" />
                         </div>
                     </template>
                     <li class="menu-title flex flex-col items-start gap-0 p-3 border-b border-base-200/50 mb-1 pointer-events-none">
