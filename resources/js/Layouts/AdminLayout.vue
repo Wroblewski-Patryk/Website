@@ -232,14 +232,13 @@ const userAvatarUrl = computed(() => {
                         <span class="text-sm font-bold uppercase hidden sm:block">{{ $page.props.locale || 'en' }}</span>
                         <svg class="w-3 h-3 opacity-60 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </template>
-                    <li class="menu-title px-4 py-2 opacity-50 text-xs tracking-wider"><span>{{ t('admin.nav.language', 'Language') }}</span></li>
+                    <li class="menu-title px-4 py-2 opacity-50 text-xs tracking-wider uppercase"><span>{{ t('admin.nav.language', 'Language') }}</span></li>
                     <template v-if="$page.props.languages && $page.props.languages.length">
                         <li v-for="lang in $page.props.languages.filter(l => l && l.code)" :key="lang.code">
-                            <a :class="['group flex items-center gap-3 py-2 px-3 rounded-lg transition-colors', { 'active !bg-primary !text-primary-content': $page.props.locale === lang.code }]" @click.prevent="changeLanguage(lang.code)">
-                                <span :class="['fi', `fi-${getFlagCode(lang.code)}`, 'inline-block', 'w-6', 'h-[18px]', 'rounded-sm', 'shadow-sm', 'transition-transform', 'group-hover:scale-110']"></span>
+                            <a :class="['group flex items-center gap-3 py-2 px-3 rounded-box transition-colors', { 'active !bg-primary !text-primary-content': $page.props.locale === lang.code }]" @click.prevent="changeLanguage(lang.code)">
+                                <span :class="['fi', `fi-${getFlagCode(lang.code)}`, 'inline-block', 'w-6', 'h-[18px]', 'rounded-sm', 'transition-transform', 'group-hover:scale-110']"></span>
                                 <div class="flex flex-col flex-1">
                                     <span class="text-sm font-semibold leading-none">{{ lang.name }}</span>
-                                    <span class="text-[10px] uppercase font-bold opacity-60 mt-1">{{ lang.code }}</span>
                                 </div>
                                 <svg v-if="$page.props.locale === lang.code" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                             </a>
@@ -248,19 +247,22 @@ const userAvatarUrl = computed(() => {
                 </TopbarDropdown>
 
                 <!-- Color Themes Dropdown -->
-                <TopbarDropdown trigger-class="btn-circle h-10 w-10 min-h-10 p-0" menu-class="w-52">
+                <TopbarDropdown trigger-class="h-10 min-h-10 px-3 rounded-full sm:rounded-box flex flex-nowrap items-center gap-2" menu-class="w-52">
                     <template #trigger>
-                        <PhPalette weight="regular" class="w-5 h-5 text-base-content/70" />
+                        <PhPalette weight="regular" class="w-5 h-5" />
+                        <span class="text-sm font-bold capitalize hidden sm:block">{{ currentTheme }}</span>
+                        <svg class="w-3 h-3 opacity-60 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </template>
-                    <li class="menu-title"><span>{{ t('admin.theme.select_theme', 'Choose Theme') }}</span></li>
+                    <li class="menu-title px-4 py-2 opacity-50 text-xs tracking-wider uppercase"><span>{{ t('admin.theme.theme', 'Theme') }}</span></li>
                     <li v-for="theme in themesList" :key="theme">
-                        <a :class="['flex items-center justify-between gap-3', { 'active': currentTheme === theme }]" @click="currentTheme = theme">
-                            <span class="capitalize">{{ theme }}</span>
+                        <a :class="['group flex items-center gap-3 py-2 px-3 rounded-box transition-colors', { 'active !bg-primary !text-primary-content': currentTheme === theme }]" @click="currentTheme = theme">
                             <span :data-theme="theme" class="flex items-center gap-1.5 rounded-full px-1.5 py-1 bg-base-100/80 border border-base-300/60">
                                 <span class="w-2.5 h-2.5 rounded-full bg-primary border border-base-300/50"></span>
                                 <span class="w-2.5 h-2.5 rounded-full bg-secondary border border-base-300/50"></span>
                                 <span class="w-2.5 h-2.5 rounded-full bg-accent border border-base-300/50"></span>
                             </span>
+                            <span class="capitalize flex-1 text-sm font-semibold leading-none">{{ theme }}</span>
+                            <svg v-if="currentTheme === theme" class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </a>
                     </li>
                 </TopbarDropdown>

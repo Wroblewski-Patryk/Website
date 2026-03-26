@@ -1,10 +1,10 @@
 <template>
-    <div class="toast toast-end toast-top z-[100] p-4 gap-2">
+    <div class="toast toast-end toast-top z-[100] p-4 gap-2 pointer-events-none">
         <transition-group name="toast-fade">
             <div 
                 v-for="toast in store.toasts" 
                 :key="toast.id"
-                class="alert shadow-lg border-l-4 min-w-[300px] flex justify-between items-start"
+                class="alert shadow-lg border-l-4 min-w-[300px] flex justify-between items-start pointer-events-auto"
                 :class="[
                     toast.type === 'success' ? 'alert-success border-l-success' : '',
                     toast.type === 'error' ? 'alert-error border-l-error' : '',
