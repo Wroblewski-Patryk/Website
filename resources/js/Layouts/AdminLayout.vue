@@ -224,7 +224,7 @@ const userAvatarUrl = computed(() => {
                 <GlobalSearchDropdown />
             </div>
             
-            <div class="flex-none gap-2">
+            <div class="flex-none flex items-center gap-3">
                 <!-- Language Dropdown -->
                 <TopbarDropdown trigger-class="h-10 min-h-10 px-3 rounded-full sm:rounded-box flex flex-nowrap items-center gap-2" menu-class="w-52">
                     <template #trigger>
@@ -268,7 +268,7 @@ const userAvatarUrl = computed(() => {
                 <!-- Admin Profile/Logout Dropdown -->
                 <TopbarDropdown trigger-class="btn-circle h-10 w-10 min-h-10 p-0 ml-1 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1" menu-class="w-56 gap-1">
                     <template #trigger>
-                        <div class="w-9 h-9 rounded-full overflow-hidden bg-base-200 text-base-content/70 flex items-center justify-center pointer-events-none">
+                        <div class="w-9 h-9 rounded-full overflow-hidden bg-base-200 text-base-content/70 flex items-center justify-center">
                             <img
                                 v-if="userAvatarUrl"
                                 :src="userAvatarUrl"

@@ -2,12 +2,12 @@
     <details
         ref="rootRef"
         class="dropdown dropdown-end"
-        @toggle="handleToggle"
     >
         <summary
             :tabindex="tabindex"
             :class="triggerClasses"
             role="button"
+            @click.prevent="toggleOpen"
         >
             <slot name="trigger" />
         </summary>
@@ -62,8 +62,13 @@ function closeOtherDropdowns() {
     });
 }
 
-function handleToggle() {
-    if (rootRef.value?.open) {
+function toggleOpen() {
+    if (!rootRef.value) return;
+
+    const shouldOpen = !rootRef.value.open;
+    rootRef.value.open = shouldOpen;
+
+    if (shouldOpen) {
         closeOtherDropdowns();
     }
 }
