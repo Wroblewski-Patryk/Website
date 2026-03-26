@@ -57,8 +57,15 @@ export function useTranslations() {
 
         if (typeof obj === 'string') {
             const translations = page.props.translations || {};
+            const normalizedAdminKey = obj.startsWith('admin.')
+                ? obj.slice('admin.'.length)
+                : null;
+
             if (translations[obj]) {
                 result = translations[obj];
+            } else if (normalizedAdminKey && translations[normalizedAdminKey]) {
+                // Compatibility bridge: admin UI historically stores keys without `admin.` prefix.
+                result = translations[normalizedAdminKey];
             } else {
                 result = fallback || obj;
             }

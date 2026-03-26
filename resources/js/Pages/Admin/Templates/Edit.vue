@@ -4,14 +4,26 @@
             v-model:title="form.title"
             :module-label="template?.id ? t('admin.templates.edit_template', 'Edit Template') : t('admin.templates.add_template', 'Add New Template')"
             :categories="store.categories"
+            :module-categories="scopedModuleCategories"
             :saving="form.processing"
             :templates="templates"
             :preview-url="previewUrl"
             @save="save"
+            @autosave="save"
         >
             <template #info>
                 <div class="flex flex-col gap-6">
                     <div class="space-y-4">
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.common.name', 'Name') }}</span></label>
+                            <input
+                                type="text"
+                                v-model="form.title[activeLocale]"
+                                class="input input-bordered input-sm focus:border-primary/50 transition-all"
+                                :placeholder="t('admin.templates.title_field', 'Template Name')"
+                            />
+                        </div>
+
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.common.url_slug', 'URL Slug') }}</span></label>
                             <div class="join w-full">
@@ -247,7 +259,35 @@ const activeLocale = computed(() => store.editingLocale || pageProps.locale || f
 
 const props = defineProps({
     template: Object,
+    moduleCategories: {
+        type: Array,
+        default: () => []
+    },
     templates: [Array, Object],
+});
+
+const moduleCategories = computed(() => props.moduleCategories || []);
+const scopedModuleCategories = computed(() => {
+    const templateType = String(form.type || 'page');
+
+    return moduleCategories.value
+        .map((category) => {
+            const blocks = Array.isArray(category.blocks)
+                ? category.blocks.filter((block) => {
+                    if (!Array.isArray(block?.template_types) || block.template_types.length === 0) {
+                        return true;
+                    }
+
+                    return block.template_types.includes(templateType);
+                })
+                : [];
+
+            return {
+                ...category,
+                blocks,
+            };
+        })
+        .filter((category) => Array.isArray(category.blocks) && category.blocks.length > 0);
 });
 
 const store = useBlockBuilderStore();
@@ -264,6 +304,7 @@ const form = useForm({
     title: isObject(props.template?.title) ? props.template.title : getEmptyLocales(),
     type: props.template?.type || 'header',
     content: props.template?.content || [],
+    optimistic_lock: props.template?.updated_at || null,
     is_default: props.template?.is_default ?? false,
     // SEO Fields
     meta_title: isObject(props.template?.meta_title) ? props.template.meta_title : getEmptyLocales(),
@@ -335,18 +376,31 @@ const closeRevisionDiff = () => {
     selectedRevision.value = null;
 };
 
-const save = () => {
+const save = ({ autosave = false } = {}) => {
     form.content = store.blocks;
-    
+
     if (props.template?.id) {
         form.put(route('admin.templates.update', props.template.id), {
             onSuccess: () => {
                 store.isDirty = false;
-                toast.success('Szablon został pomyślnie zaktualizowany! 🎉');
+                store.markSavedSnapshot();
+                form.optimistic_lock = new Date().toISOString();
+                if (!autosave) {
+                    toast.success('Template updated successfully.');
+                }
             },
             onError: (errors) => {
                 console.error(errors);
-                toast.error('Wystąpił błąd podczas zapisywania szablonu. ❌');
+                if (errors?.optimistic_lock) {
+                    const message = Array.isArray(errors.optimistic_lock)
+                        ? errors.optimistic_lock[0]
+                        : errors.optimistic_lock;
+                    store.setAutosaveConflict({ message });
+                    return;
+                }
+                if (!autosave) {
+                    toast.error('Could not save template.');
+                }
             },
             preserveScroll: true,
             preserveState: true
@@ -355,11 +409,16 @@ const save = () => {
         form.post(route('admin.templates.store'), {
             onSuccess: () => {
                 store.isDirty = false;
-                toast.success('Szablon został pomyślnie utworzony! ✨');
+                store.markSavedSnapshot();
+                if (!autosave) {
+                    toast.success('Template created successfully.');
+                }
             },
             onError: (errors) => {
                 console.error(errors);
-                toast.error('Wystąpił błąd podczas tworzenia szablonu. ❌');
+                if (!autosave) {
+                    toast.error('Could not create template.');
+                }
             }
         });
     }

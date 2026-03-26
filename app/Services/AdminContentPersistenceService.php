@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 
 class AdminContentPersistenceService
 {
+    private const DEFAULT_EXCEPT = [
+        'optimistic_lock',
+    ];
     /**
      * Persist a new content model with shared relation sync workflow.
      *
@@ -22,8 +25,10 @@ class AdminContentPersistenceService
         array $except = []
     ): Model {
         return DB::transaction(function () use ($modelClass, $payload, $request, $syncTaxonomies, $except) {
+            $excluded = array_values(array_unique([...self::DEFAULT_EXCEPT, ...$except]));
+
             /** @var Model $model */
-            $model = $modelClass::create(Arr::except($payload, $except));
+            $model = $modelClass::create(Arr::except($payload, $excluded));
             $syncTaxonomies($model, $request);
 
             return $model;
@@ -42,8 +47,10 @@ class AdminContentPersistenceService
         array $except = []
     ): void {
         DB::transaction(function () use ($model, $payload, $request, $saveRevision, $syncTaxonomies, $except) {
+            $excluded = array_values(array_unique([...self::DEFAULT_EXCEPT, ...$except]));
+
             $saveRevision($model);
-            $model->update(Arr::except($payload, $except));
+            $model->update(Arr::except($payload, $excluded));
             $syncTaxonomies($model, $request);
         });
     }

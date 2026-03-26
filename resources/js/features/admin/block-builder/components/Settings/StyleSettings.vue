@@ -477,20 +477,49 @@
         <!-- 8. Spacing -->
         <AdminCollapse :title="t('admin.theme.spacing', 'Spacing')" :icon="PhFrameCorners" persistKey="style_spacing">
             <div class="space-y-6 pt-1">
+                <div class="rounded-xl border border-base-content/10 bg-base-200/30 p-2">
+                    <div class="mb-2 text-[10px] uppercase font-bold tracking-widest opacity-50">
+                        {{ t('admin.builder.breakpoint_target', 'Target Breakpoint') }}
+                    </div>
+                    <div class="join w-full">
+                        <button
+                            v-for="bp in breakpointOptions"
+                            :key="bp.id"
+                            type="button"
+                            class="btn btn-xs join-item flex-1"
+                            :class="activeSpacingBreakpoint === bp.id ? 'btn-primary' : 'btn-ghost opacity-70'"
+                            @click="activeSpacingBreakpoint = bp.id"
+                        >
+                            <component :is="bp.icon" class="h-3.5 w-3.5" />
+                            <span>{{ bp.label }}</span>
+                        </button>
+                    </div>
+                </div>
+
                 <LinkedUnitInput 
-                    v-model:top="modelValue.marginTop"
-                    v-model:right="modelValue.marginRight"
-                    v-model:bottom="modelValue.marginBottom"
-                    v-model:left="modelValue.marginLeft"
+                    :top="responsiveSpacing.marginTop"
+                    :right="responsiveSpacing.marginRight"
+                    :bottom="responsiveSpacing.marginBottom"
+                    :left="responsiveSpacing.marginLeft"
+                    @update:top="setResponsiveSpacing('marginTop', $event)"
+                    @update:right="setResponsiveSpacing('marginRight', $event)"
+                    @update:bottom="setResponsiveSpacing('marginBottom', $event)"
+                    @update:left="setResponsiveSpacing('marginLeft', $event)"
                     :label="t('admin.builder.style_margin', 'Margin')" 
+                    :allow-auto="true"
                 />
                 <div class="divider my-0 opacity-10"></div>
                 <LinkedUnitInput 
-                    v-model:top="modelValue.paddingTop"
-                    v-model:right="modelValue.paddingRight"
-                    v-model:bottom="modelValue.paddingBottom"
-                    v-model:left="modelValue.paddingLeft"
+                    :top="responsiveSpacing.paddingTop"
+                    :right="responsiveSpacing.paddingRight"
+                    :bottom="responsiveSpacing.paddingBottom"
+                    :left="responsiveSpacing.paddingLeft"
+                    @update:top="setResponsiveSpacing('paddingTop', $event)"
+                    @update:right="setResponsiveSpacing('paddingRight', $event)"
+                    @update:bottom="setResponsiveSpacing('paddingBottom', $event)"
+                    @update:left="setResponsiveSpacing('paddingLeft', $event)"
                     :label="t('admin.builder.style_padding', 'Padding')" 
+                    :allow-auto="true"
                 />
             </div>
         </AdminCollapse>
@@ -528,12 +557,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 import { useTranslations } from '@/Composables/useTranslations';
 import AdminCollapse from '@/features/admin/shared/components/AdminCollapse.vue';
 import FillControl from '@/features/admin/theme/components/FillControl.vue';
 import LinkedUnitInput from '@/features/admin/theme/components/LinkedUnitInput.vue';
 import UnitInput from '@/features/admin/theme/components/UnitInput.vue';
+import { getResponsiveSpacingValue, normalizeBreakpoint, setResponsiveSpacingValue } from '@/features/admin/block-builder/utils/responsiveSpacing';
 import { 
     PhTextAlignLeft, PhTextAlignCenter, PhTextAlignRight, PhTextAlignJustify, 
     PhAlignLeftSimple, PhAlignCenterHorizontalSimple, PhAlignRightSimple,
@@ -544,7 +574,7 @@ import {
     PhArrowsInLineHorizontal, PhArrowsInLineVertical, PhCircleDashed,
     PhDotsThreeOutline, PhDotsThreeOutlineVertical,
     PhBoundingBox, PhSelectionBackground, PhSlidersHorizontal, PhTrash,
-    PhLayout, PhColumns, PhRows, PhArrowUDownRight
+    PhLayout, PhColumns, PhRows, PhArrowUDownRight, PhDesktop, PhDeviceTablet, PhDeviceMobile
 } from '@phosphor-icons/vue';
 
 const props = defineProps({
@@ -558,6 +588,48 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'reset']);
 
 const { t } = useTranslations();
+const builderViewport = inject('builderViewport', null);
+
+const breakpointOptions = computed(() => ([
+    { id: 'desktop', label: t('admin.builder.viewport_desktop', 'Desktop'), icon: PhDesktop },
+    { id: 'tablet', label: t('admin.builder.viewport_tablet', 'Tablet'), icon: PhDeviceTablet },
+    { id: 'phone', label: t('admin.builder.viewport_mobile', 'Mobile'), icon: PhDeviceMobile },
+]));
+
+const resolveInitialBreakpoint = () => {
+    if (!builderViewport) return 'desktop';
+    const raw = typeof builderViewport === 'object' && 'value' in builderViewport
+        ? builderViewport.value
+        : builderViewport;
+    return normalizeBreakpoint(raw);
+};
+
+const activeSpacingBreakpoint = ref(resolveInitialBreakpoint());
+
+watch(
+    () => (typeof builderViewport === 'object' && builderViewport && 'value' in builderViewport ? builderViewport.value : builderViewport),
+    (value) => {
+        const normalized = normalizeBreakpoint(value);
+        if (normalized !== activeSpacingBreakpoint.value) {
+            activeSpacingBreakpoint.value = normalized;
+        }
+    }
+);
+
+const responsiveSpacing = computed(() => ({
+    marginTop: getResponsiveSpacingValue(props.modelValue, activeSpacingBreakpoint.value, 'marginTop'),
+    marginRight: getResponsiveSpacingValue(props.modelValue, activeSpacingBreakpoint.value, 'marginRight'),
+    marginBottom: getResponsiveSpacingValue(props.modelValue, activeSpacingBreakpoint.value, 'marginBottom'),
+    marginLeft: getResponsiveSpacingValue(props.modelValue, activeSpacingBreakpoint.value, 'marginLeft'),
+    paddingTop: getResponsiveSpacingValue(props.modelValue, activeSpacingBreakpoint.value, 'paddingTop'),
+    paddingRight: getResponsiveSpacingValue(props.modelValue, activeSpacingBreakpoint.value, 'paddingRight'),
+    paddingBottom: getResponsiveSpacingValue(props.modelValue, activeSpacingBreakpoint.value, 'paddingBottom'),
+    paddingLeft: getResponsiveSpacingValue(props.modelValue, activeSpacingBreakpoint.value, 'paddingLeft'),
+}));
+
+const setResponsiveSpacing = (key, value) => {
+    setResponsiveSpacingValue(props.modelValue, activeSpacingBreakpoint.value, key, value);
+};
 
 const createFillProxy = (legacyProp, newProp) => computed({
     get: () => {
@@ -622,4 +694,3 @@ const toggleOffset = (direction) => {
     emit('update:modelValue', newModelValue);
 };
 </script>
-

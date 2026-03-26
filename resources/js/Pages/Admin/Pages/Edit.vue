@@ -4,16 +4,28 @@
             v-model:title="form.title"
             :module-label="page?.id ? t('admin.pages.edit_page', 'Edit Page') : t('admin.pages.add_page', 'Add New Page')"
             :categories="store.categories"
+            :module-categories="moduleCategories"
             :saving="form.processing"
             :templates="templates"
             :preview-url="previewUrl"
             canvas-min-height="720px"
             @save="save"
+            @autosave="save"
         >
             <!-- Info Tab -->
             <template #info>
                 <div class="flex flex-col gap-6">
                     <div class="space-y-4">
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.common.name', 'Name') }}</span></label>
+                            <input
+                                type="text"
+                                v-model="form.title[activeLocale]"
+                                class="input input-bordered input-sm focus:border-primary/50 transition-all"
+                                :placeholder="t('admin.pages.title_field', 'Page Title')"
+                            />
+                        </div>
+
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.pages.url_slug', 'URL Slug') }}</span></label>
                             <div class="join w-full">
@@ -74,7 +86,7 @@
                             <select v-model="form.template_id" class="select select-bordered select-sm text-xs w-full">
                                 <option :value="null">{{ t('admin.pages.layout_default', 'Default Page Layout') }}</option>
                                 <option v-for="t in templates.page || []" :key="t.id" :value="t.id">
-                                    {{ t.title?.[activeLocale] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled' }}
+                                    {{ t.title?.[activeLocale] || t.title?.pl || Object.values(t.title || {})[0] || translate('admin.common.untitled', 'Untitled') }}
                                 </option>
                             </select>
                         </div>
@@ -84,7 +96,7 @@
                             <select v-model="form.header_override_id" class="select select-bordered select-sm text-xs w-full">
                                 <option :value="null">{{ t('admin.pages.header_default', 'System Default Header') }}</option>
                                 <option v-for="t in templates.header || []" :key="t.id" :value="t.id">
-                                    {{ t.title?.[activeLocale] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled Header' }}
+                                    {{ t.title?.[activeLocale] || t.title?.pl || Object.values(t.title || {})[0] || translate('admin.pages.untitled_header', 'Untitled Header') }}
                                 </option>
                             </select>
                         </div>
@@ -94,7 +106,7 @@
                             <select v-model="form.sidebar_override_id" class="select select-bordered select-sm text-xs w-full">
                                 <option :value="null">{{ t('admin.pages.sidebar_default', 'System Default Sidebar') }}</option>
                                 <option v-for="t in templates.sidebar || []" :key="t.id" :value="t.id">
-                                    {{ t.title?.[activeLocale] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled Sidebar' }}
+                                    {{ t.title?.[activeLocale] || t.title?.pl || Object.values(t.title || {})[0] || translate('admin.pages.untitled_sidebar', 'Untitled Sidebar') }}
                                 </option>
                             </select>
                         </div>
@@ -104,7 +116,7 @@
                             <select v-model="form.footer_override_id" class="select select-bordered select-sm text-xs w-full">
                                 <option :value="null">{{ t('admin.pages.footer_default', 'System Default Footer') }}</option>
                                 <option v-for="t in templates.footer || []" :key="t.id" :value="t.id">
-                                    {{ t.title?.[activeLocale] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled Footer' }}
+                                    {{ t.title?.[activeLocale] || t.title?.pl || Object.values(t.title || {})[0] || translate('admin.pages.untitled_footer', 'Untitled Footer') }}
                                 </option>
                             </select>
                         </div>
@@ -128,11 +140,11 @@
                         <div class="flex flex-col gap-2 text-[11px]">
                             <div class="flex justify-between items-center bg-base-100/50 p-2 rounded-lg border border-base-content/5">
                                 <span class="opacity-60">{{ t('admin.common.created', 'Created') }}</span>
-                                <span class="font-mono">{{ page?.created_at ? new Date(page.created_at).toLocaleString() : 'New Content' }}</span>
+                                <span class="font-mono">{{ page?.created_at ? formatDateTime(page.created_at) : t('admin.common.new_content', 'New content') }}</span>
                             </div>
                             <div class="flex justify-between items-center bg-base-100/50 p-2 rounded-lg border border-base-content/5">
                                 <span class="opacity-60">{{ t('admin.common.edited', 'Last Edit') }}</span>
-                                <span class="font-mono">{{ page?.updated_at ? new Date(page.updated_at).toLocaleString() : 'N/A' }}</span>
+                                <span class="font-mono">{{ page?.updated_at ? formatDateTime(page.updated_at) : t('admin.common.not_available', 'N/A') }}</span>
                             </div>
                         </div>
                     </div>
@@ -146,12 +158,12 @@
                          <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">{{ t('admin.pages.meta_title', 'Meta Title') }}</span></label>
                             <input type="text" v-model="form.meta_title[activeLocale]" class="input input-bordered input-sm focus:input-primary transition-all" :placeholder="t('admin.pages.meta_title', 'SEO Title')" />
-                            <label class="label"><span class="label-text-alt opacity-40">{{ form.meta_title[activeLocale]?.length || 0 }}/60 chars</span></label>
+                            <label class="label"><span class="label-text-alt opacity-40">{{ (form.meta_title[activeLocale]?.length || 0) + '/60 ' + t('admin.common.characters', 'chars') }}</span></label>
                         </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">{{ t('admin.pages.meta_desc', 'Meta Description') }}</span></label>
                             <textarea v-model="form.meta_description[activeLocale]" class="textarea textarea-bordered textarea-sm focus:textarea-primary transition-all h-24" :placeholder="t('admin.pages.meta_desc', 'SEO Description')"></textarea>
-                            <label class="label"><span class="label-text-alt opacity-40">{{ form.meta_description[activeLocale]?.length || 0 }}/160 chars</span></label>
+                            <label class="label"><span class="label-text-alt opacity-40">{{ (form.meta_description[activeLocale]?.length || 0) + '/160 ' + t('admin.common.characters', 'chars') }}</span></label>
                         </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.pages.canonical_url', 'Canonical URL') }}</span></label>
@@ -164,7 +176,7 @@
                     <!-- Social Sharing (OG) -->
                     <div class="space-y-4">
                         <label class="text-[10px] font-bold uppercase tracking-widest opacity-30 flex items-center gap-2">
-                            <PhShareNetwork weight="bold" class="w-3 h-3 text-secondary" /> Social Sharing (OG)
+                            <PhShareNetwork weight="bold" class="w-3 h-3 text-secondary" /> {{ t('admin.pages.social_sharing_og', 'Social Sharing (OG)') }}
                         </label>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.pages.og_image', 'OG Image URL') }}</span></label>
@@ -198,10 +210,10 @@
                 <div v-else class="space-y-3">
                     <div v-for="rev in page.revisions" :key="rev.id" class="p-3 bg-base-200/50 rounded-xl border border-base-content/5 flex flex-col gap-2 hover:border-primary/30 transition-all group">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold opacity-70">{{ new Date(rev.created_at).toLocaleString() }}</span>
+                            <span class="text-xs font-bold opacity-70">{{ formatDateTime(rev.created_at) }}</span>
                             <button @click="restoreRevision(rev)" class="btn btn-xs btn-outline btn-primary opacity-0 group-hover:opacity-100 scale-90 transition-all">{{ t('admin.pages.restore_btn', 'Restore') }}</button>
                         </div>
-                        <span class="text-[10px] opacity-40">{{ rev.content?.length || 0 }} blocks total</span>
+                        <span class="text-[10px] opacity-40">{{ (rev.content?.length || 0) + ' ' + t('admin.pages.blocks_total', 'blocks total') }}</span>
                     </div>
                 </div>
             </template>
@@ -246,12 +258,19 @@ const props = defineProps({
         type: Array,
         default: () => []
     },
+    moduleCategories: {
+        type: Array,
+        default: () => []
+    },
     templates: [Array, Object],
     menus: Array
 });
 
+const moduleCategories = computed(() => props.moduleCategories || []);
+
 const store = useBlockBuilderStore();
 const toast = useToastStore();
+const translate = (key, fallback) => t(key, fallback);
 
 const isObject = (val) => val && typeof val === 'object' && !Array.isArray(val);
 
@@ -277,6 +296,13 @@ const form = useForm({
 });
 
 const previewUrl = computed(() => form.slug?.[activeLocale.value] ? `/${form.slug[activeLocale.value]}` : null);
+const formatDateTime = (value) => {
+    if (!value) {
+        return t('admin.common.not_available', 'N/A');
+    }
+
+    return new Date(value).toLocaleString(activeLocale.value || 'en');
+};
 
 onMounted(() => {
     store.init(props.page?.content || []);
@@ -303,34 +329,46 @@ watch(() => form.title[activeLocale.value], (newTitle) => {
 });
 
 const restoreRevision = (rev) => {
-    if (confirm(t('admin.common.are_you_sure', 'Are you sure you want to restore this version? Current unsaved changes will be lost.'))) {
+    if (confirm(t('admin.pages.restore_confirm_warning', 'Are you sure you want to restore this version? Current unsaved changes will be lost.'))) {
         router.post(route('admin.pages.revisions.restore', { page: props.page.id, revision: rev.id }), {
             optimistic_lock: form.optimistic_lock,
         }, {
             onSuccess: () => {
-                toast.success('Revision restored successfully.');
+                toast.success(t('admin.pages.revision_restored_success', 'Revision restored successfully.'));
                 store.isDirty = false;
             },
             onError: () => {
-                toast.error('Could not restore revision.');
+                toast.error(t('admin.pages.revision_restore_error', 'Could not restore revision.'));
             },
         });
     }
 };
 
-const save = () => {
+const save = ({ autosave = false } = {}) => {
     form.content = store.blocks;
-    
+
     if (props.page?.id) {
         form.put(route('admin.pages.update', props.page.id), {
             onSuccess: () => {
                 store.isDirty = false;
+                store.markSavedSnapshot();
                 form.optimistic_lock = new Date().toISOString();
-                toast.success('Strona została pomyślnie zaktualizowana! 🎉');
+                if (!autosave) {
+                    toast.success(t('admin.pages.update_success', 'Page updated successfully.'));
+                }
             },
             onError: (errors) => {
                 console.error(errors);
-                toast.error('Wystąpił błąd podczas zapisywania strony. ❌');
+                if (errors?.optimistic_lock) {
+                    const message = Array.isArray(errors.optimistic_lock)
+                        ? errors.optimistic_lock[0]
+                        : errors.optimistic_lock;
+                    store.setAutosaveConflict({ message });
+                    return;
+                }
+                if (!autosave) {
+                    toast.error(t('admin.common.error_saving', 'Error occurred while saving.'));
+                }
             },
             preserveScroll: true,
             preserveState: true
@@ -339,11 +377,16 @@ const save = () => {
         form.post(route('admin.pages.store'), {
             onSuccess: () => {
                 store.isDirty = false;
-                toast.success('Strona została pomyślnie utworzona! ✨');
+                store.markSavedSnapshot();
+                if (!autosave) {
+                    toast.success(t('admin.pages.create_success', 'Page created successfully.'));
+                }
             },
             onError: (errors) => {
                 console.error(errors);
-                toast.error('Wystąpił błąd podczas tworzenia strony. ❌');
+                if (!autosave) {
+                    toast.error(t('admin.common.error_creating', 'Error occurred while creating.'));
+                }
             }
         });
     }

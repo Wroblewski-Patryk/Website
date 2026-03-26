@@ -19,6 +19,7 @@ class MediaController extends Controller
 {
     private const DEFAULT_PER_PAGE = 40;
     private const MAX_PER_PAGE = 120;
+    private const FILE_TYPES = ['all', 'document', 'image', 'audio', 'video'];
 
     /**
      * MIME types accepted after server-side content sniffing.
@@ -41,6 +42,7 @@ class MediaController extends Controller
     public function index(Request $request)
     {
         $query = Media::query();
+        $fileType = $this->normalizeFileType((string) $request->get('file_type', 'all'));
 
         $viewType = $request->get('view_type', 'nested');
 
@@ -57,6 +59,8 @@ class MediaController extends Controller
         else {
             $query->where('folder_id', $request->get('folder_id'));
         }
+
+        $this->applyFileTypeFilter($query, $fileType);
 
         // Sorting
         $sortField = $request->get('sort', 'created_at');
@@ -91,7 +95,10 @@ class MediaController extends Controller
             'folders' => $folders,
             'subfolders' => $subfolders,
             'currentFolder' => $currentFolder,
-            'filters' => $request->only(['search', 'folder_id', 'sort', 'direction', 'view_type', 'per_page', 'pagination'])
+            'filters' => [
+                ...$request->only(['search', 'folder_id', 'sort', 'direction', 'view_type', 'per_page', 'pagination']),
+                'file_type' => $fileType,
+            ],
         ];
 
         if ($request->wantsJson()) {
@@ -99,6 +106,43 @@ class MediaController extends Controller
         }
 
         return Inertia::render('Admin/Media/Index', $data);
+    }
+
+    private function normalizeFileType(string $fileType): string
+    {
+        return in_array($fileType, self::FILE_TYPES, true) ? $fileType : 'all';
+    }
+
+    private function applyFileTypeFilter(Builder $query, string $fileType): void
+    {
+        if ($fileType === 'all') {
+            return;
+        }
+
+        if ($fileType === 'image') {
+            $query->where('mime', 'like', 'image/%');
+            return;
+        }
+
+        if ($fileType === 'audio') {
+            $query->where('mime', 'like', 'audio/%');
+            return;
+        }
+
+        if ($fileType === 'video') {
+            $query->where('mime', 'like', 'video/%');
+            return;
+        }
+
+        // Document = everything that is not image/audio/video (including unknown mime).
+        $query->where(function (Builder $q) {
+            $q->whereNull('mime')
+                ->orWhere(function (Builder $mimeQuery) {
+                    $mimeQuery->where('mime', 'not like', 'image/%')
+                        ->where('mime', 'not like', 'audio/%')
+                        ->where('mime', 'not like', 'video/%');
+                });
+        });
     }
 
     public function store(Request $request)

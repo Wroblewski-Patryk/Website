@@ -1,7 +1,7 @@
 import { 
     PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, 
     PhCube, PhLayout, PhImageSquare, PhGlobe, PhGearSix, 
-    PhUsers, PhTag, PhHash, PhList, PhPlus, PhPalette, PhTextT, PhTextH, PhSelectionAll, PhMagicWand, PhCardsThree, PhCalendarBlank
+    PhUsers, PhTag, PhHash, PhList, PhPlus, PhPalette, PhTextT, PhTextH, PhSelectionAll, PhMagicWand, PhCardsThree, PhCalendarBlank, PhBracketsCurly
 } from '@phosphor-icons/vue';
 
 export const navigation = (t) => [
@@ -93,6 +93,32 @@ export const navigation = (t) => [
                 children: [
                     { label: t('admin.common.all', 'All'), route: 'admin.templates.index', active: '/admin/templates', exact: true, icon: PhList },
                     { label: t('admin.common.add', 'Add New'), route: 'admin.templates.create', active: '/admin/templates/create', icon: PhPlus }
+                ]
+            },
+            {
+                label: t('admin.menu.composed_blocks', 'Composed Blocks'),
+                icon: PhBracketsCurly,
+                route: 'admin.composed-blocks.index',
+                createRoute: 'admin.composed-blocks.create',
+                permission: 'can_manage_settings',
+                active: '/admin/composed-blocks',
+                color: 'secondary',
+                children: [
+                    { label: t('admin.common.all', 'All'), route: 'admin.composed-blocks.index', active: '/admin/composed-blocks', exact: true, icon: PhList },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.composed-blocks.create', active: '/admin/composed-blocks/create', icon: PhPlus }
+                ]
+            },
+            {
+                label: t('admin.menu.animation_presets', 'Animation Presets'),
+                icon: PhMagicWand,
+                route: 'admin.animation-presets.index',
+                createRoute: 'admin.animation-presets.create',
+                permission: 'can_manage_settings',
+                active: '/admin/animation-presets',
+                color: 'secondary',
+                children: [
+                    { label: t('admin.common.all', 'All'), route: 'admin.animation-presets.index', active: '/admin/animation-presets', exact: true, icon: PhList },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.animation-presets.create', active: '/admin/animation-presets/create', icon: PhPlus }
                 ]
             }
         ]

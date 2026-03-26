@@ -111,4 +111,11 @@ class PostController extends BaseAdminContentController
 
         return redirect()->back()->with('success', 'posts.update_success');
     }
+
+    public function bulkAction(Request $request)
+    {
+        Gate::authorize('viewAny', Post::class);
+
+        return $this->handleBulkAction($request);
+    }
 }

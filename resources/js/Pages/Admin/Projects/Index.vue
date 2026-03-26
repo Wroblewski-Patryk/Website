@@ -49,6 +49,7 @@ function deleteProject(item) {
             :columns="columns"
             :create-route="route('admin.projects.create')"
             :create-label="t('admin.projects.create_btn', 'Create Project')"
+            :bulk-route="route('admin.projects.bulk-action')"
             persistence-key="projects"
             ref="tableRef"
             @delete-confirmed="deleteProject"

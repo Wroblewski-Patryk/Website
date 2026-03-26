@@ -13,12 +13,13 @@ const props = defineProps({
     direction: String,
     viewMode: String,
     viewType: { type: String, default: 'nested' },
+    fileType: { type: String, default: 'all' },
     selectedCount: Number,
     allSelected: Boolean
 });
 
 defineEmits([
-    'update:sort', 'update:direction', 'update:viewMode', 'update:viewType',
+    'update:sort', 'update:direction', 'update:viewMode', 'update:viewType', 'update:fileType',
     'toggle-all', 'bulk-move', 'bulk-delete'
 ]);
 </script>
@@ -91,6 +92,18 @@ defineEmits([
 
                 <!-- Sorting Zone -->
                 <div class="flex items-center gap-2">
+                    <select
+                        :value="fileType"
+                        @change="$emit('update:fileType', $event.target.value)"
+                        class="select select-sm select-bordered h-9 text-[10px] font-black uppercase tracking-widest bg-base-200/50 border-0 focus:ring-0"
+                    >
+                        <option value="all">{{ t('admin.media.filter_all', 'All files') }}</option>
+                        <option value="document">{{ t('admin.media.filter_document', 'Documents') }}</option>
+                        <option value="image">{{ t('admin.media.filter_image', 'Images') }}</option>
+                        <option value="audio">{{ t('admin.media.filter_audio', 'Audio') }}</option>
+                        <option value="video">{{ t('admin.media.filter_video', 'Video') }}</option>
+                    </select>
+
                     <select 
                         :value="sort"
                         @change="$emit('update:sort', $event.target.value)"
@@ -133,4 +146,3 @@ defineEmits([
         </div>
     </div>
 </template>
-

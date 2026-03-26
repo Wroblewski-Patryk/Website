@@ -4,14 +4,26 @@
             v-model:title="form.title"
             :module-label="post?.id ? t('admin.posts.edit_post', 'Edit Post') : t('admin.posts.add_post', 'Add New Post')"
             :categories="store.categories"
+            :module-categories="moduleCategories"
             :saving="form.processing"
             :templates="templates"
             :preview-url="previewUrl"
             @save="save"
+            @autosave="save"
         >
             <template #info>
                 <div class="flex flex-col gap-6">
                     <div class="space-y-4">
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.common.name', 'Name') }}</span></label>
+                            <input
+                                type="text"
+                                v-model="form.title[activeLocale]"
+                                class="input input-bordered input-sm focus:border-primary/50 transition-all"
+                                :placeholder="t('admin.posts.title_field', 'Post Title')"
+                            />
+                        </div>
+
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.posts.url_slug', 'URL Slug') }}</span></label>
                             <div class="join w-full">
@@ -217,8 +229,14 @@ const props = defineProps({
         type: Array,
         default: () => []
     },
+    moduleCategories: {
+        type: Array,
+        default: () => []
+    },
     templates: [Array, Object]
 });
+
+const moduleCategories = computed(() => props.moduleCategories || []);
 
 const store = useBlockBuilderStore();
 const toast = useToastStore();
@@ -286,18 +304,30 @@ const restoreRevision = (rev) => {
     }
 };
 
-const save = () => {
+const save = ({ autosave = false } = {}) => {
     form.content = store.blocks;
     if (props.post?.id) {
         form.put(route('admin.posts.update', props.post.id), {
             onSuccess: () => {
                 store.isDirty = false;
+                store.markSavedSnapshot();
                 form.optimistic_lock = new Date().toISOString();
-                toast.success('Post został pomyślnie zaktualizowany! 🎉');
+                if (!autosave) {
+                    toast.success('Post updated successfully.');
+                }
             },
             onError: (errors) => {
                 console.error(errors);
-                toast.error('Wystąpił błąd podczas zapisywania postu. ❌');
+                if (errors?.optimistic_lock) {
+                    const message = Array.isArray(errors.optimistic_lock)
+                        ? errors.optimistic_lock[0]
+                        : errors.optimistic_lock;
+                    store.setAutosaveConflict({ message });
+                    return;
+                }
+                if (!autosave) {
+                    toast.error('Could not save post.');
+                }
             },
             preserveScroll: true,
             preserveState: true
@@ -306,11 +336,16 @@ const save = () => {
         form.post(route('admin.posts.store'), {
             onSuccess: () => {
                 store.isDirty = false;
-                toast.success('Post został pomyślnie utworzony! ✨');
+                store.markSavedSnapshot();
+                if (!autosave) {
+                    toast.success('Post created successfully.');
+                }
             },
             onError: (errors) => {
                 console.error(errors);
-                toast.error('Wystąpił błąd podczas tworzenia postu. ❌');
+                if (!autosave) {
+                    toast.error('Could not create post.');
+                }
             }
         });
     }

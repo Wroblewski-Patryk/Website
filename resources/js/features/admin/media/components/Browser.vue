@@ -1,10 +1,25 @@
 <script setup>
-import { PhImageSquare } from '@phosphor-icons/vue';
+import {
+    PhImageSquare,
+    PhFolder,
+    PhFile,
+    PhCaretRight,
+    PhTrash,
+    PhEye,
+    PhLink,
+    PhPencilSimple,
+    PhVideo,
+    PhFilePdf,
+    PhFileZip
+} from '@phosphor-icons/vue';
+import { computed } from 'vue';
 import { useTranslations } from '@/Composables/useTranslations';
+import { useFormatter } from '@/Composables/useFormatter';
+import ResourceTable from '@/features/admin/shared/components/ResourceTable.vue';
 import GridItem from './GridItem.vue';
-import ListItem from './ListItem.vue';
 
 const { t } = useTranslations();
+const { formatDate } = useFormatter();
 
 const props = defineProps({
     viewMode: { type: String, default: 'grid' },
@@ -23,6 +38,74 @@ defineEmits([
     'copy-link',
     'rename'
 ]);
+
+const listRows = computed(() => {
+    const folderRows = (props.subfolders || []).map((folder) => ({
+        id: `folder-${folder.id}`,
+        original_id: folder.id,
+        row_kind: 'folder',
+        name: folder.name,
+        mime: null,
+        size: null,
+        created_at: folder.created_at,
+        item: folder,
+    }));
+
+    const mediaRows = (props.media || []).map((item) => ({
+        id: `media-${item.id}`,
+        original_id: item.id,
+        row_kind: 'media',
+        name: item.path?.split('/').pop() || item.filename || item.name || `#${item.id}`,
+        mime: item.mime,
+        size: item.size,
+        created_at: item.created_at,
+        item,
+    }));
+
+    return [...folderRows, ...mediaRows];
+});
+
+const listResources = computed(() => {
+    const rows = listRows.value;
+    const total = rows.length;
+
+    return {
+        data: rows,
+        from: total ? 1 : 0,
+        to: total,
+        total,
+        links: [],
+    };
+});
+
+const listColumns = computed(() => ([
+    { key: 'select', label: '', sortable: false, align: 'center' },
+    { key: 'preview', label: t('admin.common.preview', 'Preview'), sortable: false },
+    { key: 'name', label: t('admin.common.name', 'Name'), sortable: false },
+    { key: 'type', label: t('admin.common.type', 'Type'), sortable: false },
+    { key: 'size', label: t('admin.common.size', 'Size'), sortable: false },
+    { key: 'date', label: t('admin.common.date', 'Date'), sortable: false },
+    { key: 'actions', label: t('admin.common.actions', 'Actions'), sortable: false, align: 'right' },
+]));
+
+const isImageMime = (mime) => Boolean(mime?.startsWith('image/'));
+
+const getFileIcon = (mime) => {
+    if (!mime) return PhFile;
+    if (mime.startsWith('image/')) return PhImageSquare;
+    if (mime.startsWith('video/')) return PhVideo;
+    if (mime.includes('pdf')) return PhFilePdf;
+    if (mime.includes('zip') || mime.includes('rar')) return PhFileZip;
+    return PhFile;
+};
+
+const formatSize = (bytes) => {
+    if (!bytes) return '-';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
 </script>
 
 <template>
@@ -67,45 +150,115 @@ defineEmits([
             </div>
 
             <!-- List View -->
-            <div v-else class="bg-base-100 rounded-box border border-base-300 overflow-hidden shadow-sm mt-4">
-                <table class="table w-full">
-                    <thead>
-                        <tr class="bg-base-200/50 border-b border-base-300">
-                            <th class="w-12 bg-transparent"></th>
-                            <th class="w-16 bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest pl-6">{{ t('admin.common.preview', 'Preview') }}</th>
-                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest">{{ t('admin.common.name', 'Name') }}</th>
-                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest">{{ t('admin.common.type', 'Type') }}</th>
-                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest">{{ t('admin.common.size', 'Size') }}</th>
-                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest">{{ t('admin.common.date', 'Date') }}</th>
-                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest text-right pr-6">{{ t('admin.common.actions', 'Actions') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-base-200">
-                        <ListItem 
-                            v-for="folder in subfolders" :key="'lf-' + folder.id"
-                            type="folder"
-                            :item="folder"
-                            :is-selected="selectedFolderIds.includes(folder.id)"
-                            @folder-click="$emit('folder-click', $event)"
-                            @selection-toggle="$emit('selection-toggle', 'folder', folder.id)"
-                            @move="$emit('move', 'folder', folder.id)"
-                            @delete="$emit('delete', 'folder', folder.id)"
-                            @rename="$emit('rename', 'folder', folder)"
+            <div v-else class="mt-4">
+                <ResourceTable
+                    :show-header="false"
+                    :resources="listResources"
+                    :columns="listColumns"
+                    persistence-key="media-browser-list"
+                >
+                    <template #cell-select="{ item }">
+                        <input
+                            type="checkbox"
+                            class="checkbox checkbox-primary checkbox-sm"
+                            :checked="item.row_kind === 'folder' ? selectedFolderIds.includes(item.original_id) : selectedMediaIds.includes(item.original_id)"
+                            @change="$emit('selection-toggle', item.row_kind, item.original_id)"
                         />
+                    </template>
 
-                        <ListItem 
-                            v-for="item in media" :key="'lm-' + item.id"
-                            type="media"
-                            :item="item"
-                            :is-selected="selectedMediaIds.includes(item.id)"
-                            @selection-toggle="$emit('selection-toggle', 'media', item.id)"
-                            @preview="$emit('preview', item)"
-                            @move="$emit('move', 'media', item.id)"
-                            @delete="$emit('delete', 'media', item.id)"
-                            @copy-link="$emit('copy-link', item.path)"
-                        />
-                    </tbody>
-                </table>
+                    <template #cell-preview="{ item }">
+                        <button
+                            v-if="item.row_kind === 'folder'"
+                            type="button"
+                            class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shadow-inner"
+                            @click="$emit('folder-click', item.original_id)"
+                        >
+                            <PhFolder weight="fill" class="w-5 h-5" />
+                        </button>
+                        <button
+                            v-else
+                            type="button"
+                            class="w-10 h-10 rounded-lg bg-base-300 overflow-hidden flex items-center justify-center shadow-inner"
+                            @click="$emit('preview', item.item)"
+                        >
+                            <img v-if="isImageMime(item.mime)" :src="item.item.url" class="object-cover w-full h-full" />
+                            <component v-else :is="getFileIcon(item.mime)" class="w-5 h-5 opacity-40" />
+                        </button>
+                    </template>
+
+                    <template #cell-name="{ item }">
+                        <button
+                            v-if="item.row_kind === 'folder'"
+                            type="button"
+                            class="font-medium hover:text-primary transition-colors"
+                            @click="$emit('folder-click', item.original_id)"
+                        >
+                            {{ item.name }}
+                        </button>
+                        <span v-else class="font-medium truncate block max-w-[220px]">{{ item.name }}</span>
+                    </template>
+
+                    <template #cell-type="{ item }">
+                        <span class="badge badge-sm opacity-60 uppercase text-[10px]" :class="item.row_kind === 'folder' ? 'badge-ghost' : 'badge-outline'">
+                            {{ item.row_kind === 'folder' ? t('admin.media.folder', 'Folder') : (item.mime?.split('/')[1] || t('admin.media.file', 'File')) }}
+                        </span>
+                    </template>
+
+                    <template #cell-size="{ item }">
+                        <span class="text-xs opacity-60">{{ item.row_kind === 'folder' ? '-' : formatSize(item.size) }}</span>
+                    </template>
+
+                    <template #cell-date="{ item }">
+                        <span class="text-xs opacity-60">{{ formatDate(item.created_at) }}</span>
+                    </template>
+
+                    <template #cell-actions="{ item }">
+                        <div class="flex justify-end gap-1">
+                            <button
+                                v-if="item.row_kind === 'media'"
+                                type="button"
+                                class="btn btn-ghost btn-xs btn-square"
+                                :title="t('admin.common.preview', 'Preview')"
+                                @click="$emit('preview', item.item)"
+                            >
+                                <PhEye class="w-4 h-4" />
+                            </button>
+                            <button
+                                v-if="item.row_kind === 'media'"
+                                type="button"
+                                class="btn btn-ghost btn-xs btn-square"
+                                :title="t('admin.media.copy_link', 'Copy link')"
+                                @click="$emit('copy-link', item.item.url)"
+                            >
+                                <PhLink class="w-4 h-4" />
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-ghost btn-xs btn-square"
+                                :title="t('admin.common.rename', 'Rename')"
+                                @click="$emit('rename', item.row_kind, item.item)"
+                            >
+                                <PhPencilSimple class="w-4 h-4" />
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-ghost btn-xs btn-square"
+                                :title="t('admin.common.move', 'Move')"
+                                @click="$emit('move', item.row_kind, item.original_id)"
+                            >
+                                <PhCaretRight class="w-4 h-4" />
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-ghost btn-xs btn-square text-error"
+                                :title="t('admin.common.delete', 'Delete')"
+                                @click="$emit('delete', item.row_kind, item.original_id)"
+                            >
+                                <PhTrash class="w-4 h-4" />
+                            </button>
+                        </div>
+                    </template>
+                </ResourceTable>
             </div>
         </template>
     </div>

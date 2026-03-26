@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, watch, inject, provide, reactive } from 'vue';
+import { ref, onMounted, onUnmounted, computed, watch, inject, provide, reactive } from 'vue';
 import { useGsapRuntime } from '@/Composables/useGsapRuntime';
 import { useForm, usePage, Link } from '@inertiajs/vue3';
 // Self-import removed to avoid Vite recursion issues. 
@@ -11,6 +11,8 @@ import { useTranslations } from '@/Composables/useTranslations';
 import placeholderImg from '@/../images/placeholder.png';
 import { useToastStore } from '@/Stores/useToastStore';
 import { sanitizeHtml } from '@/Utils/sanitizeHtml';
+import { getResponsiveSpacingValue, normalizeBreakpoint, resolveBreakpointFromWidth } from '@/features/admin/block-builder/utils/responsiveSpacing';
+import { IconRenderer } from '@/features/admin/icons';
 import moment from 'moment';
 
 const props = defineProps(['block']);
@@ -18,6 +20,7 @@ const page = usePage();
 const toast = useToastStore();
 const store = useBlockBuilderStore();
 const isEditor = inject('isEditor', false);
+const builderViewport = inject('builderViewport', null);
 
 // Safe reactive injection handles both refs and plain values
 const headerContent = computed(() => {
@@ -100,11 +103,25 @@ const initAnimations = () => {
     }
 };
 
+const onRuntimeResize = () => {
+    runtimeViewportWidth.value = window.innerWidth;
+};
+
 onMounted(() => {
     if (isEditor && props.block && !Array.isArray(props.block.children)) {
         props.block.children = [];
     }
     initAnimations();
+
+    if (!isEditor && typeof window !== 'undefined') {
+        window.addEventListener('resize', onRuntimeResize);
+    }
+});
+
+onUnmounted(() => {
+    if (!isEditor && typeof window !== 'undefined') {
+        window.removeEventListener('resize', onRuntimeResize);
+    }
 });
 
 // Re-run animations if settings change in editor
@@ -118,6 +135,37 @@ const displayedProjects = computed(() => {
         return page.props.all_projects || [];
     }
     return props.block.content.projects || [];
+});
+
+const runtimeViewportWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1280);
+
+const activeSpacingBreakpoint = computed(() => {
+    if (isEditor && builderViewport) {
+        const raw = typeof builderViewport === 'object' && 'value' in builderViewport
+            ? builderViewport.value
+            : builderViewport;
+
+        return normalizeBreakpoint(raw);
+    }
+
+    return resolveBreakpointFromWidth(runtimeViewportWidth.value);
+});
+
+const composedBlockReference = computed(() => {
+    if (props.block.type !== 'composed_block') {
+        return null;
+    }
+
+    const library = Array.isArray(page.props.composed_blocks_library)
+        ? page.props.composed_blocks_library
+        : [];
+
+    const selectedId = Number(props.block?.content?.composed_block_id || 0);
+    if (!selectedId) {
+        return null;
+    }
+
+    return library.find((item) => Number(item.id) === selectedId) || null;
 });
 
 const resolveMediaUrl = (value) => {
@@ -195,14 +243,14 @@ const styleObj = computed(() => {
         backgroundAttachment: st.backgroundAttachment || (l.fixedBg ? 'fixed' : undefined),
         
         // Spacing (with theme defaults fallback)
-        marginTop: st.marginTop || themeDefaults.marginTop,
-        marginBottom: st.marginBottom || themeDefaults.marginBottom,
-        marginLeft: st.marginLeft || themeDefaults.marginLeft,
-        marginRight: st.marginRight || themeDefaults.marginRight,
-        paddingTop: st.paddingTop || themeDefaults.paddingTop,
-        paddingBottom: st.paddingBottom || themeDefaults.paddingBottom,
-        paddingLeft: st.paddingLeft || themeDefaults.paddingLeft,
-        paddingRight: st.paddingRight || themeDefaults.paddingRight,
+        marginTop: getResponsiveSpacingValue(st, activeSpacingBreakpoint.value, 'marginTop') || themeDefaults.marginTop,
+        marginBottom: getResponsiveSpacingValue(st, activeSpacingBreakpoint.value, 'marginBottom') || themeDefaults.marginBottom,
+        marginLeft: getResponsiveSpacingValue(st, activeSpacingBreakpoint.value, 'marginLeft') || themeDefaults.marginLeft,
+        marginRight: getResponsiveSpacingValue(st, activeSpacingBreakpoint.value, 'marginRight') || themeDefaults.marginRight,
+        paddingTop: getResponsiveSpacingValue(st, activeSpacingBreakpoint.value, 'paddingTop') || themeDefaults.paddingTop,
+        paddingBottom: getResponsiveSpacingValue(st, activeSpacingBreakpoint.value, 'paddingBottom') || themeDefaults.paddingBottom,
+        paddingLeft: getResponsiveSpacingValue(st, activeSpacingBreakpoint.value, 'paddingLeft') || themeDefaults.paddingLeft,
+        paddingRight: getResponsiveSpacingValue(st, activeSpacingBreakpoint.value, 'paddingRight') || themeDefaults.paddingRight,
         
         // Position
         position: st.position,
@@ -678,6 +726,13 @@ const safeHtml = (value) => sanitizeHtml(String(value ?? ''));
             </div>
         </div>
 
+        <div v-else-if="block.type === 'icon'" class="inline-flex items-center justify-center">
+            <IconRenderer
+                :icon="resolvedContent.icon || 'ph:PhStar'"
+                :style="{ fontSize: resolvedContent.size || '2rem', color: resolvedContent.color || undefined }"
+            />
+        </div>
+
         <div v-else-if="block.type === 'chat'" class="w-full flex flex-col gap-2">
             <div v-for="(msg, i) in resolvedContent.messages" :key="i" class="chat" :class="msg.side === 'start' ? 'chat-start' : 'chat-end'">
                 <div class="chat-bubble" :class="msg.side === 'start' ? 'chat-bubble-primary' : ''">{{ t(msg.text) }}</div>
@@ -720,7 +775,9 @@ const safeHtml = (value) => sanitizeHtml(String(value ?? ''));
 
         <div v-else-if="block.type === 'stat'" class="stats shadow mx-auto flex w-fit">
             <div class="stat">
-                <div class="stat-figure text-primary" v-if="resolvedContent.icon"><i :class="resolvedContent.icon + ' text-3xl'"></i></div>
+                <div class="stat-figure text-primary" v-if="resolvedContent.icon">
+                    <IconRenderer :icon="resolvedContent.icon" class="text-3xl" />
+                </div>
                 <div class="stat-title">{{ t(resolvedContent.title) }}</div>
                 <div class="stat-value text-primary">{{ t(resolvedContent.value) }}</div>
                 <div class="stat-desc">{{ t(resolvedContent.desc) }}</div>
@@ -1006,6 +1063,21 @@ const safeHtml = (value) => sanitizeHtml(String(value ?? ''));
                 {{ t(resolvedContent.words)?.split('\n')?.[0] || 'Animated Word' }}
             </span>
             <span>{{ t(resolvedContent.suffix) }}</span>
+        </div>
+
+        <div v-else-if="block.type === 'composed_block'" class="space-y-4">
+            <template v-if="composedBlockReference && Array.isArray(composedBlockReference.content) && composedBlockReference.content.length > 0">
+                <DynamicBlock
+                    v-for="child in composedBlockReference.content"
+                    :key="`composed-${block.id}-${child.id}`"
+                    :block="child"
+                />
+            </template>
+            <div v-else class="rounded-2xl border-2 border-dashed border-base-content/20 bg-base-200/20 p-6 text-center">
+                <p class="text-xs font-bold uppercase tracking-widest opacity-50">
+                    {{ resolvedContent.snapshot_title || 'Composed block not selected' }}
+                </p>
+            </div>
         </div>
 
         <div v-else-if="block.type === 'divider'" class="divider">{{ t(resolvedContent.text) }}</div>

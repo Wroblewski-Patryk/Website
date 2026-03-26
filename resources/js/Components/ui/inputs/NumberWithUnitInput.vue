@@ -3,15 +3,15 @@
         <input
             type="number"
             :value="numericValue"
-            :disabled="disabled"
+            :disabled="disabled || isAutoSelected"
             @input="handleInput($event.target.value)"
             class="input input-sm input-bordered join-item h-8 min-h-0 w-full border-r-0 bg-base-100 font-mono shadow-none focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            :class="disabled ? 'cursor-not-allowed opacity-50' : ''"
+            :class="(disabled || isAutoSelected) ? 'cursor-not-allowed opacity-50' : ''"
             :placeholder="placeholder"
         />
         <UnitSelect
             v-model="localUnit"
-            :options="units"
+            :options="unitOptions"
             :join-item="true"
             :disabled="disabled"
             width-class="w-20"
@@ -31,16 +31,37 @@ const props = defineProps({
     units: {
         type: Array,
         default: () => ['px', '%', 'rem', 'em', 'vh', 'vw']
-    }
+    },
+    allowAuto: { type: Boolean, default: false }
 });
 
 const emit = defineEmits(['update:modelValue']);
 
 const localUnit = ref('px');
 
+const unitOptions = computed(() => {
+    const base = Array.isArray(props.units) ? props.units : ['px', '%', 'rem', 'em', 'vh', 'vw'];
+    if (!props.allowAuto) {
+        return base;
+    }
+
+    if (base.includes('auto')) {
+        return base;
+    }
+
+    return ['auto', ...base];
+});
+
+const isAutoSelected = computed(() => localUnit.value === 'auto');
+
 watch(
     () => props.modelValue,
     (newVal) => {
+        if (newVal === 'auto') {
+            localUnit.value = 'auto';
+            return;
+        }
+
         if (!newVal) return;
         const match = String(newVal).match(/[a-zA-Z%]+$/);
         if (match) {
@@ -51,12 +72,18 @@ watch(
 );
 
 const numericValue = computed(() => {
+    if (props.modelValue === 'auto') return '';
     if (!props.modelValue) return '';
     const match = String(props.modelValue).match(/^-?\d*\.?\d+/);
     return match ? match[0] : '';
 });
 
 const handleInput = (val) => {
+    if (isAutoSelected.value) {
+        emit('update:modelValue', 'auto');
+        return;
+    }
+
     if (val === '' || val === null || val === undefined) {
         emit('update:modelValue', undefined);
         return;
@@ -65,6 +92,11 @@ const handleInput = (val) => {
 };
 
 watch(localUnit, () => {
+    if (localUnit.value === 'auto') {
+        emit('update:modelValue', 'auto');
+        return;
+    }
+
     if (numericValue.value !== '') {
         emit('update:modelValue', `${numericValue.value}${localUnit.value}`);
     }

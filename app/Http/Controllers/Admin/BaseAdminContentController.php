@@ -8,11 +8,15 @@ use App\Models\Revision;
 use App\Models\Taxonomy;
 use App\Models\Template;
 use App\Rules\UniqueLocalizedSlug;
+use App\Services\BlockBuilder\ModuleBlockRegistry;
+use App\Support\AuditLogger;
 use App\Support\CanonicalUrlNormalizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 abstract class BaseAdminContentController extends Controller
 {
@@ -97,6 +101,7 @@ abstract class BaseAdminContentController extends Controller
                 'page' => Template::where('type', 'page')->get(),
             ],
             'languages' => Language::where('is_active', true)->get(),
+            'moduleCategories' => app(ModuleBlockRegistry::class)->resolveCategories($this->module),
         ];
 
         if ($this->useTaxonomies) {
@@ -270,6 +275,67 @@ abstract class BaseAdminContentController extends Controller
 
         $request->merge([
             'canonical_url' => CanonicalUrlNormalizer::normalize($request->input('canonical_url')),
+        ]);
+    }
+
+    /**
+     * Shared bulk action contract for base content modules.
+     */
+    protected function handleBulkAction(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $validated = $request->validate([
+            'action' => 'required|string|in:publish,unpublish,archive,delete',
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer|min:1',
+        ]);
+
+        $action = $validated['action'];
+        $ids = collect($validated['ids'])->map(fn ($id) => (int) $id)->unique()->values();
+        $models = $this->modelClass::query()->whereIn('id', $ids)->get();
+
+        if ($models->count() !== $ids->count()) {
+            return response()->json([
+                'message' => 'Some resources were not found.',
+                'code' => 'bulk_action_missing_resources',
+            ], 422);
+        }
+
+        foreach ($models as $model) {
+            Gate::authorize($action === 'delete' ? 'delete' : 'update', $model);
+        }
+
+        DB::transaction(function () use ($models, $action) {
+            foreach ($models as $model) {
+                if ($action === 'delete') {
+                    $model->delete();
+                    continue;
+                }
+
+                $model->update([
+                    'status' => match ($action) {
+                        'publish' => 'published',
+                        'unpublish' => 'draft',
+                        'archive' => 'archived',
+                    },
+                ]);
+            }
+        });
+
+        AuditLogger::log('content.bulk_action', [
+            'module' => $this->module,
+            'model' => $this->modelClass,
+            'action' => $action,
+            'ids' => $ids->all(),
+            'count' => $models->count(),
+        ]);
+
+        return response()->json([
+            'message' => 'Bulk action completed.',
+            'data' => [
+                'action' => $action,
+                'count' => $models->count(),
+                'ids' => $ids->all(),
+            ],
         ]);
     }
 }

@@ -82,8 +82,8 @@
         <div v-if="mode === 'advanced'" class="space-y-6 animate-in fade-in slide-in-from-top-1">
             <div v-if="type === 'stat'" class="space-y-3">
                 <div class="form-control">
-                    <label class="label"><span class="label-text text-[10px] uppercase font-bold opacity-50">Icon Class</span></label>
-                    <input type="text" v-model="modelValue.icon" placeholder="e.g. fas fa-bolt" class="input input-sm input-bordered w-full font-mono text-xs focus:border-primary transition-all" />
+                    <label class="label"><span class="label-text text-[10px] uppercase font-bold opacity-50">Icon</span></label>
+                    <IconPicker v-model="modelValue.icon" />
                 </div>
             </div>
 
@@ -153,6 +153,7 @@
 
 <script setup>
 import { PhPlus, PhTrash } from '@phosphor-icons/vue';
+import { IconPicker } from '@/features/admin/icons';
 
 const props = defineProps({
     modelValue: {
@@ -169,4 +170,3 @@ const props = defineProps({
     }
 });
 </script>
-

@@ -21,6 +21,7 @@ class AdminUiTranslationSeeder extends Seeder
             'media.php',
             'system.php',
             'forms.php',
+            'composed_blocks.php',
             'forms_templates.php',
             'dashboard.php',
             'users.php',

@@ -17,6 +17,7 @@ const props = defineProps({
 const languages = usePage().props.languages || [];
 const { t } = useTranslations();
 const isMediaPickerOpen = ref(false);
+const mediaTargetField = ref('default_og_image');
 const currentLocale = computed(() => usePage().props.locale || 'en');
 
 const getEmptyLocales = (field) => {
@@ -39,6 +40,11 @@ const form = useForm({
     maintenance_page_id: props.settings.maintenance_page_id || '',
     coming_soon_page_id: props.settings.coming_soon_page_id || '',
     page_404_id: props.settings.page_404_id || '',
+    page_500_id: props.settings.page_500_id || '',
+    page_503_id: props.settings.page_503_id || '',
+    brand_logo_light: props.settings.brand_logo_light || '',
+    brand_logo_dark: props.settings.brand_logo_dark || '',
+    brand_favicon: props.settings.brand_favicon || '',
     
     // SEO Settings (Dynamic)
     site_name: getEmptyLocales('site_name'),
@@ -54,8 +60,13 @@ const form = useForm({
     sitemap_cache_minutes: parseInt(props.settings.sitemap_cache_minutes) || 60,
 });
 
-function selectOgImage(file) {
-    form.default_og_image = file.url;
+function openMediaPickerFor(field) {
+    mediaTargetField.value = field;
+    isMediaPickerOpen.value = true;
+}
+
+function selectMedia(file) {
+    form[mediaTargetField.value] = file.url;
     isMediaPickerOpen.value = false;
 }
 
@@ -223,6 +234,32 @@ function saveSettings() {
                                         </select>
                                         <p class="mt-2 text-[10px] opacity-40 italic">{{ t('admin.settings.custom_404_desc', 'Global error destination.') }}</p>
                                     </div>
+
+                                    <div class="form-control w-full">
+                                        <label class="label">
+                                            <span class="label-text font-bold text-base-content/70 text-xs uppercase tracking-widest">Custom 500</span>
+                                        </label>
+                                        <select v-model="form.page_500_id" class="select select-bordered w-full bg-base-100">
+                                            <option value="">Standard 500...</option>
+                                            <option v-for="page in pages" :key="page.id" :value="page.id">
+                                                {{ t(page.title) }}
+                                            </option>
+                                        </select>
+                                        <p class="mt-2 text-[10px] opacity-40 italic">Internal server error fallback destination.</p>
+                                    </div>
+
+                                    <div class="form-control w-full">
+                                        <label class="label">
+                                            <span class="label-text font-bold text-base-content/70 text-xs uppercase tracking-widest">Custom 503</span>
+                                        </label>
+                                        <select v-model="form.page_503_id" class="select select-bordered w-full bg-base-100">
+                                            <option value="">Standard 503...</option>
+                                            <option v-for="page in pages" :key="page.id" :value="page.id">
+                                                {{ t(page.title) }}
+                                            </option>
+                                        </select>
+                                        <p class="mt-2 text-[10px] opacity-40 italic">Service unavailable / maintenance fallback destination.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -238,6 +275,56 @@ function saveSettings() {
                         </div>
                         
                         <div class="p-8 space-y-10">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-base-200/20 rounded-2xl border border-base-300/50">
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text text-xs font-bold uppercase tracking-widest opacity-70">Logo Light</span>
+                                    </label>
+                                    <div class="space-y-2">
+                                        <div class="relative w-full aspect-[4/3] rounded-xl bg-base-200 border border-dashed border-base-300 flex items-center justify-center overflow-hidden">
+                                            <img v-if="form.brand_logo_light" :src="form.brand_logo_light" class="w-full h-full object-contain p-3" />
+                                            <PhImage v-else weight="duotone" class="w-8 h-8 opacity-20" />
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button type="button" class="btn btn-xs btn-outline btn-primary" @click="openMediaPickerFor('brand_logo_light')">Select</button>
+                                            <button v-if="form.brand_logo_light" type="button" class="btn btn-xs btn-ghost text-error" @click="form.brand_logo_light = ''">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text text-xs font-bold uppercase tracking-widest opacity-70">Logo Dark</span>
+                                    </label>
+                                    <div class="space-y-2">
+                                        <div class="relative w-full aspect-[4/3] rounded-xl bg-base-200 border border-dashed border-base-300 flex items-center justify-center overflow-hidden">
+                                            <img v-if="form.brand_logo_dark" :src="form.brand_logo_dark" class="w-full h-full object-contain p-3" />
+                                            <PhImage v-else weight="duotone" class="w-8 h-8 opacity-20" />
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button type="button" class="btn btn-xs btn-outline btn-primary" @click="openMediaPickerFor('brand_logo_dark')">Select</button>
+                                            <button v-if="form.brand_logo_dark" type="button" class="btn btn-xs btn-ghost text-error" @click="form.brand_logo_dark = ''">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text text-xs font-bold uppercase tracking-widest opacity-70">Favicon</span>
+                                    </label>
+                                    <div class="space-y-2">
+                                        <div class="relative w-full aspect-[4/3] rounded-xl bg-base-200 border border-dashed border-base-300 flex items-center justify-center overflow-hidden">
+                                            <img v-if="form.brand_favicon" :src="form.brand_favicon" class="w-12 h-12 object-contain" />
+                                            <PhImage v-else weight="duotone" class="w-8 h-8 opacity-20" />
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button type="button" class="btn btn-xs btn-outline btn-primary" @click="openMediaPickerFor('brand_favicon')">Select</button>
+                                            <button v-if="form.brand_favicon" type="button" class="btn btn-xs btn-ghost text-error" @click="form.brand_favicon = ''">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Site Name -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div class="form-control">
@@ -248,6 +335,15 @@ function saveSettings() {
                                         </span>
                                     </label>
                                     <input type="text" v-model="form.site_name[currentLocale]" class="input input-bordered w-full focus:input-primary transition-all" />
+                                </div>
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text flex items-center gap-2 font-bold text-base-content/70">
+                                            <PhMapTrifold weight="duotone" class="w-4 h-4 text-primary" />
+                                            {{ t('admin.settings.site_description', 'Site Description') }} ({{ currentLocale.toUpperCase() }})
+                                        </span>
+                                    </label>
+                                    <input type="text" v-model="form.site_description[currentLocale]" class="input input-bordered w-full focus:input-primary transition-all" />
                                 </div>
                             </div>
 
@@ -301,7 +397,7 @@ function saveSettings() {
                                         <PhImage v-else weight="duotone" class="w-10 h-10 opacity-20" />
                                     </div>
                                     <div class="flex flex-col gap-2">
-                                        <button @click="isMediaPickerOpen = true" class="btn btn-sm btn-outline btn-primary">
+                                        <button @click="openMediaPickerFor('default_og_image')" class="btn btn-sm btn-outline btn-primary">
                                             {{ t('admin.settings.select_image', 'Select Image') }}
                                         </button>
                                         <button v-if="form.default_og_image" @click="form.default_og_image = ''" class="btn btn-sm btn-ghost text-error">
@@ -340,7 +436,7 @@ function saveSettings() {
         <MediaPickerModal 
             v-if="isMediaPickerOpen" 
             @close="isMediaPickerOpen = false" 
-            @select="selectOgImage" 
+            @select="selectMedia"
         />
     </AdminLayout>
 </template>

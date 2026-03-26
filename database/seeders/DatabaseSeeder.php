@@ -64,6 +64,7 @@ class DatabaseSeeder extends Seeder
             'coming_soon_page_id' => $getPageId('juz-wkrotce'),
             'default_header_id' => null,
             'default_footer_id' => null,
+            'builder_autosave_interval_minutes' => 3,
             'theme_colors' => [
                 'primary' => '#4f46e5',
                 'secondary' => '#10b981',

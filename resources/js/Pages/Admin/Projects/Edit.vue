@@ -5,14 +5,26 @@
             v-model:title="form.title"
             :module-label="project?.id ? t('admin.projects.edit_project', 'Edit Project') : t('admin.projects.add_project', 'Add New Project')"
             :categories="store.categories"
+            :module-categories="moduleCategories"
             :saving="form.processing"
             :templates="templates"
             :preview-url="previewUrl"
             @save="submit"
+            @autosave="submit"
         >
             <template #info>
                 <div class="flex flex-col gap-6">
                     <div class="space-y-4">
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.common.name', 'Name') }}</span></label>
+                            <input
+                                type="text"
+                                v-model="form.title[activeLocale]"
+                                class="input input-bordered input-sm focus:border-primary/50 transition-all"
+                                :placeholder="t('admin.projects.title_field', 'Project Title')"
+                            />
+                        </div>
+
                         <div class="form-control">
                              <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.common.url_slug', 'URL Slug') }}</span></label>
                             <div class="join w-full">
@@ -146,8 +158,14 @@ const props = defineProps({
         type: Array,
         default: () => []
     },
+    moduleCategories: {
+        type: Array,
+        default: () => []
+    },
     templates: [Array, Object],
 });
+
+const moduleCategories = computed(() => props.moduleCategories || []);
 
 const store = useBlockBuilderStore();
 const toast = useToastStore();
@@ -204,19 +222,31 @@ watch(() => form.title[activeLocale.value], (newTitle) => {
     }
 });
 
-function submit() {
+function submit({ autosave = false } = {}) {
     form.content = store.blocks;
-    
+
     if (props.project?.id) {
         form.put(route('admin.projects.update', props.project.id), {
             onSuccess: () => {
                 store.isDirty = false;
+                store.markSavedSnapshot();
                 form.optimistic_lock = new Date().toISOString();
-                toast.success(t('admin.projects.update_success', 'Project updated successfully! 🎉'));
+                if (!autosave) {
+                    toast.success(t('admin.projects.update_success', 'Project updated successfully.'));
+                }
             },
             onError: (errors) => {
                 console.error(errors);
-                toast.error(t('admin.common.error_saving', 'Error saving project. ❌'));
+                if (errors?.optimistic_lock) {
+                    const message = Array.isArray(errors.optimistic_lock)
+                        ? errors.optimistic_lock[0]
+                        : errors.optimistic_lock;
+                    store.setAutosaveConflict({ message });
+                    return;
+                }
+                if (!autosave) {
+                    toast.error(t('admin.common.error_saving', 'Error saving project.'));
+                }
             },
             preserveScroll: true,
             preserveState: true
@@ -225,11 +255,16 @@ function submit() {
         form.post(route('admin.projects.store'), {
             onSuccess: () => {
                 store.isDirty = false;
-                toast.success(t('admin.projects.create_success', 'Project created successfully! ✨'));
+                store.markSavedSnapshot();
+                if (!autosave) {
+                    toast.success(t('admin.projects.create_success', 'Project created successfully.'));
+                }
             },
             onError: (errors) => {
                 console.error(errors);
-                toast.error(t('admin.common.error_creating', 'Error creating project. ❌'));
+                if (!autosave) {
+                    toast.error(t('admin.common.error_creating', 'Error creating project.'));
+                }
             }
         });
     }

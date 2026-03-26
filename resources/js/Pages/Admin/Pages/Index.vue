@@ -48,6 +48,7 @@ function deletePage(item) {
             :columns="columns"
             :create-route="route('admin.pages.create')"
             :create-label="t('admin.pages.create_btn', 'Create Page')"
+            :bulk-route="route('admin.pages.bulk-action')"
             persistence-key="pages"
             ref="tableRef"
             @delete-confirmed="deletePage"

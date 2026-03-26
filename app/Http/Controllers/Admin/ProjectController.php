@@ -104,4 +104,11 @@ class ProjectController extends BaseAdminContentController
         $project->delete();
         return redirect()->back()->with('success', 'admin.projects.delete_success');
     }
+
+    public function bulkAction(Request $request)
+    {
+        Gate::authorize('viewAny', Project::class);
+
+        return $this->handleBulkAction($request);
+    }
 }

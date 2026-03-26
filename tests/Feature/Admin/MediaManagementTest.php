@@ -139,4 +139,80 @@ class MediaManagementTest extends TestCase
         $this->assertSame($media[0]->checksum, $media[1]->checksum);
         $this->assertSame($media[0]->id, $media[1]->duplicate_of_id);
     }
+
+    public function test_admin_media_index_filters_by_file_type(): void
+    {
+        Media::unguarded(function () {
+            Media::create([
+                'path' => 'media/photo.jpg',
+                'mime' => 'image/jpeg',
+                'size' => 1200,
+                'alt_text' => 'image',
+                'folder_id' => null,
+            ]);
+            Media::create([
+                'path' => 'media/song.mp3',
+                'mime' => 'audio/mpeg',
+                'size' => 1500,
+                'alt_text' => 'audio',
+                'folder_id' => null,
+            ]);
+            Media::create([
+                'path' => 'media/video.mp4',
+                'mime' => 'video/mp4',
+                'size' => 1800,
+                'alt_text' => 'video',
+                'folder_id' => null,
+            ]);
+            Media::create([
+                'path' => 'media/doc.pdf',
+                'mime' => 'application/pdf',
+                'size' => 2000,
+                'alt_text' => 'document',
+                'folder_id' => null,
+            ]);
+        });
+
+        $imageResponse = $this->actingAs($this->admin)->getJson(route('admin.media.index', ['file_type' => 'image']));
+        $audioResponse = $this->actingAs($this->admin)->getJson(route('admin.media.index', ['file_type' => 'audio']));
+        $videoResponse = $this->actingAs($this->admin)->getJson(route('admin.media.index', ['file_type' => 'video']));
+        $documentResponse = $this->actingAs($this->admin)->getJson(route('admin.media.index', ['file_type' => 'document']));
+
+        $imageResponse->assertOk()->assertJsonCount(1, 'media.data');
+        $audioResponse->assertOk()->assertJsonCount(1, 'media.data');
+        $videoResponse->assertOk()->assertJsonCount(1, 'media.data');
+        $documentResponse->assertOk()->assertJsonCount(1, 'media.data');
+
+        $this->assertSame('image/jpeg', $imageResponse->json('media.data.0.mime'));
+        $this->assertSame('audio/mpeg', $audioResponse->json('media.data.0.mime'));
+        $this->assertSame('video/mp4', $videoResponse->json('media.data.0.mime'));
+        $this->assertSame('application/pdf', $documentResponse->json('media.data.0.mime'));
+    }
+
+    public function test_admin_media_index_defaults_invalid_file_type_to_all(): void
+    {
+        Media::unguarded(function () {
+            Media::create([
+                'path' => 'media/a.jpg',
+                'mime' => 'image/jpeg',
+                'size' => 1200,
+                'alt_text' => 'image',
+                'folder_id' => null,
+            ]);
+            Media::create([
+                'path' => 'media/b.pdf',
+                'mime' => 'application/pdf',
+                'size' => 1500,
+                'alt_text' => 'document',
+                'folder_id' => null,
+            ]);
+        });
+
+        $response = $this->actingAs($this->admin)->getJson(route('admin.media.index', ['file_type' => 'unsupported']));
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('filters.file_type', 'all')
+            ->assertJsonCount(2, 'media.data');
+    }
 }

@@ -11,6 +11,7 @@ class TemplateController extends BaseAdminContentController
 {
     protected string $modelClass = Template::class;
     protected string $viewPath = 'Admin/Templates';
+    protected string $module = 'templates';
     protected bool $useTaxonomies = false;
     protected bool $useSlug = false;
 

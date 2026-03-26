@@ -10,13 +10,9 @@
             <div class="flex flex-col min-w-0">
                 <span v-if="moduleLabel" class="text-[9px] font-black uppercase tracking-widest opacity-30 leading-none mb-1">{{ moduleLabel }}</span>
                 <div class="flex items-center gap-1.5">
-                    <input
-                        type="text"
-                        :value="title"
-                        @input="$emit('update:title', $event.target.value)"
-                        :placeholder="t('admin.builder.untitled', 'Untitled...')"
-                        class="bg-transparent border-none focus:outline-none text-xs font-bold p-0 placeholder:opacity-30 truncate"
-                    />
+                    <span class="text-xs font-bold truncate" :title="title || t('admin.builder.untitled', 'Untitled...')">
+                        {{ title || t('admin.builder.untitled', 'Untitled...') }}
+                    </span>
                 </div>
             </div>
         </div>
@@ -88,6 +84,10 @@
 
         <!-- 7: Actions (Container 7) -->
         <div class="flex items-center gap-2 shrink-0 pl-2">
+            <div v-if="autosaveStatusLabel" class="badge badge-sm font-semibold" :class="autosaveStatusToneClass">
+                {{ autosaveStatusLabel }}
+            </div>
+
             <slot name="actions-pre"></slot>
             
             <a
@@ -131,7 +131,7 @@ import {
 import { computed } from 'vue';
 import { useTranslations } from '@/Composables/useTranslations';
 
-defineProps({
+const props = defineProps({
     title: String,
     moduleLabel: String,
     currentViewport: {
@@ -150,7 +150,15 @@ defineProps({
         type: String,
         default: ''
     },
-    saving: Boolean
+    saving: Boolean,
+    autosaveStatusLabel: {
+        type: String,
+        default: ''
+    },
+    autosaveStatusTone: {
+        type: String,
+        default: 'neutral'
+    }
 });
 
 const emit = defineEmits(['update:title', 'update:viewport', 'update:customWidth', 'update:customHeight', 'save']);
@@ -168,4 +176,12 @@ const viewports = computed(() => [
     { id: 'mobile', name: t('admin.builder.viewport_mobile', 'Mobile'), icon: PhDeviceMobile },
     { id: 'custom', name: t('admin.builder.viewport_custom', 'Custom'), icon: PhArrowsOut }
 ]);
+
+const autosaveStatusToneClass = computed(() => {
+    if (props.autosaveStatusTone === 'error') return 'badge-error';
+    if (props.autosaveStatusTone === 'warning') return 'badge-warning';
+    if (props.autosaveStatusTone === 'success') return 'badge-success';
+    if (props.autosaveStatusTone === 'info') return 'badge-info';
+    return 'badge-ghost';
+});
 </script>

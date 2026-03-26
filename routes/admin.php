@@ -10,10 +10,14 @@ Route::middleware('permission:view-admin')->name('dashboard.')->group(function (
 
 // Content Section (Admin & Editor)
 Route::middleware('permission:manage-content')->group(function () {
+    Route::get('search', \App\Http\Controllers\Admin\AdminSearchController::class)->name('search.index');
     Route::get('publication-calendar', [\App\Http\Controllers\Admin\DashboardController::class, 'publicationCalendar'])->name('publication-calendar');
     Route::get('content-export', \App\Http\Controllers\Admin\ContentExportController::class)->name('content-export');
     Route::resource('pages', AdminPageController::class)->except(['show']);
     Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->except(['show']);
+    Route::post('pages/bulk-action', [AdminPageController::class, 'bulkAction'])->name('pages.bulk-action');
+    Route::post('posts/bulk-action', [\App\Http\Controllers\Admin\PostController::class, 'bulkAction'])->name('posts.bulk-action');
+    Route::post('projects/bulk-action', [\App\Http\Controllers\Admin\ProjectController::class, 'bulkAction'])->name('projects.bulk-action');
     Route::post('pages/{page}/revisions/{revision}/restore', [AdminPageController::class, 'restoreRevision'])->name('pages.revisions.restore');
     Route::post('posts/{post}/revisions/{revision}/restore', [\App\Http\Controllers\Admin\PostController::class, 'restoreRevision'])->name('posts.revisions.restore');
 
@@ -60,6 +64,8 @@ Route::middleware('permission:manage-settings')->group(function () {
     Route::resource('languages', \App\Http\Controllers\Admin\LanguageController::class)->except(['show']);
     Route::resource('forms', \App\Http\Controllers\Admin\FormController::class)->except(['show']);
     Route::resource('templates', \App\Http\Controllers\Admin\TemplateController::class)->except(['show']);
+    Route::resource('composed-blocks', \App\Http\Controllers\Admin\ComposedBlockController::class)->except(['show']);
+    Route::resource('animation-presets', \App\Http\Controllers\Admin\AnimationPresetController::class)->except(['show']);
     Route::post('templates/{template}/revisions/{revision}/restore', [\App\Http\Controllers\Admin\TemplateController::class, 'restoreRevision'])->name('templates.revisions.restore');
 
     Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');

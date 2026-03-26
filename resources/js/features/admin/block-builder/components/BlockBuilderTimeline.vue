@@ -102,6 +102,12 @@ const gridTicks = computed(() => {
     return Array.from({ length: duration + 1 }, (_, i) => i);
 });
 
+const normalizeSeconds = (value, fallback = 0) => {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return fallback;
+    return number > 20 ? number / 1000 : number;
+};
+
 // Rebuild timeline when blocks or their animation settings change
 watch(() => props.blocks, buildTimeline, { deep: true, immediate: true });
 
@@ -128,8 +134,8 @@ function buildTimeline() {
     // Populate timeline with dummy tweens representing the blocks
     props.blocks.forEach(block => {
         const anim = block.settings?.animations || {};
-        const duration = Number(anim.duration) || 1;
-        const delay = Number(anim.delay) || 0;
+        const duration = normalizeSeconds(anim.duration, 0.8) || 0.8;
+        const delay = normalizeSeconds(anim.delay, 0) || 0;
         
         const dummyTarget = { val: 0 };
         // Add a dummy tween to the timeline
@@ -153,8 +159,8 @@ function buildTimeline() {
 
 function getTrackStyle(block) {
     const anim = block.settings?.animations || {};
-    const duration = Number(anim.duration) || 1;
-    const delay = Number(anim.delay) || 0;
+    const duration = normalizeSeconds(anim.duration, 0.8) || 0.8;
+    const delay = normalizeSeconds(anim.delay, 0) || 0;
     
     // Calculate percentages based on total timeline duration
     const maxDur = Math.max(1, totalDuration.value);

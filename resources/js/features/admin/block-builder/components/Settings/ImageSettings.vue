@@ -14,6 +14,16 @@
 
         <!-- Advanced Mode: Global Image URL -->
         <div v-if="mode === 'advanced'" class="space-y-4 animate-in fade-in slide-in-from-top-1">
+            <MediaPickerField
+                v-model="modelValue.media_id"
+                :preview-url="modelValue.url"
+                :media-type="pickerConfig?.type || 'image'"
+                :multiple="Boolean(pickerConfig?.multiple)"
+                label="Media Library"
+                @selected="applySelectedMedia"
+                @cleared="clearSelectedMedia"
+            />
+
             <div class="form-control">
                 <label class="label pb-1"><span class="label-text text-[10px] uppercase font-bold opacity-50">Image URL</span></label>
                 <div class="relative group">
@@ -33,6 +43,7 @@
 
 <script setup>
 import { PhLink } from '@phosphor-icons/vue';
+import MediaPickerField from '@/features/admin/media/components/MediaPickerField.vue';
 
 const props = defineProps({
     modelValue: {
@@ -42,7 +53,22 @@ const props = defineProps({
     mode: {
         type: String,
         default: 'content'
+    },
+    pickerConfig: {
+        type: Object,
+        default: () => ({ type: 'image', multiple: false })
     }
 });
-</script>
 
+const applySelectedMedia = (media) => {
+    if (!media) return;
+    if (media.url) {
+        props.modelValue.url = media.url;
+    }
+};
+
+const clearSelectedMedia = () => {
+    props.modelValue.url = '';
+    props.modelValue.media_id = null;
+};
+</script>

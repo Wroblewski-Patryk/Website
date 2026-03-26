@@ -26,6 +26,7 @@
                 <NumberWithUnitInput
                     :model-value="internal.top"
                     @update:modelValue="updateTop"
+                    :allow-auto="allowAuto"
                     placeholder="-"
                 />
             </div>
@@ -40,6 +41,7 @@
                         :model-value="internal.left"
                         @update:modelValue="updateLeft"
                         :disabled="linkAll || linkX"
+                        :allow-auto="allowAuto"
                         placeholder="-"
                     />
                 </div>
@@ -57,6 +59,7 @@
                         :model-value="internal.right"
                         @update:modelValue="updateRight"
                         :disabled="linkAll"
+                        :allow-auto="allowAuto"
                         placeholder="-"
                     />
                 </div>
@@ -70,6 +73,7 @@
                     :model-value="internal.bottom"
                     @update:modelValue="updateBottom"
                     :disabled="linkAll || linkY"
+                    :allow-auto="allowAuto"
                     placeholder="-"
                 />
             </div>
@@ -91,6 +95,7 @@ const props = defineProps({
     bottom: { type: [String, Number], default: '' },
     left: { type: [String, Number], default: '' },
     label: { type: String, default: '' },
+    allowAuto: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['update:top', 'update:right', 'update:bottom', 'update:left']);
@@ -252,4 +257,3 @@ const updateLeft = (val) => {
     emitChanges();
 };
 </script>
-

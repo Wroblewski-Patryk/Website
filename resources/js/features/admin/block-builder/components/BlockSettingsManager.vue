@@ -7,6 +7,7 @@
             :type="activeBlock.type"
             :templates="templates"
             :mode="mode"
+            :picker-config="pickerConfig"
         />
         <div v-else class="text-center py-10 opacity-30 italic text-xs">
             {{ t('admin.builder.no_specific_settings', 'No specific settings for {type} yet.').replace('{type}', activeBlock.type) }}
@@ -19,6 +20,7 @@ import { computed, defineAsyncComponent } from 'vue';
 import { useTranslations } from '@/Composables/useTranslations';
 import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { usePage } from '@inertiajs/vue3';
+import { hasBlockModeSettings } from '@/features/admin/block-builder/config/settingsCapabilities';
 
 const { t } = useTranslations();
 const store = useBlockBuilderStore();
@@ -125,6 +127,16 @@ const localizedContent = computed(() => {
 
 const proxiedContent = computed(() => props.mode === 'advanced' ? globalContent.value : localizedContent.value);
 
+const pickerConfigMap = {
+    image: { type: 'image', multiple: false },
+    carousel: { type: 'image', multiple: true },
+};
+
+const pickerConfig = computed(() => {
+    if (!props.activeBlock?.type) return { type: 'all', multiple: false };
+    return pickerConfigMap[props.activeBlock.type] || { type: 'all', multiple: false };
+});
+
 
 const settingsMap = {
     heading: 'HeadingSettings',
@@ -133,6 +145,7 @@ const settingsMap = {
     list: 'ListSettings',
     quote: 'QuoteSettings',
     image: 'ImageSettings',
+    icon: 'IconBlockSettings',
     video: 'VideoSettings',
     gallery: 'GallerySettings',
     carousel: 'CarouselSettings',
@@ -173,6 +186,7 @@ const settingsMap = {
     posts_list: 'AppSpecificSettings',
     projects_list: 'AppSpecificSettings',
     text_rotate: 'AppSpecificSettings',
+    composed_block: 'ComposedBlockSettings',
     custom_code: 'CustomCodeSettings'
 };
 
@@ -182,6 +196,7 @@ const settingsLoaders = {
     ListSettings: () => import('./Settings/ListSettings.vue'),
     QuoteSettings: () => import('./Settings/QuoteSettings.vue'),
     ImageSettings: () => import('./Settings/ImageSettings.vue'),
+    IconBlockSettings: () => import('./Settings/IconBlockSettings.vue'),
     VideoSettings: () => import('./Settings/VideoSettings.vue'),
     GallerySettings: () => import('./Settings/GallerySettings.vue'),
     CarouselSettings: () => import('./Settings/CarouselSettings.vue'),
@@ -195,11 +210,13 @@ const settingsLoaders = {
     DisplaySettings: () => import('./Settings/DisplaySettings.vue'),
     NavigationSettings: () => import('./Settings/NavigationSettings.vue'),
     AppSpecificSettings: () => import('./Settings/AppSpecificSettings.vue'),
+    ComposedBlockSettings: () => import('./Settings/ComposedBlockSettings.vue'),
     CustomCodeSettings: () => import('./Settings/CustomCodeSettings.vue'),
 };
 
 const settingsComponent = computed(() => {
     if (!props.activeBlock) return null;
+    if (!hasBlockModeSettings(props.activeBlock.type, props.mode)) return null;
     const componentName = settingsMap[props.activeBlock.type];
     if (!componentName) return null;
 

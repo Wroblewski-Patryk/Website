@@ -106,4 +106,11 @@ class PageController extends BaseAdminContentController
 
         return redirect()->back()->with('success', 'pages.update_success');
     }
+
+    public function bulkAction(Request $request)
+    {
+        Gate::authorize('viewAny', Page::class);
+
+        return $this->handleBulkAction($request);
+    }
 }

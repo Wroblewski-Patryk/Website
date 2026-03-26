@@ -9,7 +9,11 @@ import { useFormatter } from '@/Composables/useFormatter';
 
 const props = defineProps({
     user_item: Object,
-    roles: Array
+    roles: Array,
+    default_roles: {
+        type: Array,
+        default: () => []
+    }
 });
 
 const { t } = useTranslations();
@@ -20,7 +24,7 @@ const form = useForm({
     email: props.user_item.email || '',
     password: '',
     password_confirmation: '',
-    roles: props.user_item.roles?.map(r => r.name) || (props.user_item.id ? [] : ['editor'])
+    roles: props.user_item.roles?.map(r => r.name) || (props.default_roles.length ? props.default_roles : ['admin'])
 });
 
 const submit = () => {

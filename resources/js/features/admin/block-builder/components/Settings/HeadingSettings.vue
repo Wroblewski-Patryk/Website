@@ -3,7 +3,7 @@
         <!-- Content Mode: Text Editing -->
         <div v-if="mode === 'content'" class="form-control">
             <label class="label"><span class="label-text text-[10px] uppercase font-bold opacity-50">Heading Text</span></label>
-            <textarea v-model="modelValue.text" class="textarea textarea-bordered h-20 w-full font-bold focus:border-primary transition-all"></textarea>
+            <LightweightWysiwyg v-model="modelValue.text" />
         </div>
 
         <!-- Advanced Mode: Structural Settings -->
@@ -37,6 +37,7 @@
 
 <script setup>
 import { PhTextAlignLeft, PhTextAlignCenter, PhTextAlignRight, PhTextAlignJustify } from '@phosphor-icons/vue';
+import LightweightWysiwyg from '@/features/admin/shared/components/LightweightWysiwyg.vue';
 
 const props = defineProps({
     modelValue: {

@@ -3,6 +3,8 @@
 namespace App\Http\Middleware;
 
 use App\Models\Page;
+use App\Models\ComposedBlock;
+use App\Models\AnimationPreset;
 use App\Support\SharedInertiaCache;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
@@ -46,6 +48,8 @@ class HandleInertiaRequests extends Middleware
         $allProjects = collect();
         $themeConfig = null;
         $archivePages = collect();
+        $composedBlocksLibrary = collect();
+        $animationPresetsLibrary = collect();
 
         try {
             $settings = \Illuminate\Support\Facades\Cache::rememberForever(SharedInertiaCache::keySettings(), function () {
@@ -89,6 +93,18 @@ class HandleInertiaRequests extends Middleware
                     ->get()
                     ->keyBy('id');
             }
+
+            $composedBlocksLibrary = ComposedBlock::query()
+                ->where('is_active', true)
+                ->select(['id', 'title', 'slug', 'content', 'settings'])
+                ->orderByDesc('id')
+                ->get();
+
+            $animationPresetsLibrary = AnimationPreset::query()
+                ->where('is_active', true)
+                ->select(['id', 'name', 'slug', 'definition'])
+                ->orderBy('name')
+                ->get();
             
             $themeColors = isset($settings['theme_colors']) ? (is_array($settings['theme_colors']) ? $settings['theme_colors'] : json_decode($settings['theme_colors'], true)) : [];
             $themeRadius = isset($settings['theme_radius']) ? (is_array($settings['theme_radius']) ? $settings['theme_radius'] : json_decode($settings['theme_radius'], true)) : [];
@@ -144,6 +160,9 @@ class HandleInertiaRequests extends Middleware
             'languages' => fn () => $languages,
             'all_projects' => fn () => $allProjects,
             'theme_config' => fn () => $themeConfig,
+            'builder_settings' => fn () => [
+                'autosave_interval_minutes' => $this->normalizeAutosaveInterval($settings['builder_autosave_interval_minutes'] ?? 3),
+            ],
             'menus' => fn () => [], // Safe historical fallback
             'translations' => fn () => \Illuminate\Support\Facades\Cache::remember(SharedInertiaCache::keyTranslations(app()->getLocale()), 3600, function () {
                 return Translation::query()->select(['key', 'text'])->get()->reduce(function ($carry, $translation) {
@@ -163,7 +182,9 @@ class HandleInertiaRequests extends Middleware
             'archive_slugs' => fn () => [
                 'blog' => $this->resolveArchiveSlug($archivePages, $settings['blog_page_id'] ?? null, 'blog'),
                 'projects' => $this->resolveArchiveSlug($archivePages, $settings['projects_page_id'] ?? null, 'projects'),
-            ]
+            ],
+            'composed_blocks_library' => fn () => $composedBlocksLibrary,
+            'animation_presets_library' => fn () => $animationPresetsLibrary,
         ];
     }
 
@@ -233,5 +254,20 @@ class HandleInertiaRequests extends Middleware
         }
 
         return (string) $page->getTranslation('slug', app()->getLocale());
+    }
+
+    protected function normalizeAutosaveInterval(mixed $value): int
+    {
+        if (is_array($value)) {
+            $value = reset($value);
+        }
+
+        $interval = (int) $value;
+
+        if ($interval < 1) {
+            return 3;
+        }
+
+        return min($interval, 60);
     }
 }

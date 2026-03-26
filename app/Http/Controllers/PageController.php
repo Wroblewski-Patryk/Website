@@ -67,8 +67,8 @@ class PageController extends Controller
         // Try to find page by the FULL path first (for nested slugs or specific pages)
         $firstPage = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
             ->where(function ($query) use ($locale, $fallbackLocale, $actualPath) {
-                $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$actualPath])
-                      ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$actualPath]);
+                $query->where("slug->{$locale}", $actualPath)
+                    ->orWhere("slug->{$fallbackLocale}", $actualPath);
             })->first();
 
         // If not found, try finding a parent page (like Blog or Projects archive)
@@ -104,18 +104,35 @@ class PageController extends Controller
      */
     private function renderPage($page, $settings, $isAdmin, $comingSoonId, $page404Id)
     {
-        if (!$page || ($page->status === 'draft' && !$isAdmin)) {
+        if (!$page) {
             return $this->render404($settings, $page404Id);
         }
 
-        if ($page->status === 'planned' && !$isAdmin) {
-            $soonPage = $this->getComingSoonPage($settings);
-            if ($soonPage) {
-                return Inertia::render('Public/Page', [
-                    'page' => $soonPage,
-                    'settings' => $settings
+        if (!$isAdmin && $page->status !== 'published') {
+            $publishAt = $page->published_at;
+
+            // Planned pages with a future publish date should route to coming soon.
+            if ($page->status === 'planned' && $publishAt && $publishAt->isFuture()) {
+                $soonPage = $this->getComingSoonPage($settings);
+                if ($soonPage) {
+                    return Inertia::render('Public/Page', [
+                        'page' => $soonPage,
+                        'settings' => $settings,
+                        'coming_soon_countdown_to' => $publishAt->toIso8601String(),
+                        'coming_soon_source' => [
+                            'id' => $page->id,
+                            'title' => $page->title,
+                        ],
+                    ]);
+                }
+
+                return Inertia::render('Public/ComingSoonFallback', [
+                    'settings' => $settings,
+                    'countdown_to' => $publishAt->toIso8601String(),
                 ]);
             }
+
+            // Non-public pages without a valid schedule should return 404.
             return $this->render404($settings, $page404Id);
         }
 

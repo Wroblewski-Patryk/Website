@@ -12,6 +12,8 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         expandedNodes: {}, // Persist expanded/collapsed state of layers
         sidebarCollapses: {}, // Persist expanded/collapsed state of sidebar sections
         isEditingBlock: false,
+        lastSavedBlocks: [],
+        autosaveConflict: null,
         editingLocale: null,
         availableLocales: [],
         categories: [
@@ -97,6 +99,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 label: 'Media',
                 icon: 'PhImage',
                 blocks: [
+                    { type: 'icon', label: 'Icon', icon: 'PhStar' },
                     { type: 'image', label: 'Image', icon: 'PhImage' },
                     { type: 'video', label: 'Video', icon: 'PhVideoCamera' },
                 ]
@@ -141,6 +144,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 label: 'Extended',
                 icon: 'PhPlusCircle',
                 blocks: [
+                    { type: 'composed_block', label: 'Composed Block', icon: 'PhBracketsCurly' },
                     { type: 'posts_list', label: 'Posts', icon: 'PhArticle' },
                     { type: 'projects_list', label: 'Projects', icon: 'PhBriefcase' },
                     { type: 'text_rotate', label: 'Text Rotate', icon: 'PhArrowsClockwise' },
@@ -225,6 +229,8 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 this.blocks = Array.isArray(initialContent) ? initialContent : [];
             }
             this.isDirty = false;
+            this.lastSavedBlocks = JSON.parse(JSON.stringify(this.blocks || []));
+            this.autosaveConflict = null;
         },
         initLocales(languages, currentLocale) {
             this.availableLocales = languages || [];
@@ -255,7 +261,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 avatar: { url: 'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp', online: true },
                 badge: { text: 'New', style: 'primary' },
                 card: { title: 'Card Title', description: 'A sophisticated card component.', image: 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp', buttonText: 'Buy Now' },
-                carousel: { images: ['https://img.daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.webp'] },
+                carousel: { image_ids: [], images: ['https://img.daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.webp'] },
                 chat: { messages: [{ side: 'start', text: 'Hi!' }, { side: 'end', text: 'Hello!' }] },
                 countdown: { value: 60, unit: 'min' },
                 diff: { img1: 'https://img.daisyui.com/images/stock/photo-1560717789-0ac7c58acfa6.webp', img2: 'https://img.daisyui.com/images/stock/photo-1560717789-0ac7c58acfa6-blur.webp' },
@@ -296,8 +302,9 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                     gridConfig: { cols: '1', gap: '4' }
                 },
                 divider: { text: 'OR' },
-                image: { url: 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp', alt: '', caption: '' },
+                image: { media_id: null, url: 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp', alt: '', caption: '' },
                 video: { url: '', autoplay: false, controls: true },
+                icon: { icon: 'ph:PhStar', size: '2rem', color: '' },
 
                 // 6. Navigation
                 breadcrumbs: { items: ['Home', 'Documents', 'Add Document'] },
@@ -313,6 +320,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 mockup_window: { content: 'Window content...' },
 
                 // 8. Extended
+                composed_block: { composed_block_id: null, snapshot_title: '' },
                 posts_list: { count: 3, layout: 'grid' },
                 projects_list: { count: 3, layout: 'grid' },
                 text_rotate: { prefix: 'We are ', words: 'Creative\nAwesome\nInnovators', suffix: '!', interval: 2000 },
@@ -489,6 +497,22 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
             const element = this.blocks.splice(index, 1)[0];
             this.blocks.splice(newIndex, 0, element);
             this.isDirty = true;
+        },
+        markSavedSnapshot(blocks = null) {
+            const source = Array.isArray(blocks) ? blocks : this.blocks;
+            this.lastSavedBlocks = JSON.parse(JSON.stringify(source || []));
+            this.autosaveConflict = null;
+        },
+        setAutosaveConflict(payload = {}) {
+            this.autosaveConflict = {
+                message: payload.message || 'Autosave conflict detected.',
+                detectedAt: new Date().toISOString(),
+                localBlocks: JSON.parse(JSON.stringify(this.blocks || [])),
+                lastSavedBlocks: JSON.parse(JSON.stringify(this.lastSavedBlocks || [])),
+            };
+        },
+        clearAutosaveConflict() {
+            this.autosaveConflict = null;
         }
     },
     getters: {

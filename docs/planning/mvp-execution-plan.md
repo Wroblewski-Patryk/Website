@@ -74,6 +74,87 @@
 - [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
+- 2026-03-26: Completed FEX-078 by adding integration coverage for bulk action authorization + outcome contract (`BulkActionContractTest` with success/validation/permission cases).
+- 2026-03-26: Completed FEX-077 by adding optimistic bulk updates in shared `ResourceTable` with snapshot rollback on request failure.
+- 2026-03-26: Completed FEX-076 by adding audit logging for content bulk actions (`content.bulk_action` entries with action/module/ids metadata).
+- 2026-03-26: Completed FEX-075 by adding bulk archive/delete behavior for base content modules with explicit confirmation prompt before risky operations.
+- 2026-03-26: Completed FEX-074 by implementing bulk publish/unpublish actions for pages/posts/projects and wiring them to shared table bulk controls.
+- 2026-03-26: Completed FEX-073 by introducing bulk action API contract endpoints with validation and per-resource authorization checks.
+- 2026-03-26: Completed FEX-072 by adding select-all-visible and clear-selection behavior to shared admin table component.
+- 2026-03-26: Completed FEX-071 by introducing generic table multi-select row checkbox UX in reusable `ResourceTable`.
+- 2026-03-26: Completed FEX-079 by running full regression validation (`php artisan test` all green + `perf:smoke` no slow/error routes).
+- 2026-03-26: Completed FEX-080 by publishing implementation summary and next-lane backlog proposal in `feature-expansion-plan-2026-03.md`.
+- 2026-03-26: Completed FEX-070 by extending system page settings with additional core error mappings (`500`/`503`) and wiring exception-time custom page rendering fallback for configured statuses.
+- 2026-03-26: Completed FEX-069 by enforcing home-page status fallback rules (non-public unscheduled -> 404, planned with future publish date -> Coming Soon with countdown).
+- 2026-03-26: Completed FEX-068 by adding brand settings fields (`brand_logo_light`, `brand_logo_dark`, `brand_favicon`) and exposing site-name/description editing alongside settings-media picker flow updates.
+- 2026-03-26: Completed FEX-067 by linking animation module presets from shared Inertia library to block animation settings (preset select + apply flow).
+- 2026-03-26: Completed FEX-066 by standardizing GSAP block animation schema (enabled/trigger/preset/duration/delay/ease/timeline/tween) with legacy compatibility and timeline filter normalization.
+- 2026-03-26: Completed FEX-065 by adding animation preset module data model + admin CRUD (migration/model/controller/routes/Inertia pages + feature coverage).
+- 2026-03-26: Completed FEX-064 by exposing centralized icon set exports (`features/admin/icons/index.js`) for reuse across admin UI surfaces.
+- 2026-03-26: Completed FEX-063 by adding icon search/select picker UI to builder icon workflows (`icon` block + stat display settings) with shared renderer usage.
+- 2026-03-26: Completed FEX-062 by registering Font Awesome Free in frontend bootstrap and supporting prefixed FA rendering in icon runtime component.
+- 2026-03-26: Completed FEX-061 by adding icon library module foundation (dataset contract + set metadata + query helper) for admin/builder usage.
+- 2026-03-26: Completed FEX-060 by documenting builder design controls and WYSIWYG scope contract in architecture docs.
+- 2026-03-26: Completed FEX-059 by adding JS UX logic tests for responsive breakpoint spacing behavior and empty-tab capability filtering.
+- 2026-03-26: Completed FEX-058 by hiding block settings tabs dynamically when no controls are available for active block + mode.
+- 2026-03-26: Completed FEX-057 by persisting/loading spacing values per breakpoint (`responsiveSpacing.desktop/tablet/phone`) with runtime/editor fallback resolution.
+- 2026-03-26: Completed FEX-056 by adding breakpoint switch controls (`desktop/tablet/phone`) inside style spacing panel.
+- 2026-03-26: Completed FEX-055 by supporting `auto` unit mode in spacing controls and disabling numeric input in auto mode.
+- 2026-03-26: Completed FEX-054 by implementing spacing control group (top/right/bottom/left) with unit switching for margin and padding.
+- 2026-03-26: Completed FEX-053 by extending the same lightweight WYSIWYG content pipeline to heading/text-oriented block settings.
+- 2026-03-26: Completed FEX-052 by removing paragraph advanced alignment control (design-level alignment remains source of truth).
+- 2026-03-26: Completed FEX-051 by integrating a lightweight WYSIWYG editor for paragraph content settings (toolbar + HTML contenteditable flow).
+- 2026-03-26: Completed FEX-050 by adding coverage for module inheritance/override dedupe and composed-block rendering contract persistence/runtime payload checks.
+- 2026-03-26: Completed FEX-049 by documenting the contentType/module contract and reference implementation slice in architecture docs.
+- 2026-03-26: Completed FEX-048 by adding composed block revision snapshots + optimistic-lock conflict protection on updates (safe update path).
+- 2026-03-26: Completed FEX-047 by adding `composed_block` insertion flow in block builder (palette entry, settings selector by ID, runtime/editor rendering from shared composed blocks library).
+- 2026-03-26: Completed FEX-046 by adding admin CRUD baseline for composed blocks (controller, routes, nav entry, Inertia pages, and feature/model coverage).
+- 2026-03-26: Completed FEX-045 by adding global `composed_blocks` data model + migration (`title`, `slug`, `content`, `settings`, `is_active`) with persistence coverage.
+- 2026-03-26: Completed FEX-044 by adding template-type-scoped addon visibility for template module blocks (slots visible for `page` templates only).
+- 2026-03-26: Completed FEX-043 by wiring module-scoped palette categories into all admin block-editor pages (`pages/posts/projects/templates/forms`) through shared `moduleCategories` props.
+- 2026-03-26: Completed FEX-042 by adding `ModuleBlockRegistry` service-backed loader from `config/block_builder.php` and exposing resolved categories via base admin content shared props.
+- 2026-03-26: Completed FEX-041 by defining module block registry contract (inheritance/override + per-category block-type dedupe) with unit coverage.
+- 2026-03-26: Completed FEX-040 by documenting media picker control schema, payload, and integration contract in architecture docs.
+- 2026-03-26: Completed FEX-039 by adding regression checks for media filter behavior and persisted media ID ordering in page block content.
+- 2026-03-26: Completed FEX-038 by integrating media picker controls into first target block settings (`image`, `carousel`).
+- 2026-03-26: Completed FEX-037 by adding block-level picker configuration contract (`type`, `multiple`) in `BlockSettingsManager`.
+- 2026-03-26: Completed FEX-036 by adding preview rendering for selected media in reusable picker control (single and multi-preview variants).
+- 2026-03-26: Completed FEX-035 by preserving user click order in multi-select picker payload.
+- 2026-03-26: Completed FEX-034 by extending media picker modal/store contract with optional multi-select confirm flow.
+- 2026-03-26: Completed FEX-033 by introducing reusable `MediaPickerField` control (single-select, ID storage) and integrating it into block `image` advanced settings.
+- 2026-03-26: Completed FEX-032 by adding media type filter controls in admin media toolbar and media picker toolbar.
+- 2026-03-26: Completed FEX-031 by adding media index backend filtering by file type (`all/document/image/audio/video`) with feature test coverage.
+- 2026-03-26: Completed FEX-027 by replacing editable top-bar title input with read-only title preview in Block Builder header.
+- 2026-03-26: Completed FEX-026 by adding title inputs in Info tabs for page/post/project/template/form editors.
+- 2026-03-26: Completed FEX-030 by adding missing admin translation seeder keys for new builder/auth/search copy and validating with `TranslationIntegrityTest`.
+- 2026-03-26: Completed FEX-029 by adding keyboard-shortcuts help modal and top-bar trigger button in Block Builder.
+- 2026-03-26: Completed FEX-028 by introducing reusable `useBuilderShortcuts` map/handler service and wiring editor actions.
+- 2026-03-26: Completed FEX-025 by adding autosave status badge in Block Builder header (saved/unsaved/saving/conflict states).
+- 2026-03-26: Completed FEX-024 by adding autosave conflict modal with compare summary and reload option, explicitly without overwrite action.
+- 2026-03-25: Completed FEX-023 by validating stale optimistic-lock rejection on autosave-like update payloads (feature coverage for page update lock conflict).
+- 2026-03-25: Completed FEX-022 by adding interval-driven autosave timer service in Block Builder and wiring autosave hooks to page/post/project/template/form editors.
+- 2026-03-25: Completed FEX-021 by introducing shared `builder_autosave_interval_minutes` setting key and exposing normalized `builder_settings.autosave_interval_minutes` in Inertia shared props.
+- 2026-03-25: Completed FEX-020 by adding debounce flow and loading/empty/error states in global admin search dropdown.
+- 2026-03-25: Completed FEX-019 by wiring search result navigation and entity-type badges in navbar dropdown results.
+- 2026-03-25: Completed FEX-018 by adding keyboard navigation (`up/down/enter/esc`) for global admin search dropdown.
+- 2026-03-25: Completed FEX-017 by adding centered navbar search UI shell in admin layout.
+- 2026-03-25: Completed FEX-016 by introducing backend ranking strategy for search providers (exact > prefix > partial with status-aware boost).
+- 2026-03-25: Completed FEX-015 by adding aggregated admin search endpoint (`admin.search.index`) with standardized typed JSON envelope.
+- 2026-03-25: Completed FEX-014 by implementing `ProjectSearchProvider` for normalized project search results in admin search contract.
+- 2026-03-25: Completed FEX-013 by implementing `PostSearchProvider` for normalized post search results in admin search contract.
+- 2026-03-25: Completed FEX-012 by implementing `PageSearchProvider` for normalized page search results in admin search contract.
+- 2026-03-25: Completed FEX-011 by adding backend admin-search provider contract (`AdminSearchProvider`, `AdminSearchResult`, `AdminSearchManager`) with unit coverage and architecture note.
+- 2026-03-25: Completed FEX-010 by applying shared validation primitives to admin auth flows and installer alerts (login/forgot/reset + install steps).
+- 2026-03-25: Completed FEX-009 by introducing reusable DaisyUI validation/status primitives (`FormFieldError`, `FormStatusAlert`) for admin forms.
+- 2026-03-25: Completed FEX-008 by hardening installer access guard: `install.*` routes are blocked after installation state is detected.
+- 2026-03-25: Completed FEX-007 by adding installer finalize action (env persistence, migrate + seed execution, default language application, and installer lock creation).
+- 2026-03-25: Completed FEX-006 by adding installer step 2 for default language selection with session persistence and validation sequencing.
+- 2026-03-25: Completed FEX-005 by adding installer step 1 database connection validation (SQLite/MySQL/PostgreSQL probe + session persistence).
+- 2026-03-25: Completed FEX-004 by introducing global install-state middleware and installer entry route redirect flow for uninitialized environments.
+- 2026-03-25: Completed FEX-003 by adding admin forgot/reset password flow (routes, controller actions, Inertia views) and feature tests for reset-link dispatch and token-based password reset.
+- 2026-03-25: Completed FEX-002 by finalizing admin user creation form defaults (preselected `admin` role), enforcing role validation on create/update, and adding feature coverage for create-form authorization and defaults.
+- 2026-03-25: Completed FEX-001 by adding `UserPolicy`-based admin-only guard for user creation endpoint (`admin.users.store`) with feature tests covering admin allow + non-admin deny paths.
+- 2026-03-25: Planned feature expansion stream (FEX-001..FEX-080) in `docs/planning/feature-expansion-backlog.md` with confirmed product decisions for admin auth, installer mode, search v1 scope, block modularity, icon scope, and home fallback behavior.
 - 2026-03-24: Introduced scaling execution documentation and 65-item backlog.
 - 2026-03-25: Completed SCL-050 revision restore workflow with server-side safeguards and tests.
 - 2026-03-25: Completed SCL-051 publication calendar view for planned content across pages, posts, and projects.

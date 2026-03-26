@@ -17,6 +17,10 @@
   - Owner: content/runtime backend + frontend
   - Responsibilities: form definitions and runtime submissions
   - Inputs/Outputs: form JSON definitions, submission records
+- Composed Blocks
+  - Owner: block-builder domain
+  - Responsibilities: reusable user-defined multi-block compositions
+  - Inputs/Outputs: composed block definitions (`title`, `slug`, `content`, `settings`, `is_active`)
 - Projects
   - Owner: content domain
   - Responsibilities: project portfolio entities with client relation and SEO fields
@@ -33,6 +37,8 @@
   - Owner: media domain
   - Responsibilities: upload, listing, and asset references for content modules
   - Inputs/Outputs: media records + storage files
+  - Contracts:
+    - `docs/architecture/media-picker-control-contract.md`
 - RBAC
   - Owner: authz/security domain
   - Responsibilities: roles/permissions and access enforcement
@@ -41,5 +47,11 @@
 ## Cross-Module Contracts
 - Locale-aware routes and translatable fields are required across content modules.
 - Block content contracts must stay compatible between builder and renderer.
+- Module-scoped block palette contract:
+  - `docs/architecture/module-block-registry-contract.md`
+- ContentType module contract:
+  - `docs/architecture/content-type-module-contract.md`
+- Builder design controls contract:
+  - `docs/architecture/builder-design-controls-contract.md`
 - Settings and templates must remain compatible with public runtime rendering.
 - Role/permission decisions must be mirrored in admin UI visibility.

@@ -5,8 +5,10 @@ import { PhPencilSimple, PhPlusCircle, PhTag, PhPlus, PhTrash, PhHouse, PhTextT,
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ResourceTable from '@/features/admin/shared/components/ResourceTable.vue';
 import { useTranslations } from '@/Composables/useTranslations';
+import { useToastStore } from '@/Stores/useToastStore';
 
 const { t } = useTranslations();
+const toast = useToastStore();
 
 const props = defineProps({
     taxonomies: Object,
@@ -97,7 +99,7 @@ function openEdit(item) {
     form.icon = item.icon;
     
     // Handle translatable fields
-    locales.forEach(lang => {
+    locales.value.forEach(lang => {
         form.title[lang] = item.title[lang] || '';
         form.slug[lang] = item.slug[lang] || '';
         form.description[lang] = item.description[lang] || '';
@@ -108,19 +110,29 @@ function openEdit(item) {
 }
 
 function submit() {
+    const handleError = (errors) => {
+        const firstError = Object.values(errors || {})
+            .flat()
+            .find(Boolean);
+
+        toast.error(firstError || t('admin.common.error_saving', 'Error occurred while saving.'));
+    };
+
     if (editingTaxonomy.value) {
         form.put(route('admin.taxonomies.update', editingTaxonomy.value.id), {
             onSuccess: () => {
                 isCreating.value = false;
                 form.reset();
-            }
+            },
+            onError: handleError,
         });
     } else {
         form.post(route('admin.taxonomies.store'), {
             onSuccess: () => {
                 isCreating.value = false;
                 form.reset();
-            }
+            },
+            onError: handleError,
         });
     }
 }

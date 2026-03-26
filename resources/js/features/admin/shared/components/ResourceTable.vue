@@ -1,6 +1,6 @@
 <template>
     <div class="space-y-6">
-        <div class="bg-base-100 p-6 rounded-box shadow-sm border border-base-300">
+        <div v-if="showHeader" class="bg-base-100 p-6 rounded-box shadow-sm border border-base-300">
             <ModuleHeader 
                 :title="title" 
                 :description="description" 
@@ -28,6 +28,8 @@
             </ModuleHeader>
         </div>
 
+        <slot name="after-header"></slot>
+
         <!-- Table Section -->
         <div class="bg-base-100 rounded-box shadow-sm border border-base-300 overflow-hidden">
             <div
@@ -40,6 +42,16 @@
                 <table class="table w-full">
                     <thead>
                         <tr class="bg-base-200/30">
+                            <th v-if="selectionEnabled" class="w-12">
+                                <label class="label cursor-pointer justify-center">
+                                    <input
+                                        type="checkbox"
+                                        class="checkbox checkbox-sm"
+                                        :checked="allVisibleSelected"
+                                        @change="toggleSelectAllVisible($event.target.checked)"
+                                    />
+                                </label>
+                            </th>
                             <th v-for="col in activeColumns" :key="col.key" 
                                 :class="[
                                     col.align === 'center' ? 'text-center' : (col.align === 'right' ? 'text-right' : ''),
@@ -61,10 +73,20 @@
                     </thead>
                     <tbody class="divide-y divide-base-300">
                         <tr v-if="shouldVirtualize && topSpacerHeight > 0" aria-hidden="true">
-                            <td :colspan="activeColumns.length" class="!p-0 border-0" :style="{ height: `${topSpacerHeight}px` }"></td>
+                            <td :colspan="columnCount" class="!p-0 border-0" :style="{ height: `${topSpacerHeight}px` }"></td>
                         </tr>
 
                         <tr v-for="(item, rowIndex) in renderedRows" :key="`${item.id}-${virtualStartIndex + rowIndex}`" class="hover:bg-base-200/30 transition-colors group">
+                            <td v-if="selectionEnabled" class="py-4">
+                                <label class="label cursor-pointer justify-center">
+                                    <input
+                                        type="checkbox"
+                                        class="checkbox checkbox-sm"
+                                        :checked="isSelected(item.id)"
+                                        @change="toggleSelectRow(item.id, $event.target.checked)"
+                                    />
+                                </label>
+                            </td>
                             <td v-for="col in activeColumns" :key="col.key"
                                 :class="[
                                     col.align === 'center' ? 'text-center' : (col.align === 'right' ? 'text-right' : ''),
@@ -82,12 +104,12 @@
                         </tr>
 
                         <tr v-if="shouldVirtualize && bottomSpacerHeight > 0" aria-hidden="true">
-                            <td :colspan="activeColumns.length" class="!p-0 border-0" :style="{ height: `${bottomSpacerHeight}px` }"></td>
+                            <td :colspan="columnCount" class="!p-0 border-0" :style="{ height: `${bottomSpacerHeight}px` }"></td>
                         </tr>
                         
                         <!-- Empty State -->
                         <tr v-if="allRows.length === 0">
-                            <td :colspan="activeColumns.length" class="py-20 text-center">
+                            <td :colspan="columnCount" class="py-20 text-center">
                                 <div class="flex flex-col items-center opacity-20">
                                     <PhFolderOpen class="text-6xl mb-4" />
                                     <p class="text-xs font-black uppercase tracking-widest">{{ t('admin.common.no_records', 'No matching records found') }}</p>
@@ -102,7 +124,32 @@
             <TablePagination 
                 :resources="resources" 
                 :filters="{ search, sort: sortField, direction: sortDirection }" 
-            />
+            >
+                <template #controls>
+                    <div v-if="selectionEnabled && selectedCount > 0" class="flex items-center gap-2 flex-wrap">
+                        <span class="text-[10px] font-bold uppercase tracking-widest opacity-50">
+                            {{ selectedCount }} selected
+                        </span>
+                        <select v-model="selectedBulkAction" class="select select-bordered select-sm min-w-[140px]">
+                            <option value="">Choose action</option>
+                            <option v-for="action in resolvedBulkActions" :key="action.value" :value="action.value">
+                                {{ action.label }}
+                            </option>
+                        </select>
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-primary"
+                            :disabled="isApplyingBulk || !selectedBulkAction"
+                            @click="applyBulkAction"
+                        >
+                            {{ isApplyingBulk ? 'Applying...' : 'Apply' }}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-ghost" @click="clearSelection">
+                            Clear
+                        </button>
+                    </div>
+                </template>
+            </TablePagination>
         </div>
 
         <!-- Universal Delete Modal -->
@@ -123,6 +170,7 @@ import ModuleHeader from '@/features/admin/shared/components/ModuleHeader.vue';
 import TableToolbar from './ResourceTable/TableToolbar.vue';
 import TablePagination from './ResourceTable/TablePagination.vue';
 import DeleteModal from './ResourceTable/DeleteModal.vue';
+import { applyBulkOptimistic, cloneRows } from './ResourceTable/bulkOptimistic';
 import { useTranslations } from '@/Composables/useTranslations';
 import { useFormatter } from '@/Composables/useFormatter';
 
@@ -159,16 +207,29 @@ const props = defineProps({
     virtualizeThreshold: Number,
     virtualizedRowHeight: Number,
     virtualizedOverscan: Number,
-    virtualizedViewportHeight: Number
+    virtualizedViewportHeight: Number,
+    bulkRoute: String,
+    showHeader: {
+        type: Boolean,
+        default: true,
+    },
+    bulkActions: {
+        type: Array,
+        default: () => []
+    }
 });
 
-const emit = defineEmits(['delete-confirmed']);
+const emit = defineEmits(['delete-confirmed', 'selection-change']);
 
 const search = ref(new URLSearchParams(window.location.search).get('search') || '');
 const sortField = ref(new URLSearchParams(window.location.search).get('sort') || '');
 const sortDirection = ref(new URLSearchParams(window.location.search).get('direction') || '');
 const tableScrollRef = ref(null);
 const virtualStartIndex = ref(0);
+const selectedIds = ref([]);
+const selectedBulkAction = ref('');
+const isApplyingBulk = ref(false);
+const tableRows = ref([]);
 
 // Delete Modal State
 const showDeleteModal = ref(false);
@@ -252,7 +313,24 @@ const activeColumns = computed(() => {
     );
 });
 
-const allRows = computed(() => props.resources?.data || []);
+const allRows = computed(() => tableRows.value);
+const visibleRowIds = computed(() => allRows.value.map((row) => Number(row.id)).filter((id) => Number.isFinite(id)));
+const selectedCount = computed(() => selectedIds.value.length);
+const selectionEnabled = computed(() => Boolean(props.bulkRoute));
+const allVisibleSelected = computed(() => {
+    if (!visibleRowIds.value.length) return false;
+    return visibleRowIds.value.every((id) => selectedIds.value.includes(id));
+});
+const resolvedBulkActions = computed(() => {
+    if (props.bulkActions.length) return props.bulkActions;
+    return [
+        { value: 'publish', label: 'Publish' },
+        { value: 'unpublish', label: 'Unpublish' },
+        { value: 'archive', label: 'Archive' },
+        { value: 'delete', label: 'Delete' },
+    ];
+});
+const columnCount = computed(() => activeColumns.value.length + (selectionEnabled.value ? 1 : 0));
 const virtualizeThreshold = computed(() => props.virtualizeThreshold ?? 120);
 const virtualizedRowHeight = computed(() => props.virtualizedRowHeight ?? 72);
 const virtualizedOverscan = computed(() => props.virtualizedOverscan ?? 8);
@@ -304,11 +382,18 @@ const handleVirtualScroll = (event) => {
 
 watch(allRows, () => {
     virtualStartIndex.value = 0;
+    selectedIds.value = [];
+    emit('selection-change', selectedIds.value);
+    selectedBulkAction.value = '';
 
     if (tableScrollRef.value) {
         tableScrollRef.value.scrollTop = 0;
     }
 });
+
+watch(() => props.resources?.data, (rows) => {
+    tableRows.value = cloneRows(Array.isArray(rows) ? rows : []);
+}, { immediate: true });
 
 
 
@@ -352,6 +437,75 @@ function getFieldValue(item, key) {
     }
     
     return val;
+}
+
+function isSelected(id) {
+    return selectedIds.value.includes(Number(id));
+}
+
+function toggleSelectRow(id, checked) {
+    const normalizedId = Number(id);
+    if (!Number.isFinite(normalizedId)) return;
+
+    if (checked) {
+        if (!selectedIds.value.includes(normalizedId)) {
+            selectedIds.value.push(normalizedId);
+        }
+    } else {
+        selectedIds.value = selectedIds.value.filter((itemId) => itemId !== normalizedId);
+    }
+
+    emit('selection-change', selectedIds.value);
+}
+
+function toggleSelectAllVisible(checked) {
+    if (!checked) {
+        clearSelection();
+        return;
+    }
+
+    selectedIds.value = [...visibleRowIds.value];
+    emit('selection-change', selectedIds.value);
+}
+
+function clearSelection() {
+    selectedIds.value = [];
+    selectedBulkAction.value = '';
+    emit('selection-change', selectedIds.value);
+}
+
+function applyBulkAction() {
+    if (!selectionEnabled.value || !selectedBulkAction.value || selectedIds.value.length === 0 || isApplyingBulk.value) {
+        return;
+    }
+
+    if (['archive', 'delete'].includes(selectedBulkAction.value)) {
+        const confirmed = window.confirm(`Confirm bulk ${selectedBulkAction.value} for ${selectedIds.value.length} item(s)?`);
+        if (!confirmed) {
+            return;
+        }
+    }
+
+    isApplyingBulk.value = true;
+    const snapshotRows = cloneRows(allRows.value);
+    tableRows.value = applyBulkOptimistic(allRows.value, selectedBulkAction.value, selectedIds.value);
+
+    router.post(props.bulkRoute, {
+        action: selectedBulkAction.value,
+        ids: selectedIds.value,
+    }, {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: () => {
+            clearSelection();
+        },
+        onError: () => {
+            tableRows.value = snapshotRows;
+        },
+        onFinish: () => {
+            isApplyingBulk.value = false;
+        },
+    });
 }
 </script>
 

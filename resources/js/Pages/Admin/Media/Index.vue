@@ -66,6 +66,7 @@ const editingFolder = ref(null); // When renaming
 
 const sortBy = ref(props.filters?.sort || 'created_at');
 const sortDirection = ref(props.filters?.direction || 'desc');
+const fileType = ref(props.filters?.file_type || 'all');
 const viewMode = ref('grid'); 
 const viewType = ref(props.filters?.view_type || 'nested');
 const selectedMediaForPreview = ref(null);
@@ -89,7 +90,7 @@ const allCurrentSelected = computed(() => {
 const currentFolderId = computed(() => props.currentFolder?.id || null);
 
 // Watch filters - Auto update
-watch([sortBy, sortDirection, currentFolderId, viewType], () => {
+watch([sortBy, sortDirection, fileType, currentFolderId, viewType], () => {
     fetchMedia();
 });
 
@@ -99,7 +100,8 @@ const fetchMedia = () => {
             folder_id: viewType.value === 'flat' ? null : currentFolderId.value,
             sort: sortBy.value,
             direction: sortDirection.value,
-            view_type: viewType.value
+            view_type: viewType.value,
+            file_type: fileType.value
         },
         only: ['media', 'subfolders', 'breadcrumbs', 'currentFolder'],
         preserveState: true,
@@ -290,6 +292,7 @@ const folderTree = computed(() => {
                 <Toolbar 
                     v-model:sort="sortBy"
                     v-model:direction="sortDirection"
+                    v-model:file-type="fileType"
                     v-model:view-mode="viewMode"
                     v-model:view-type="viewType"
                     :selected-count="selectedMediaIds.length + selectedFolderIds.length"
@@ -311,7 +314,7 @@ const folderTree = computed(() => {
                     @preview="selectedMediaForPreview = $event"
                     @move="openMoveModal"
                     @delete="deleteSingle"
-                    @copy-link="copyUrl($event.url)"
+                    @copy-link="copyUrl(typeof $event === 'string' ? $event : $event?.url)"
                     @rename="(type, item) => type === 'folder' ? (editingFolder = item, isFolderModalOpen = true) : (selectedMediaForPreview = item)"
                 />
             </div>

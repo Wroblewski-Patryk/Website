@@ -25,7 +25,8 @@ export function useGsapRuntime() {
     const animateBlock = (el, animation) => {
         if (!el || !animation || !animation.enabled) return;
 
-        const { preset, duration, delay, trigger, ease, timelineId, once } = animation;
+        const { duration, delay, trigger, ease, timelineId, once } = animation;
+        const preset = animation.preset || animation.type || 'fade-up';
 
         // 1. Define Advanced Presets
         const presets = {
@@ -41,10 +42,22 @@ export function useGsapRuntime() {
             'reveal-text': { from: { opacity: 0, y: 20 }, to: { opacity: 1, y: 0, stagger: 0.02 } }
         };
 
-        const config = presets[preset] || presets['fade-up'];
+        const customTween = animation.tween || {};
+        const hasCustomTween = customTween
+            && typeof customTween === 'object'
+            && customTween.from
+            && customTween.to
+            && Object.keys(customTween.from).length
+            && Object.keys(customTween.to).length;
+        const config = hasCustomTween
+            ? { from: customTween.from, to: customTween.to }
+            : (presets[preset] || presets['fade-up']);
+
+        const normalizedDuration = Number(duration ?? 0.8);
+        const normalizedDelay = Number(delay ?? 0);
         const commonVars = {
-            duration: duration || 0.8,
-            delay: delay || 0,
+            duration: normalizedDuration > 20 ? normalizedDuration / 1000 : (normalizedDuration || 0.8),
+            delay: normalizedDelay > 20 ? normalizedDelay / 1000 : (normalizedDelay || 0),
             ease: ease || 'power2.out',
             overwrite: 'auto'
         };

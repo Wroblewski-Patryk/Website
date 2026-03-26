@@ -16,6 +16,8 @@ return [
     'admin.menu.library' => ['pl' => 'Biblioteka', 'en' => 'Library'],
     'admin.menu.media' => ['pl' => 'Media', 'en' => 'Media'],
     'admin.menu.templates' => ['pl' => 'Szablony', 'en' => 'Templates'],
+    'admin.menu.composed_blocks' => ['pl' => 'Bloki złożone', 'en' => 'Composed Blocks'],
+    'admin.menu.animation_presets' => ['pl' => 'Presety animacji', 'en' => 'Animation Presets'],
     'admin.menu.design' => ['pl' => 'Wygląd', 'en' => 'Design'],
     'admin.menu.theme' => ['pl' => 'Motyw', 'en' => 'Theme'],
     'admin.menu.colors' => ['pl' => 'Kolory', 'en' => 'Colors'],

@@ -7,6 +7,7 @@ export const useMediaPickerStore = defineStore('mediaPicker', () => {
     const rejectCallback = ref(null);
     const options = ref({
         type: 'image', // image, video, document, etc. (later integration)
+        multiple: false,
     });
 
     const open = (opts = {}) => {

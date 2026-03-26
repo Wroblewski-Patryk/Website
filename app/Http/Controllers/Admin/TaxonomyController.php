@@ -7,6 +7,7 @@ use App\Models\Language;
 use App\Models\Taxonomy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class TaxonomyController extends Controller
@@ -47,17 +48,32 @@ class TaxonomyController extends Controller
         ];
 
         foreach ($locales as $locale) {
-            $rules["title.$locale"] = 'required|string|max:255';
+            $rules["title.$locale"] = 'nullable|string|max:255';
             $rules["slug.$locale"] = 'nullable|string|max:255';
             $rules["description.$locale"] = 'nullable|string';
         }
 
         $validated = $request->validate($rules);
+        $primaryLocale = $this->resolveDefaultLocale($locales);
+        $firstFilledTitle = collect($validated['title'] ?? [])->first(fn ($value) => filled($value));
+
+        if (!filled($firstFilledTitle)) {
+            throw ValidationException::withMessages([
+                "title.$primaryLocale" => 'At least one title translation is required.',
+            ]);
+        }
+
+        foreach ($locales as $locale) {
+            if (empty($validated['title'][$locale])) {
+                $validated['title'][$locale] = $firstFilledTitle;
+            }
+        }
 
         // Generate slugs if missing
         foreach ($locales as $locale) {
             if (empty($validated['slug'][$locale])) {
-                $validated['slug'][$locale] = Str::slug($validated['title'][$locale]);
+                $baseTitle = $validated['title'][$locale] ?: $firstFilledTitle;
+                $validated['slug'][$locale] = Str::slug($baseTitle);
             }
         }
 
@@ -78,12 +94,30 @@ class TaxonomyController extends Controller
         ];
 
         foreach ($locales as $locale) {
-            $rules["title.$locale"] = 'required|string|max:255';
-            $rules["slug.$locale"] = 'required|string|max:255';
+            $rules["title.$locale"] = 'nullable|string|max:255';
+            $rules["slug.$locale"] = 'nullable|string|max:255';
             $rules["description.$locale"] = 'nullable|string';
         }
 
         $validated = $request->validate($rules);
+        $primaryLocale = $this->resolveDefaultLocale($locales);
+        $firstFilledTitle = collect($validated['title'] ?? [])->first(fn ($value) => filled($value));
+
+        if (!filled($firstFilledTitle)) {
+            throw ValidationException::withMessages([
+                "title.$primaryLocale" => 'At least one title translation is required.',
+            ]);
+        }
+
+        foreach ($locales as $locale) {
+            if (empty($validated['title'][$locale])) {
+                $validated['title'][$locale] = $firstFilledTitle;
+            }
+            if (empty($validated['slug'][$locale])) {
+                $baseTitle = $validated['title'][$locale] ?: $firstFilledTitle;
+                $validated['slug'][$locale] = Str::slug($baseTitle);
+            }
+        }
 
         $taxonomy->update($validated);
 
@@ -113,5 +147,18 @@ class TaxonomyController extends Controller
             app()->getLocale(),
             config('app.fallback_locale'),
         ])));
+    }
+
+    private function resolveDefaultLocale(array $activeLocales): string
+    {
+        $default = Language::query()
+            ->where('is_default', true)
+            ->value('code');
+
+        if ($default && in_array($default, $activeLocales, true)) {
+            return $default;
+        }
+
+        return $activeLocales[0] ?? app()->getLocale() ?? 'en';
     }
 }

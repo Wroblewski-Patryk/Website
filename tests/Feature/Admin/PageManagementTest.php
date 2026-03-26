@@ -66,7 +66,7 @@ class PageManagementTest extends TestCase
             'content' => [['type' => 'paragraph', 'content' => ['text' => 'Initial content']]],
             'status' => 'published',
             'published_at' => now()->toDateTimeString(),
-            'meta_title' => ['pl' => 'Tytuł SEO', 'en' => 'SEO Title'],
+            'meta_title' => ['pl' => 'TytuÄąâ€š SEO', 'en' => 'SEO Title'],
             'meta_description' => ['pl' => 'Opis SEO', 'en' => 'SEO Description'],
             'canonical_url' => 'https://example.com/canonical-page',
         ];
@@ -78,7 +78,7 @@ class PageManagementTest extends TestCase
             'id' => 1,
             'title->pl' => 'Testowa strona',
             'slug->pl' => 'testowa-strona',
-            'meta_title->pl' => 'Tytuł SEO',
+            'meta_title->pl' => 'TytuÄąâ€š SEO',
             'meta_description->pl' => 'Opis SEO',
             'canonical_url' => 'https://example.com/canonical-page',
         ]);
@@ -87,11 +87,11 @@ class PageManagementTest extends TestCase
     public function test_admin_can_update_page(): void
     {
         $page = \App\Models\Page::factory()->create([
-            'title' => ['pl' => 'Stary tytuł', 'en' => 'Old title']
+            'title' => ['pl' => 'Stary tytuÄąâ€š', 'en' => 'Old title']
         ]);
 
         $data = [
-            'title' => ['pl' => 'Nowy tytuł', 'en' => 'New title'],
+            'title' => ['pl' => 'Nowy tytuÄąâ€š', 'en' => 'New title'],
             'slug' => ['pl' => 'nowy-tytul', 'en' => 'new-title'],
             'content' => [['type' => 'paragraph', 'content' => ['text' => 'Updated content']]],
             'status' => 'published',
@@ -103,7 +103,7 @@ class PageManagementTest extends TestCase
         $response->assertRedirect(); // Redirects back or to edit
         $this->assertDatabaseHas('pages', [
             'id' => $page->id,
-            'title->pl' => 'Nowy tytuł',
+            'title->pl' => 'Nowy tytuÄąâ€š',
         ]);
     }
 
@@ -138,5 +138,49 @@ class PageManagementTest extends TestCase
 
         $response->assertRedirect();
         $this->assertDatabaseMissing('pages', ['id' => $page->id]);
+    }
+    public function test_page_store_persists_media_picker_ids_and_order_in_block_content(): void
+    {
+        $data = [
+            'title' => ['pl' => 'Strona media', 'en' => 'Media page'],
+            'slug' => ['pl' => 'strona-media', 'en' => 'media-page'],
+            'content' => [
+                [
+                    'id' => 'block-image-1',
+                    'type' => 'image',
+                    'content' => [
+                        'media_id' => 77,
+                        'url' => 'https://cdn.example.com/hero.jpg',
+                        'alt' => 'Hero',
+                    ],
+                    'children' => [],
+                ],
+                [
+                    'id' => 'block-carousel-1',
+                    'type' => 'carousel',
+                    'content' => [
+                        'image_ids' => [31, 22, 45],
+                        'images' => [
+                            'https://cdn.example.com/31.jpg',
+                            'https://cdn.example.com/22.jpg',
+                            'https://cdn.example.com/45.jpg',
+                        ],
+                    ],
+                    'children' => [],
+                ],
+            ],
+            'status' => 'draft',
+        ];
+
+        $response = $this->actingAs($this->admin)->post(route('admin.pages.store'), $data);
+        $response->assertRedirect();
+
+        $page = \App\Models\Page::query()->latest('id')->first();
+        $this->assertNotNull($page);
+
+        $storedContent = $page->content;
+        $this->assertIsArray($storedContent);
+        $this->assertSame(77, $storedContent[0]['content']['media_id']);
+        $this->assertSame([31, 22, 45], $storedContent[1]['content']['image_ids']);
     }
 }

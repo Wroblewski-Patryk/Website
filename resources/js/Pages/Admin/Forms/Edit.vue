@@ -4,15 +4,26 @@
             v-model:title="form.title[activeLocale]"
             :module-label="formModel?.id ? t('admin.forms.edit_form', 'Edit Form') : t('admin.forms.add_form', 'Add New Form')"
             :categories="store.categories"
-            :module-categories="formModuleCategories"
+            :module-categories="moduleCategories"
             :saving="form.processing"
             :templates="templates"
             :preview-url="previewUrl"
             @save="save"
+            @autosave="save"
         >
             <template #info>
                 <div class="flex flex-col gap-6">
                     <div class="space-y-4">
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.common.name', 'Name') }}</span></label>
+                            <input
+                                type="text"
+                                v-model="form.title[activeLocale]"
+                                class="input input-bordered input-sm focus:border-primary/50 transition-all"
+                                :placeholder="t('admin.forms.title_field', 'Form Name')"
+                            />
+                        </div>
+
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.common.url_slug', 'URL Slug') }}</span></label>
                             <div class="join w-full">
@@ -129,6 +140,10 @@ const activeLocale = computed(() => store.editingLocale || pageProps.locale || f
 
 const props = defineProps({
     formModel: Object,
+    moduleCategories: {
+        type: Array,
+        default: () => []
+    },
     templates: [Array, Object]
 });
 
@@ -139,7 +154,7 @@ const getEmptyLocales = () => {
     return locales.reduce((acc, code) => ({ ...acc, [code]: '' }), {});
 };
 
-const formModuleCategories = [];
+const moduleCategories = computed(() => props.moduleCategories || []);
 
 const previewUrl = computed(() => props.formModel?.id ? `/${activeLocale.value}/forms/${props.formModel.id}/preview` : null);
 
@@ -159,6 +174,7 @@ const generateSlug = (text) => {
 const form = useForm({
     title: props.formModel?.title || getEmptyLocales(),
     content: props.formModel?.content || [],
+    optimistic_lock: props.formModel?.updated_at || null,
     settings: {
         success_message: props.formModel?.settings?.success_message || t('admin.forms.success_placeholder', 'Message sent!'),
         notification_email: props.formModel?.settings?.notification_email || '',
@@ -177,16 +193,29 @@ onMounted(() => {
     store.init(props.formModel?.content || getEmptyLocales());
 });
 
-const save = () => {
+const save = ({ autosave = false } = {}) => {
     form.content = store.blocks;
     if (props.formModel?.id) {
         form.put(route('admin.forms.update', props.formModel.id), {
             onSuccess: () => {
                 store.isDirty = false;
-                toast.success('Formularz został pomyślnie zaktualizowany! 🎉');
+                store.markSavedSnapshot();
+                form.optimistic_lock = new Date().toISOString();
+                if (!autosave) {
+                    toast.success('Form updated successfully.');
+                }
             },
-            onError: () => {
-                toast.error('Wystąpił błąd podczas zapisywania formularza. ❌');
+            onError: (errors) => {
+                if (errors?.optimistic_lock) {
+                    const message = Array.isArray(errors.optimistic_lock)
+                        ? errors.optimistic_lock[0]
+                        : errors.optimistic_lock;
+                    store.setAutosaveConflict({ message });
+                    return;
+                }
+                if (!autosave) {
+                    toast.error('Could not save form.');
+                }
             },
             preserveScroll: true,
             preserveState: true
@@ -195,10 +224,22 @@ const save = () => {
         form.post(route('admin.forms.store'), {
             onSuccess: () => {
                 store.isDirty = false;
-                toast.success('Formularz został pomyślnie utworzony! ✨');
+                store.markSavedSnapshot();
+                if (!autosave) {
+                    toast.success('Form created successfully.');
+                }
             },
-            onError: () => {
-                toast.error('Wystąpił błąd podczas tworzenia formularza. ❌');
+            onError: (errors) => {
+                if (errors?.optimistic_lock) {
+                    const message = Array.isArray(errors.optimistic_lock)
+                        ? errors.optimistic_lock[0]
+                        : errors.optimistic_lock;
+                    store.setAutosaveConflict({ message });
+                    return;
+                }
+                if (!autosave) {
+                    toast.error('Could not create form.');
+                }
             }
         });
     }

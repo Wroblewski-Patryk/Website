@@ -23,7 +23,6 @@ const tableRef = ref(null);
 const showAddModal = ref(false);
 
 const coverageLanguages = computed(() => props.coverage?.languages || []);
-const coverageGroups = computed(() => (props.coverage?.groups || []).slice(0, 5));
 const totalTranslationKeys = computed(() => props.coverage?.total_keys || 0);
 const fullyCoveredLanguages = computed(() => props.coverage?.fully_covered_languages || 0);
 
@@ -98,52 +97,6 @@ const deleteTranslation = (item) => {
     <AdminLayout>
         <Head :title="t('admin.menu.translations', 'Translations')" />
 
-        <div class="grid grid-cols-1 xl:grid-cols-4 gap-4 mb-4">
-            <div class="card bg-base-100 border border-base-300 shadow-sm">
-                <div class="card-body p-4">
-                    <p class="text-xs uppercase tracking-wider opacity-60">Scanned keys</p>
-                    <p class="text-2xl font-black mt-1">{{ totalTranslationKeys }}</p>
-                </div>
-            </div>
-            <div class="card bg-base-100 border border-base-300 shadow-sm">
-                <div class="card-body p-4">
-                    <p class="text-xs uppercase tracking-wider opacity-60">Fully covered languages</p>
-                    <p class="text-2xl font-black mt-1">{{ fullyCoveredLanguages }} / {{ coverageLanguages.length }}</p>
-                </div>
-            </div>
-            <div
-                v-for="langCoverage in coverageLanguages.slice(0, 2)"
-                :key="`coverage-${langCoverage.code}`"
-                class="card bg-base-100 border border-base-300 shadow-sm"
-            >
-                <div class="card-body p-4">
-                    <p class="text-xs uppercase tracking-wider opacity-60">
-                        {{ langCoverage.name }} ({{ langCoverage.code.toUpperCase() }})
-                    </p>
-                    <p class="text-2xl font-black mt-1">{{ langCoverage.coverage_percent }}%</p>
-                    <p class="text-xs opacity-70 mt-1">
-                        Filled: {{ langCoverage.filled }},
-                        Missing: {{ langCoverage.missing }}
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div v-if="coverageGroups.length" class="card bg-base-100 border border-base-300 shadow-sm mb-4">
-            <div class="card-body p-4">
-                <p class="text-xs uppercase tracking-wider opacity-60 mb-2">Top groups by key volume</p>
-                <div class="flex flex-wrap gap-2">
-                    <span
-                        v-for="groupCoverage in coverageGroups"
-                        :key="`group-${groupCoverage.group}`"
-                        class="badge badge-outline badge-sm font-mono"
-                    >
-                        {{ groupCoverage.group }}: {{ groupCoverage.keys }} ({{ groupCoverage.share_percent }}%)
-                    </span>
-                </div>
-            </div>
-        </div>
-
         <ResourceTable
             :title="t('admin.menu.translations', 'Translations')"
             :description="t('admin.translations.description', 'Manage multi-language strings for your website UI.')"
@@ -156,6 +109,39 @@ const deleteTranslation = (item) => {
             ref="tableRef"
             @delete-confirmed="deleteTranslation"
         >
+            <template #after-header>
+                <div class="grid grid-cols-1 xl:grid-cols-4 gap-4">
+                    <div class="card bg-base-100 border border-base-300 shadow-sm">
+                        <div class="card-body p-4">
+                            <p class="text-xs uppercase tracking-wider opacity-60">Scanned keys</p>
+                            <p class="text-2xl font-black mt-1">{{ totalTranslationKeys }}</p>
+                        </div>
+                    </div>
+                    <div class="card bg-base-100 border border-base-300 shadow-sm">
+                        <div class="card-body p-4">
+                            <p class="text-xs uppercase tracking-wider opacity-60">Fully covered languages</p>
+                            <p class="text-2xl font-black mt-1">{{ fullyCoveredLanguages }} / {{ coverageLanguages.length }}</p>
+                        </div>
+                    </div>
+                    <div
+                        v-for="langCoverage in coverageLanguages.slice(0, 2)"
+                        :key="`coverage-${langCoverage.code}`"
+                        class="card bg-base-100 border border-base-300 shadow-sm"
+                    >
+                        <div class="card-body p-4">
+                            <p class="text-xs uppercase tracking-wider opacity-60">
+                                {{ langCoverage.name }} ({{ langCoverage.code.toUpperCase() }})
+                            </p>
+                            <p class="text-2xl font-black mt-1">{{ langCoverage.coverage_percent }}%</p>
+                            <p class="text-xs opacity-70 mt-1">
+                                Filled: {{ langCoverage.filled }},
+                                Missing: {{ langCoverage.missing }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
             <template #header-actions>
                 <button @click="showAddModal = true" class="btn btn-primary shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 transition-all">
                     <PhPlus weight="bold" class="w-3 h-3 mr-1" /> {{ t('admin.translations.create', 'Create') }}

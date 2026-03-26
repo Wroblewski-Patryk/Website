@@ -13,6 +13,7 @@ class FormController extends BaseAdminContentController
 
     protected string $modelClass = Form::class;
     protected string $viewPath = 'Admin/Forms';
+    protected string $module = 'forms';
     protected bool $useTaxonomies = false;
     protected bool $useSlug = false;
 
@@ -27,10 +28,9 @@ class FormController extends BaseAdminContentController
 
     public function create()
     {
-        return Inertia::render("{$this->viewPath}/Edit", [
+        return Inertia::render("{$this->viewPath}/Edit", array_merge([
             'formModel' => new $this->modelClass,
-            'templates' => $this->getSharedProps()['templates'],
-        ]);
+        ], $this->getSharedProps()));
     }
 
     public function store(Request $request)

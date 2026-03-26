@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 
@@ -27,9 +28,12 @@ class UserController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', User::class);
+
         return Inertia::render('Admin/Users/Edit', [
             'user_item' => new User(),
-            'roles' => Role::all()
+            'roles' => Role::all(),
+            'default_roles' => ['admin'],
         ]);
     }
 
@@ -38,10 +42,14 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        Gate::authorize('create', User::class);
+
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'roles' => 'required|array|min:1',
+            'roles.*' => 'string|exists:roles,name',
         ]);
 
         $user = User::create([
@@ -50,9 +58,7 @@ class UserController extends Controller
             'password' => bcrypt($validatedData['password']),
         ]);
 
-        if ($request->has('roles')) {
-            $user->syncRoles($request->roles);
-        }
+        $user->syncRoles($validatedData['roles']);
 
         return redirect()->route('admin.users.index')->with('success', 'users.create_success');
     }
@@ -64,7 +70,8 @@ class UserController extends Controller
     {
         return Inertia::render('Admin/Users/Edit', [
             'user_item' => $user->load('roles'),
-            'roles' => Role::all()
+            'roles' => Role::all(),
+            'default_roles' => $user->roles->pluck('name')->values(),
         ]);
     }
 
@@ -77,6 +84,8 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
+            'roles' => 'required|array|min:1',
+            'roles.*' => 'string|exists:roles,name',
         ]);
 
         $user->name = $validatedData['name'];
@@ -88,9 +97,7 @@ class UserController extends Controller
 
         $user->save();
 
-        if ($request->has('roles')) {
-            $user->syncRoles($request->roles);
-        }
+        $user->syncRoles($validatedData['roles']);
 
         return redirect()->route('admin.users.index')->with('success', 'users.update_success');
     }

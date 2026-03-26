@@ -4,10 +4,12 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import { useTranslations } from '@/Composables/useTranslations';
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue';
 import ToastContainer from '@/Components/ToastContainer.vue';
-import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGearSix, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhUsers, PhSignOut, PhLifebuoy, PhPlus, PhCaretDown } from '@phosphor-icons/vue';
+import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGearSix, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhUsers, PhSignOut, PhLifebuoy, PhPlus, PhCaretDown, PhUserCircle } from '@phosphor-icons/vue';
 import SidebarGroup from '@/Components/Admin/Sidebar/SidebarGroup.vue';
 import SidebarItem from '@/Components/Admin/Sidebar/SidebarItem.vue';
 import SidebarChild from '@/Components/Admin/Sidebar/SidebarChild.vue';
+import GlobalSearchDropdown from '@/features/admin/shared/components/GlobalSearchDropdown.vue';
+import TopbarDropdown from '@/features/admin/shared/components/TopbarDropdown.vue';
 
 defineProps({
     fullWidth: {
@@ -192,6 +194,11 @@ const changeLanguage = (langCode) => {
         window.location.href = `/${langCode}/admin`;
     }
 };
+
+const userAvatarUrl = computed(() => {
+    const user = page.props.auth?.user || {};
+    return user.avatar_url || user.avatar || user.profile_photo_url || null;
+});
 </script>
 
 <template>
@@ -201,7 +208,7 @@ const changeLanguage = (langCode) => {
     <div class="min-h-screen bg-base-200 text-base-content font-sans">
         <!-- Top Navbar -->
         <div class="navbar bg-base-100/80 backdrop-blur-md shadow-lg border-b border-base-300 z-50 sticky top-0 px-4">
-            <div class="flex-1">
+            <div class="flex-none">
                 <Link :href="route('admin.dashboard.index')" class="btn btn-ghost normal-case hover:bg-transparent flex items-center gap-1 group w-fit px-2">
                     <div class="h-8 w-8 bg-gradient-to-r from-primary to-accent" 
                          style="mask: url('/img/featherly-sygnet.svg') no-repeat center / contain; -webkit-mask: url('/img/featherly-sygnet.svg') no-repeat center / contain; background-size: 160px 100%; background-position: left center;">
@@ -212,68 +219,75 @@ const changeLanguage = (langCode) => {
                     </span>
                 </Link>
             </div>
+
+            <div class="flex-1 hidden lg:flex justify-center px-4">
+                <GlobalSearchDropdown />
+            </div>
             
             <div class="flex-none gap-2">
                 <!-- Color Themes Dropdown -->
-                <div class="dropdown dropdown-end">
-                    <label tabindex="0" class="btn btn-ghost btn-circle">
+                <TopbarDropdown trigger-class="btn-circle h-10 w-10 min-h-10 p-0" menu-class="w-52">
+                    <template #trigger>
                         <PhPalette weight="regular" class="w-5 h-5 text-base-content/70" />
-                    </label>
-                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200">
-                        <li class="menu-title"><span>{{ t('admin.theme.select_theme', 'Choose Theme') }}</span></li>
-                        <li v-for="theme in themesList" :key="theme">
-                            <a :class="{ 'active': currentTheme === theme }" @click="currentTheme = theme">
-                                <span class="capitalize w-full">{{ theme }}</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                    </template>
+                    <li class="menu-title"><span>{{ t('admin.theme.select_theme', 'Choose Theme') }}</span></li>
+                    <li v-for="theme in themesList" :key="theme">
+                        <a :class="['flex items-center justify-between gap-3', { 'active': currentTheme === theme }]" @click="currentTheme = theme">
+                            <span class="capitalize">{{ theme }}</span>
+                            <span class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-primary border border-base-300/40"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-secondary border border-base-300/40"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-accent border border-base-300/40"></span>
+                            </span>
+                        </a>
+                    </li>
+                </TopbarDropdown>
 
                 <!-- Language Dropdown -->
-                <div class="dropdown dropdown-end">
-                    <label tabindex="0" class="btn btn-ghost hover:bg-base-200/50 flex flex-nowrap items-center gap-2 px-3 border border-transparent shadow-none hover:border-base-300 transition-all rounded-full sm:rounded-box">
-                        <span :class="['fi', `fi-${getFlagCode($page.props.locale || 'en')}`, 'rounded-sm', 'text-sm', 'shadow-sm']"></span>
+                <TopbarDropdown trigger-class="h-10 min-h-10 px-3 rounded-full sm:rounded-box flex flex-nowrap items-center gap-2" menu-class="w-52">
+                    <template #trigger>
+                        <span :class="['fi', `fi-${getFlagCode($page.props.locale || 'en')}`, 'inline-block', 'w-5', 'h-4', 'rounded-sm', 'shadow-sm']"></span>
                         <span class="text-sm font-bold uppercase hidden sm:block">{{ $page.props.locale || 'en' }}</span>
-                        <!-- Chevron icon -->
                         <svg class="w-3 h-3 opacity-60 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </label>
-                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200">
-                        <li class="menu-title px-4 py-2 opacity-50 text-xs tracking-wider"><span>{{ t('admin.nav.language', 'Language') }}</span></li>
-                        <template v-if="$page.props.languages && $page.props.languages.length">
-                            <li v-for="lang in $page.props.languages.filter(l => l && l.code)" :key="lang.code">
-                                <a :class="['group flex items-center gap-3 py-2 px-3 rounded-lg transition-colors', { 'active !bg-primary !text-primary-content': $page.props.locale === lang.code }]" @click.prevent="changeLanguage(lang.code)">
-                                    <span :class="['fi', `fi-${getFlagCode(lang.code)}`, 'rounded-sm', 'text-xl', 'shadow-sm', 'transition-transform', 'group-hover:scale-110']"></span>
-                                    <div class="flex flex-col flex-1">
-                                        <span class="text-sm font-semibold leading-none">{{ lang.name }}</span>
-                                        <span class="text-[10px] uppercase font-bold opacity-60 mt-1">{{ lang.code }}</span>
-                                    </div>
-                                    <!-- Checkmark for active -->
-                                    <svg v-if="$page.props.locale === lang.code" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                                </a>
-                            </li>
-                        </template>
-                    </ul>
-                </div>
+                    </template>
+                    <li class="menu-title px-4 py-2 opacity-50 text-xs tracking-wider"><span>{{ t('admin.nav.language', 'Language') }}</span></li>
+                    <template v-if="$page.props.languages && $page.props.languages.length">
+                        <li v-for="lang in $page.props.languages.filter(l => l && l.code)" :key="lang.code">
+                            <a :class="['group flex items-center gap-3 py-2 px-3 rounded-lg transition-colors', { 'active !bg-primary !text-primary-content': $page.props.locale === lang.code }]" @click.prevent="changeLanguage(lang.code)">
+                                <span :class="['fi', `fi-${getFlagCode(lang.code)}`, 'inline-block', 'w-6', 'h-[18px]', 'rounded-sm', 'shadow-sm', 'transition-transform', 'group-hover:scale-110']"></span>
+                                <div class="flex flex-col flex-1">
+                                    <span class="text-sm font-semibold leading-none">{{ lang.name }}</span>
+                                    <span class="text-[10px] uppercase font-bold opacity-60 mt-1">{{ lang.code }}</span>
+                                </div>
+                                <svg v-if="$page.props.locale === lang.code" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </a>
+                        </li>
+                    </template>
+                </TopbarDropdown>
 
                 <!-- Admin Profile/Logout Dropdown -->
-                <div class="dropdown dropdown-end">
-                    <label tabindex="0" class="btn btn-ghost btn-circle avatar placeholder transition-transform hover:scale-105 ml-1 ring ring-primary ring-offset-base-100 ring-offset-1">
-                        <div class="bg-primary text-primary-content rounded-full w-9">
-                            <span class="text-sm">{{ $page.props.auth?.user?.name?.substring(0, 2)?.toUpperCase() || 'AD' }}</span>
+                <TopbarDropdown trigger-class="btn-circle h-10 w-10 min-h-10 p-0 ml-1 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1" menu-class="w-56 gap-1">
+                    <template #trigger>
+                        <div class="w-9 h-9 rounded-full overflow-hidden bg-base-200 text-base-content/70 flex items-center justify-center">
+                            <img
+                                v-if="userAvatarUrl"
+                                :src="userAvatarUrl"
+                                :alt="$page.props.auth?.user?.name || 'User avatar'"
+                                class="w-full h-full object-cover"
+                            />
+                            <PhUserCircle v-else weight="fill" class="w-6 h-6" />
                         </div>
-                    </label>
-                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-56 border border-base-200 gap-1">
-                        <li class="menu-title flex flex-col items-start gap-0 p-3 border-b border-base-200/50 mb-1 pointer-events-none">
-                            <span class="font-bold text-sm text-base-content w-full whitespace-nowrap overflow-hidden text-ellipsis">{{ $page.props.auth?.user?.name || 'Administrator' }}</span>
-                            <span class="text-xs font-normal text-base-content/60 w-full whitespace-nowrap overflow-hidden text-ellipsis mt-1">{{ $page.props.auth?.user?.email || 'admin@example.com' }}</span>
-                        </li>
-                        <li v-if="$page.props.auth?.user?.id"><Link :href="route('admin.users.edit', $page.props.auth.user.id)"><PhUser weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.nav.my_profile', 'My Profile') }}</Link></li>
-                        <li v-if="$page.props.auth?.user?.permissions?.can_manage_settings"><Link :href="route('admin.settings.index')"><PhGearSix weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.nav.account_settings', 'Account Settings') }}</Link></li>
-                        <li><Link href="#"><PhLifebuoy weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.nav.support', 'Support') }}</Link></li>
-                        <div class="h-[1px] bg-base-200 my-1 mx-2"></div>
-                        <li><Link :href="route('auth.logout')" method="post" as="button" class="w-full text-left text-error hover:bg-error/10 hover:text-error"><PhSignOut weight="regular" class="w-4 h-4" /> {{ t('admin.nav.logout', 'Logout') }}</Link></li>
-                    </ul>
-                </div>
+                    </template>
+                    <li class="menu-title flex flex-col items-start gap-0 p-3 border-b border-base-200/50 mb-1 pointer-events-none">
+                        <span class="font-bold text-sm text-base-content w-full whitespace-nowrap overflow-hidden text-ellipsis">{{ $page.props.auth?.user?.name || 'Administrator' }}</span>
+                        <span class="text-xs font-normal text-base-content/60 w-full whitespace-nowrap overflow-hidden text-ellipsis mt-1">{{ $page.props.auth?.user?.email || 'admin@example.com' }}</span>
+                    </li>
+                    <li v-if="$page.props.auth?.user?.id"><Link :href="route('admin.users.edit', $page.props.auth.user.id)"><PhUser weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.nav.my_profile', 'My Profile') }}</Link></li>
+                    <li v-if="$page.props.auth?.user?.permissions?.can_manage_settings"><Link :href="route('admin.settings.index')"><PhGearSix weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.nav.account_settings', 'Account Settings') }}</Link></li>
+                    <li><Link href="#"><PhLifebuoy weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.nav.support', 'Support') }}</Link></li>
+                    <div class="h-[1px] bg-base-200 my-1 mx-2"></div>
+                    <li><Link :href="route('auth.logout')" method="post" as="button" class="w-full text-left text-error hover:bg-error/10 hover:text-error"><PhSignOut weight="regular" class="w-4 h-4" /> {{ t('admin.nav.logout', 'Logout') }}</Link></li>
+                </TopbarDropdown>
             </div>
         </div>
 

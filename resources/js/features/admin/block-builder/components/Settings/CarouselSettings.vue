@@ -7,6 +7,16 @@
 
         <!-- Advanced Mode: Global Image URLs -->
         <div v-if="mode === 'advanced'" class="space-y-4 animate-in fade-in slide-in-from-top-1">
+            <MediaPickerField
+                v-model="modelValue.image_ids"
+                :multiple="Boolean(pickerConfig?.multiple ?? true)"
+                :media-type="pickerConfig?.type || 'image'"
+                :preview-items="selectedPreviewItems"
+                label="Media Library"
+                @selected="applySelectedMedia"
+                @cleared="clearSelectedMedia"
+            />
+
             <div class="flex items-center justify-between">
                 <label class="text-[10px] opacity-40 uppercase font-black ml-1">Images (URLs)</label>
                 <div class="flex items-center gap-1 text-[9px] opacity-30 font-bold uppercase">
@@ -35,7 +45,9 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { PhX, PhPlus, PhImage } from '@phosphor-icons/vue';
+import MediaPickerField from '@/features/admin/media/components/MediaPickerField.vue';
 
 const props = defineProps({
     modelValue: {
@@ -45,7 +57,33 @@ const props = defineProps({
     mode: {
         type: String,
         default: 'content'
+    },
+    pickerConfig: {
+        type: Object,
+        default: () => ({ type: 'image', multiple: true })
     }
 });
-</script>
 
+const selectedPreviewItems = computed(() => {
+    const images = Array.isArray(props.modelValue?.images) ? props.modelValue.images : [];
+    const ids = Array.isArray(props.modelValue?.image_ids) ? props.modelValue.image_ids : [];
+
+    return images
+        .filter((url) => typeof url === 'string' && url.trim() !== '')
+        .map((url, index) => ({
+            id: ids[index] ?? `url-${index}`,
+            url,
+        }));
+});
+
+const applySelectedMedia = (items) => {
+    if (!Array.isArray(items)) return;
+    props.modelValue.image_ids = items.map((item) => item.id);
+    props.modelValue.images = items.map((item) => item.url);
+};
+
+const clearSelectedMedia = () => {
+    props.modelValue.image_ids = [];
+    props.modelValue.images = [];
+};
+</script>

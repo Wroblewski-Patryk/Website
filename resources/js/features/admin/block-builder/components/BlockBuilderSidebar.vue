@@ -5,6 +5,7 @@ import {
     PhX, PhStack, PhClockCounterClockwise, PhSelection, PhSlidersHorizontal, PhInfo, PhCloudArrowUp, PhFloppyDisk, PhGlobe, PhGear
 } from '@phosphor-icons/vue';
 import { useTranslations } from '@/Composables/useTranslations';
+import { hasBlockModeSettings } from '@/features/admin/block-builder/config/settingsCapabilities';
 
 // New Modular Components
 import BlockSettingsManager from './BlockSettingsManager.vue';
@@ -43,10 +44,28 @@ watch(() => store.activeBlock, (newBlock) => {
         if (!newBlock.settings) newBlock.settings = {};
         if (!newBlock.settings.style) newBlock.settings.style = {};
         if (!newBlock.settings.animations) newBlock.settings.animations = {};
-        // Ensure default animation fields if enabled
-        if (newBlock.settings.animations.type && !newBlock.settings.animations.duration) {
-            newBlock.settings.animations.duration = 800;
+
+        const anim = newBlock.settings.animations;
+
+        // Legacy compatibility: older schema used `type` and ms values.
+        if (!anim.preset && anim.type) {
+            anim.preset = anim.type;
         }
+        if (typeof anim.duration === 'number' && anim.duration > 20) {
+            anim.duration = Number((anim.duration / 1000).toFixed(2));
+        }
+        if (typeof anim.delay === 'number' && anim.delay > 20) {
+            anim.delay = Number((anim.delay / 1000).toFixed(2));
+        }
+
+        if (anim.enabled === undefined) anim.enabled = false;
+        if (!anim.trigger) anim.trigger = 'onEnter';
+        if (!anim.preset) anim.preset = 'fade-up';
+        if (anim.duration === undefined || anim.duration === null) anim.duration = 0.8;
+        if (anim.delay === undefined || anim.delay === null) anim.delay = 0;
+        if (!anim.ease) anim.ease = 'power2.out';
+        if (anim.once === undefined) anim.once = true;
+        if (!anim.timelineId) anim.timelineId = '';
     }
 }, { immediate: true, deep: true });
 
@@ -56,6 +75,32 @@ const closeSidebar = () => {
 
 const showSeo = computed(() => !!$slots.seo);
 const showAdvanced = computed(() => !!$slots.advanced);
+
+const visibleBlockTabs = computed(() => {
+    const type = store.activeBlock?.type;
+    if (!type) return [];
+
+    const tabs = [];
+
+    if (hasBlockModeSettings(type, 'content')) {
+        tabs.push({ id: 'content', key: 'content' });
+    }
+
+    tabs.push({ id: 'style', key: 'design' });
+    tabs.push({ id: 'animations', key: 'animations' });
+
+    if (hasBlockModeSettings(type, 'advanced')) {
+        tabs.push({ id: 'advanced', key: 'advanced' });
+    }
+
+    return tabs;
+});
+
+watch(visibleBlockTabs, (tabs) => {
+    if (!tabs.some((tab) => tab.id === activeSidebarTab.value)) {
+        activeSidebarTab.value = tabs[0]?.id || 'style';
+    }
+}, { immediate: true });
 </script>
 
 <template>
@@ -77,12 +122,12 @@ const showAdvanced = computed(() => !!$slots.advanced);
 
             <!-- Sidebar Tabs -->
             <div class="flex border-b border-base-content/10 bg-base-200/50">
-                <button v-for="tab in ['content', 'design', 'animations', 'advanced']" :key="tab"
-                        @click="activeSidebarTab = (tab === 'design' ? 'style' : tab)"
+                <button v-for="tab in visibleBlockTabs" :key="tab.id"
+                        @click="activeSidebarTab = tab.id"
                         class="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-all relative"
-                        :class="activeSidebarTab === (tab === 'design' ? 'style' : tab) ? 'text-primary' : 'opacity-40 hover:opacity-100'">
-                    {{ t('admin.builder.tab_' + tab, tab) }}
-                    <div v-if="activeSidebarTab === (tab === 'design' ? 'style' : tab)" class="absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full"></div>
+                        :class="activeSidebarTab === tab.id ? 'text-primary' : 'opacity-40 hover:opacity-100'">
+                    {{ t('admin.builder.tab_' + tab.key, tab.key) }}
+                    <div v-if="activeSidebarTab === tab.id" class="absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full"></div>
                 </button>
             </div>
 
@@ -224,5 +269,3 @@ const showAdvanced = computed(() => !!$slots.advanced);
     background: rgba(255, 255, 255, 0.1);
 }
 </style>
-
-

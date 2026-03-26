@@ -10,6 +10,8 @@
             :custom-height="customHeight"
             :preview-url="previewUrl"
             :saving="saving"
+            :autosave-status-label="autosaveStatusLabel"
+            :autosave-status-tone="autosaveStatusTone"
             @update:viewport="viewport = $event"
             @update:customWidth="customWidth = $event"
             @update:customHeight="customHeight = $event"
@@ -64,6 +66,17 @@
                         <PhPlus weight="bold" class="w-3 h-3" />
                     </button>
                 </div>
+            </template>
+
+            <template #actions-pre>
+                <button
+                    class="btn btn-ghost btn-sm h-8 min-h-0 px-3 gap-2 font-medium text-xs rounded-lg shadow-sm bg-base-200/50"
+                    :title="t('admin.builder.shortcuts_open', 'Keyboard Shortcuts')"
+                    @click="openShortcutsModal"
+                >
+                    <PhKeyboard weight="bold" class="w-3.5 h-3.5 text-primary" />
+                    <span class="hidden xl:inline tracking-wide">{{ t('admin.builder.shortcuts_button', 'Keys') }}</span>
+                </button>
             </template>
         </BlockBuilderHeader>
 
@@ -215,6 +228,94 @@
                 </div>
             </div>
         </div>
+
+        <div v-if="store.autosaveConflict" class="fixed inset-0 z-[120] bg-base-content/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="w-full max-w-3xl bg-base-100 rounded-2xl border border-base-300 shadow-2xl">
+                <div class="p-5 border-b border-base-300 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-black uppercase tracking-widest opacity-80">
+                            {{ t('admin.builder.autosave_conflict_title', 'Autosave Conflict Detected') }}
+                        </h3>
+                        <p class="text-xs opacity-60 mt-1">
+                            {{ store.autosaveConflict.message || t('admin.builder.autosave_conflict_desc', 'Another update was saved before your autosave.') }}
+                        </p>
+                    </div>
+                    <button class="btn btn-sm btn-ghost" @click="dismissAutosaveConflict">
+                        {{ t('admin.common.close', 'Close') }}
+                    </button>
+                </div>
+
+                <div class="p-5 space-y-5">
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+                        <div class="rounded-xl border border-base-300 p-3 bg-base-200/40">
+                            <p class="opacity-50">Last Saved</p>
+                            <p class="font-black text-lg">{{ autosaveConflictDiff.counts.previous }}</p>
+                        </div>
+                        <div class="rounded-xl border border-base-300 p-3 bg-base-200/40">
+                            <p class="opacity-50">Current Draft</p>
+                            <p class="font-black text-lg">{{ autosaveConflictDiff.counts.current }}</p>
+                        </div>
+                        <div class="rounded-xl border border-success/30 p-3 bg-success/10">
+                            <p class="opacity-60">Added</p>
+                            <p class="font-black text-lg">{{ autosaveConflictDiff.counts.added }}</p>
+                        </div>
+                        <div class="rounded-xl border border-error/30 p-3 bg-error/10">
+                            <p class="opacity-60">Removed</p>
+                            <p class="font-black text-lg">{{ autosaveConflictDiff.counts.removed }}</p>
+                        </div>
+                        <div class="rounded-xl border border-warning/30 p-3 bg-warning/10">
+                            <p class="opacity-60">Changed</p>
+                            <p class="font-black text-lg">{{ autosaveConflictDiff.counts.changed }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-2">
+                        <button class="btn btn-ghost" @click="dismissAutosaveConflict">
+                            {{ t('admin.builder.keep_local_draft', 'Keep Local Draft') }}
+                        </button>
+                        <button class="btn btn-primary" @click="reloadAfterConflict">
+                            {{ t('admin.builder.reload_latest', 'Reload Latest Version') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div
+            v-if="showShortcutsModal"
+            class="fixed inset-0 z-[121] bg-base-content/60 backdrop-blur-sm flex items-center justify-center p-4"
+            @click.self="closeShortcutsModal"
+        >
+            <div class="w-full max-w-2xl bg-base-100 rounded-2xl border border-base-300 shadow-2xl">
+                <div class="p-5 border-b border-base-300 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-black uppercase tracking-widest opacity-80">
+                            {{ t('admin.builder.shortcuts_title', 'Keyboard Shortcuts') }}
+                        </h3>
+                        <p class="text-xs opacity-60 mt-1">
+                            {{ t('admin.builder.shortcuts_desc', 'Use shortcuts to move faster in the editor.') }}
+                        </p>
+                    </div>
+                    <button class="btn btn-sm btn-ghost" @click="closeShortcutsModal">
+                        {{ t('admin.common.close', 'Close') }}
+                    </button>
+                </div>
+
+                <div class="p-5">
+                    <div class="overflow-hidden rounded-xl border border-base-300">
+                        <div
+                            v-for="shortcut in localizedShortcuts"
+                            :key="shortcut.id"
+                            class="flex items-center justify-between gap-4 px-4 py-3 border-b border-base-300/60 last:border-b-0"
+                        >
+                            <span class="text-xs opacity-70">{{ shortcut.description }}</span>
+                            <kbd class="kbd kbd-sm font-mono">{{ shortcut.key }}</kbd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <MediaPickerModal />
     </div>
 </template>
@@ -233,7 +334,7 @@ import {
     PhVideoCamera, PhNavigationArrow, PhDotsThree, PhBrowser, PhFootprints, 
     PhFolder, PhTerminal, PhDeviceMobile, PhAppWindow, PhPlusCircle, PhArticle, 
     PhBriefcase, PhArrowsClockwise, PhListNumbers, PhDeviceTablet, PhArrowsOut,
-    PhArrowUUpLeft, PhPlus, PhX, PhPerspective
+    PhArrowUUpLeft, PhPlus, PhX, PhPerspective, PhKeyboard, PhBracketsCurly
 } from '@phosphor-icons/vue';
 import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useTranslations } from '@/Composables/useTranslations';
@@ -247,6 +348,8 @@ import AdminCollapse from '@/features/admin/shared/components/AdminCollapse.vue'
 import BlockPaletteTile from './Palette/BlockPaletteTile.vue';
 import MediaPickerModal from '@/features/admin/media/components/MediaPickerModal.vue';
 import { useBuilderPerfWatch } from '@/features/admin/block-builder/composables/useBuilderPerfWatch';
+import { useBuilderShortcuts } from '@/features/admin/block-builder/composables/useBuilderShortcuts';
+import { compareRevisionContent } from '@/features/admin/shared/utils/revisionDiff';
 import draggable from 'vuedraggable';
 import gsap from 'gsap';
 
@@ -260,7 +363,7 @@ const iconMap = {
     PhStack, PhBoundingBox, PhColumns, PhList, PhMinus, PhStar, PhImage, 
     PhVideoCamera, PhNavigationArrow, PhDotsThree, PhBrowser, PhFootprints, 
     PhFolder, PhTerminal, PhDeviceMobile, PhAppWindow, PhPlusCircle, PhArticle, 
-    PhBriefcase, PhArrowsClockwise, PhListNumbers, PhPerspective
+    PhBriefcase, PhArrowsClockwise, PhListNumbers, PhPerspective, PhBracketsCurly
 };
 
 const props = defineProps({
@@ -273,19 +376,21 @@ const props = defineProps({
     previewUrl: { type: String, default: null },
     saving: { type: Boolean, default: false },
     canvasMinHeight: { type: String, default: '100px' },
-    useViewportMinHeight: { type: Boolean, default: false }
+    useViewportMinHeight: { type: Boolean, default: false },
+    autosaveIntervalMinutes: { type: Number, default: null }
 });
 
 
 provide('isEditor', true);
 
-const emit = defineEmits(['save', 'update:title', 'update:viewport']);
+const emit = defineEmits(['save', 'autosave', 'update:title', 'update:viewport']);
 
 const store = useBlockBuilderStore();
 useBuilderPerfWatch();
 const page = usePage();
 const { t } = useTranslations();
 const viewport = ref('desktop');
+provide('builderViewport', viewport);
 const fallbackLocale = computed(() => {
     return page.props.default_locale
         || page.props.languages?.find?.(lang => lang?.is_default)?.code
@@ -378,10 +483,16 @@ const blocks = computed({
 });
 
 const timelineBlocks = computed(() => {
-    return store.blocks.filter(b => b.settings?.animations?.enabled && b.settings?.animations?.trigger === 'timeline');
+    return store.blocks.filter((block) => {
+        const anim = block.settings?.animations;
+        if (!anim?.enabled) return false;
+        return Boolean(anim.timelineId || anim.timeline_id || anim.trigger === 'timeline');
+    });
 });
 
 const zoomLevel = ref(1);
+const showShortcutsModal = ref(false);
+let autosaveTimer = null;
 
 const zoomIn = () => {
     if (zoomLevel.value < 2) zoomLevel.value = parseFloat((zoomLevel.value + 0.1).toFixed(1));
@@ -393,6 +504,14 @@ const zoomOut = () => {
 
 const resetZoom = () => {
     zoomLevel.value = 1;
+};
+
+const openShortcutsModal = () => {
+    showShortcutsModal.value = true;
+};
+
+const closeShortcutsModal = () => {
+    showShortcutsModal.value = false;
 };
 
 const showLeftSidebar = ref(true);
@@ -485,12 +604,103 @@ const canvasRef = ref(null);
 const canvasHeight = ref(0);
 let resizeObserver = null;
 
-const handleKeyDown = (e) => {
-    // Save: Ctrl+S
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        e.preventDefault();
-        emit('save');
+const { shortcuts, handleKeyDown } = useBuilderShortcuts({
+    onSave: () => emit('save'),
+    onOpenHelp: () => openShortcutsModal(),
+    onZoomIn: () => zoomIn(),
+    onZoomOut: () => zoomOut(),
+    onZoomReset: () => resetZoom(),
+    onTogglePalette: () => {
+        showLeftSidebar.value = !showLeftSidebar.value;
+    },
+    onToggleInspector: () => {
+        store.showRightSidebar = !store.showRightSidebar;
+    },
+    onToggleTimeline: () => {
+        toggleTimeline();
+    },
+});
+
+const localizedShortcuts = computed(() => {
+    return shortcuts.map((shortcut) => ({
+        ...shortcut,
+        description: t(shortcut.descriptionKey, shortcut.defaultDescription),
+    }));
+});
+
+const resolvedAutosaveIntervalMinutes = computed(() => {
+    const fromProp = Number(props.autosaveIntervalMinutes);
+    if (Number.isFinite(fromProp) && fromProp > 0) {
+        return Math.min(Math.max(Math.round(fromProp), 1), 60);
     }
+
+    const fromShared = Number(page.props?.builder_settings?.autosave_interval_minutes ?? 3);
+    if (!Number.isFinite(fromShared) || fromShared < 1) {
+        return 3;
+    }
+
+    return Math.min(Math.max(Math.round(fromShared), 1), 60);
+});
+
+const autosaveStatusLabel = computed(() => {
+    if (store.autosaveConflict) {
+        return t('admin.builder.autosave_status_conflict', 'Conflict');
+    }
+
+    if (props.saving) {
+        return t('admin.builder.autosave_status_saving', 'Saving...');
+    }
+
+    if (store.isDirty) {
+        return t('admin.builder.autosave_status_unsaved', 'Unsaved changes');
+    }
+
+    return t('admin.builder.autosave_status_saved', 'All changes saved');
+});
+
+const autosaveStatusTone = computed(() => {
+    if (store.autosaveConflict) return 'error';
+    if (props.saving) return 'info';
+    if (store.isDirty) return 'warning';
+    return 'success';
+});
+
+const autosaveConflictDiff = computed(() => {
+    if (!store.autosaveConflict) {
+        return compareRevisionContent([], []);
+    }
+
+    return compareRevisionContent(
+        store.autosaveConflict.lastSavedBlocks || [],
+        store.autosaveConflict.localBlocks || []
+    );
+});
+
+const dismissAutosaveConflict = () => {
+    store.clearAutosaveConflict();
+};
+
+const reloadAfterConflict = () => {
+    window.location.reload();
+};
+
+const stopAutosave = () => {
+    if (autosaveTimer) {
+        clearInterval(autosaveTimer);
+        autosaveTimer = null;
+    }
+};
+
+const startAutosave = () => {
+    stopAutosave();
+
+    autosaveTimer = setInterval(() => {
+        if (!store.isDirty || props.saving || store.autosaveConflict) {
+            return;
+        }
+
+        emit('autosave', { autosave: true });
+    }, resolvedAutosaveIntervalMinutes.value * 60 * 1000);
 };
 
 onMounted(() => {
@@ -515,6 +725,8 @@ onMounted(() => {
             isInitialLoad.value = false;
         }, 150);
     });
+
+    startAutosave();
 });
 
 onUnmounted(() => {
@@ -528,6 +740,12 @@ onUnmounted(() => {
     if (resizeObserver) {
         resizeObserver.disconnect();
     }
+
+    stopAutosave();
+});
+
+watch(resolvedAutosaveIntervalMinutes, () => {
+    startAutosave();
 });
 </script>
 

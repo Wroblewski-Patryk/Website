@@ -48,6 +48,7 @@ function deletePost(item) {
             :columns="columns"
             :create-route="route('admin.posts.create')"
             :create-label="t('admin.posts.create_btn', 'Create Post')"
+            :bulk-route="route('admin.posts.bulk-action')"
             persistence-key="posts"
             ref="tableRef"
             @delete-confirmed="deletePost"
