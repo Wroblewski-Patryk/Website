@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Models\ComposedBlock;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class ComposedBlockManagementTest extends TestCase
@@ -39,6 +40,21 @@ class ComposedBlockManagementTest extends TestCase
             'id' => $block->id,
             'slug' => 'hero-section',
         ]);
+    }
+
+    public function test_blocks_module_route_renders_blocks_page_component(): void
+    {
+        ComposedBlock::create([
+            'title' => ['en' => 'Hero', 'pl' => 'Hero'],
+            'slug' => 'hero',
+            'content' => [],
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('admin.blocks.index'));
+
+        $response->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Admin/Blocks'));
     }
 
     public function test_admin_can_update_composed_block(): void

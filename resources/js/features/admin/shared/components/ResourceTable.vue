@@ -1,5 +1,5 @@
 <template>
-    <div class="space-y-6">
+    <div class="space-y-6" data-testid="resource-table">
         <div v-if="showHeader" class="bg-base-100 p-6 rounded-box shadow-sm border border-base-300">
             <ModuleHeader 
                 :title="title" 

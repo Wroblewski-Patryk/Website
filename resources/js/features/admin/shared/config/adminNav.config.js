@@ -1,7 +1,7 @@
 import { 
     PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, 
     PhCube, PhLayout, PhImageSquare, PhGlobe, PhGearSix, 
-    PhUsers, PhTag, PhHash, PhList, PhPlus, PhPalette, PhTextT, PhTextH, PhSelectionAll, PhMagicWand, PhCardsThree, PhCalendarBlank, PhBracketsCurly
+    PhUsers, PhTag, PhHash, PhList, PhPlus, PhPalette, PhTextT, PhTextH, PhSelectionAll, PhMagicWand, PhCardsThree, PhCalendarBlank
 } from '@phosphor-icons/vue';
 
 export const navigation = (t) => [
@@ -96,19 +96,6 @@ export const navigation = (t) => [
                 ]
             },
             {
-                label: t('admin.menu.composed_blocks', 'Composed Blocks'),
-                icon: PhBracketsCurly,
-                route: 'admin.composed-blocks.index',
-                createRoute: 'admin.composed-blocks.create',
-                permission: 'can_manage_settings',
-                active: '/admin/composed-blocks',
-                color: 'secondary',
-                children: [
-                    { label: t('admin.common.all', 'All'), route: 'admin.composed-blocks.index', active: '/admin/composed-blocks', exact: true, icon: PhList },
-                    { label: t('admin.common.add', 'Add New'), route: 'admin.composed-blocks.create', active: '/admin/composed-blocks/create', icon: PhPlus }
-                ]
-            },
-            {
                 label: t('admin.menu.animation_presets', 'Animation Presets'),
                 icon: PhMagicWand,
                 route: 'admin.animation-presets.index',
@@ -144,10 +131,15 @@ export const navigation = (t) => [
             {
                 label: t('admin.menu.blocks', 'Blocks'),
                 icon: PhCube,
-                route: 'admin.blocks',
-                permission: 'can_manage_content',
+                route: 'admin.blocks.index',
+                createRoute: 'admin.blocks.create',
+                permission: 'can_manage_settings',
                 active: '/admin/blocks',
-                color: 'accent'
+                color: 'accent',
+                children: [
+                    { label: t('admin.common.all', 'All'), route: 'admin.blocks.index', active: '/admin/blocks', exact: true, icon: PhList },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.blocks.create', active: '/admin/blocks/create', icon: PhPlus }
+                ]
             }
         ]
     },

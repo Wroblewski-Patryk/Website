@@ -56,7 +56,6 @@ Route::middleware('permission:manage-content')->group(function () {
     Route::delete('taxonomies/{taxonomy}', [\App\Http\Controllers\Admin\TaxonomyController::class, 'destroy'])->name('taxonomies.destroy');
     Route::post('taxonomies/bulk-action', [\App\Http\Controllers\Admin\TaxonomyController::class, 'bulkAction'])->name('taxonomies.bulk-action');
     
-    Route::get('blocks', [\App\Http\Controllers\Admin\DashboardController::class, 'blocks'])->name('blocks');
 });
 
 // System Section (Admin Only)
@@ -65,6 +64,7 @@ Route::middleware('permission:manage-settings')->group(function () {
     Route::resource('languages', \App\Http\Controllers\Admin\LanguageController::class)->except(['show']);
     Route::resource('forms', \App\Http\Controllers\Admin\FormController::class)->except(['show']);
     Route::resource('templates', \App\Http\Controllers\Admin\TemplateController::class)->except(['show']);
+    Route::resource('blocks', \App\Http\Controllers\Admin\ComposedBlockController::class)->except(['show']);
     Route::resource('composed-blocks', \App\Http\Controllers\Admin\ComposedBlockController::class)->except(['show']);
     Route::resource('animation-presets', \App\Http\Controllers\Admin\AnimationPresetController::class)->except(['show']);
     Route::post('templates/{template}/revisions/{revision}/restore', [\App\Http\Controllers\Admin\TemplateController::class, 'restoreRevision'])->name('templates.revisions.restore');

@@ -22,14 +22,14 @@ class ComposedBlockController extends Controller
             })
             ->latest();
 
-        return Inertia::render('Admin/ComposedBlocks/Index', [
+        return Inertia::render('Admin/Blocks', [
             'composed_blocks' => $query->paginate(10)->withQueryString(),
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Admin/ComposedBlocks/Edit', [
+        return Inertia::render('Admin/Blocks/Edit', [
             'composed_block' => new ComposedBlock(),
         ]);
     }
@@ -47,12 +47,12 @@ class ComposedBlockController extends Controller
 
         $block = ComposedBlock::create($validated);
 
-        return redirect()->route('admin.composed-blocks.edit', $block)->with('success', 'composed_blocks.create_success');
+        return redirect()->route($this->resolveRoutePrefix($request) . '.edit', $block)->with('success', 'composed_blocks.create_success');
     }
 
     public function edit(ComposedBlock $composedBlock)
     {
-        return Inertia::render('Admin/ComposedBlocks/Edit', [
+        return Inertia::render('Admin/Blocks/Edit', [
             'composed_block' => $composedBlock->load('revisions'),
         ]);
     }
@@ -83,14 +83,14 @@ class ComposedBlockController extends Controller
             $composedBlock->update($validated);
         });
 
-        return redirect()->route('admin.composed-blocks.edit', $composedBlock)->with('success', 'composed_blocks.update_success');
+        return redirect()->route($this->resolveRoutePrefix($request) . '.edit', $composedBlock)->with('success', 'composed_blocks.update_success');
     }
 
-    public function destroy(ComposedBlock $composedBlock)
+    public function destroy(Request $request, ComposedBlock $composedBlock)
     {
         $composedBlock->delete();
 
-        return redirect()->route('admin.composed-blocks.index')->with('success', 'composed_blocks.delete_success');
+        return redirect()->route($this->resolveRoutePrefix($request) . '.index')->with('success', 'composed_blocks.delete_success');
     }
 
     protected function assertOptimisticLock(ComposedBlock $composedBlock, Request $request): void
@@ -116,5 +116,16 @@ class ComposedBlockController extends Controller
                 'optimistic_lock' => 'This composed block was updated by another user. Please refresh and retry.',
             ]);
         }
+    }
+
+    private function resolveRoutePrefix(Request $request): string
+    {
+        $routeName = (string) $request->route()?->getName();
+
+        if (str_starts_with($routeName, 'admin.blocks.')) {
+            return 'admin.blocks';
+        }
+
+        return 'admin.composed-blocks';
     }
 }
