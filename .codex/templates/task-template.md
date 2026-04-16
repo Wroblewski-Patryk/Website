@@ -1,12 +1,12 @@
-﻿# Task Template
+# Task Template
 
 ## Header
-- ID: PRJ-XXX
+- ID: FEA-XXX
 - Title:
 - Status: BACKLOG | READY | IN_PROGRESS | BLOCKED | REVIEW | DONE
 - Owner: Planner | Product Docs | Backend Builder | Frontend Builder | QA/Test | Security | DB/Migrations | Ops/Release | Review
 - Depends on:
-- Priority: P0 | P1 | P2
+- Priority: P0 | P1 | P2 | P3
 
 ## Description
 One short paragraph with expected business or technical outcome.
@@ -22,12 +22,11 @@ One short paragraph with expected business or technical outcome.
 - Screenshots/logs:
 
 ## UX/UI Evidence (required for UX tasks)
-- Design source type: figma | approved_snapshot
+- Design source type: figma | approved_snapshot | stitch_exception | n/a
 - Design source reference:
 - Stitch used: yes | no
-- Stitch artifact reference (if used):
-- State checks: loading | empty | error | success
-- Responsive checks: desktop | tablet | mobile
+- State checks: loading | empty | error | success | n/a
+- Responsive checks: desktop | tablet | mobile | n/a
 - Accessibility checks:
 
 ## Notes

@@ -1,4 +1,4 @@
-﻿# Project State Update Template
+# Project State Update Template
 
 ## Update Metadata
 - Date:

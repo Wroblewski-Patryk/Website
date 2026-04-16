@@ -1,4 +1,4 @@
-﻿---
+---
 description: Workspace rules for Featherly
 ---
 
@@ -6,23 +6,28 @@ description: Workspace rules for Featherly
 
 ## Stack Snapshot
 - Backend: Laravel 12, PHP 8.2+
-- Frontend: Vue 3 (Composition API), Inertia.js, Pinia, Ziggy
+- Frontend: Vue 3, Inertia.js, Pinia, Ziggy
 - Styling/UI: Tailwind CSS, DaisyUI, custom admin components
-- Runtime constraints: localized routing under `/{locale}` and `/{locale}/admin`
+- Runtime constraints:
+  - localized routing under `/{locale}` and `/{locale}/admin`
+  - block-based content and settings contracts
+  - translation scanning and integrity checks are part of delivery hygiene
 
 ## Architecture Rules
 - Keep route split explicit: `auth`, `admin`, `public`.
-- Preserve block-based content model (`content` JSON + `settings` JSON).
+- Preserve block-based content model and module contracts.
 - Prefer existing feature-first frontend modules under `resources/js/features/admin/`.
-- Keep shared admin UI components centralized in `features/admin/shared`.
+- Keep shared admin UI components centralized before introducing new patterns.
+- Keep translation keys and locale-aware behavior explicit.
 
 ## UI/UX Rules
 - Preserve visual consistency across admin modules.
-- Use the block builder and shared controls before introducing new patterns.
+- Reuse builder controls and shared form primitives before adding new UI patterns.
 - For animation-related changes, keep progressive enhancement and accessibility defaults.
 
 ## Delivery Rules
 - Keep changes scoped and reversible.
 - Require acceptance evidence before completion.
+- Follow the loop: plan -> implement -> test -> architecture review -> sync context -> repeat.
+- Run the relevant validation commands from `.codex/context/PROJECT_STATE.md` before every commit.
 - Use subagents only according to `.agents/workflows/subagent-orchestration.md`.
-- Update relevant docs when behavior or scope changes.

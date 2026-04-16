@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+set -eu
+
+if [ "${SKIP_LOCAL_GATES:-0}" = "1" ]; then
+  echo "[pre-commit] SKIP_LOCAL_GATES=1 -> skipping local quality gates"
+  exit 0
+fi
+
+echo "[pre-commit] running Featherly quality gates"
+
+if [ -f "artisan" ]; then
+  php artisan test
+fi
+
+if [ -f "composer.json" ]; then
+  composer analyse
+fi
+
+if [ -f "package.json" ]; then
+  npm run lint
+  npm run format:check
+fi
+
+echo "[pre-commit] quality gates passed"
