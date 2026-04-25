@@ -1,9 +1,38 @@
-﻿# Local Development
+# Local Development
 
-## Prerequisites
+## Fill This File Early
 
-## Setup
+Document the real local development flow with concrete commands and expected
+results.
 
-## Useful Commands
+Recommended minimum sections:
+- prerequisites
+- environment baseline (`.env` files, required variables, local endpoints)
+- local services startup
+- backend startup
+- frontend startup
+- local PROD-like startup (build plus start mode)
+- verification checks for each mode
+- shutdown and cleanup
+- common troubleshooting notes
 
-## Troubleshooting
+## Why It Matters
+
+- reduces repeated setup questions
+- keeps AI agents aligned with the actual local workflow
+- makes validation commands more trustworthy
+- improves confidence when validating behavior close to deployment runtime
+
+## Verification Contract
+
+- Define at least one health or readiness check command.
+- Define at least one manual flow check for core admin and public journeys.
+- Clarify which local shortcuts are debugging-only and not deployment parity
+  proof.
+
+## Pair With
+
+- `docs/engineering/testing.md`
+- `.codex/context/PROJECT_STATE.md`
+
+These three should agree on real commands and local runtime expectations.

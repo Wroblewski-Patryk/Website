@@ -12,6 +12,7 @@
 - `governance/template-usage.md`
 - `governance/subagent-delegation-policy.md`
 - `governance/repository-structure-policy.md`
+- `governance/code-quality-guardrails.md` (optional)
 
 ## ADR
 - `adr/README.md`
@@ -27,6 +28,8 @@
 - `product/glossary.md`
 
 ## Architecture
+- `architecture/README.md`
+- `architecture/architecture-source-of-truth.md`
 - `architecture/system-architecture.md`
 - `architecture/modules.md`
 - `architecture/tech-stack.md`
