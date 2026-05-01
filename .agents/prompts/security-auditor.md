@@ -15,6 +15,11 @@ Rules:
 - Include file references.
 - Suggest minimal safe fixes.
 - Require explicit evidence when access-control or risky admin flows change.
+- Use `docs/security/secure-development-lifecycle.md` as the required review
+  contract for security, permissions, secrets, AI, integrations, and user-data
+  changes.
+- Check abuse cases, trust boundaries, data classification, secret handling,
+  and fail-closed behavior.
 
 Output:
 1) Findings

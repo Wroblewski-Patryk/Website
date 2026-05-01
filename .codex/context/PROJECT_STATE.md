@@ -24,6 +24,44 @@ Last updated: 2026-05-01
   implementation surfaces through `current-implementation-map.md`, including
   routing, admin/content boundaries, headless export, media lifecycle,
   operations, reliability, and known architecture debt.
+- 2026-05-01: System Update Manager update-check baseline was verified:
+  admin settings expose status/preferences, manual check uses a trusted
+  manifest, `updates:check` is scheduled daily, and unsupported automatic
+  application remains fail-closed to manual/status mode.
+- 2026-05-01: System Update Manager manual/fake apply contract was verified:
+  manual apply records operator instructions without mutating files, fake apply
+  is config-gated for tests, and high-risk/manual-review releases are blocked.
+- 2026-05-01: System Update Manager production-driver preflight baseline was
+  verified: Coolify reports configured webhook readiness without exposing
+  secrets, archive reports missing or writable paths, and both remain
+  preflight-only with runtime code replacement disabled.
+- 2026-05-01: System Update Manager Coolify apply trigger path was added behind
+  `FEATHERLY_UPDATE_COOLIFY_APPLY_ENABLED`; tests verify webhook trigger with
+  HTTP fakes, disabled trigger sends no request, and status never exposes the
+  webhook secret.
+- 2026-05-01: System Update Manager post-deploy confirmation was added through
+  `updates:confirm`, which marks a triggered deployment complete only after
+  the running `APP_VERSION` matches the expected target release.
+- 2026-05-01: System Update Manager confirmation now reuses a shared
+  operational health checker, so matching runtime versions are marked
+  `confirmed` only when database, cache, and queue readiness checks also pass.
+- 2026-05-01: Coolify update rollout runbook was added to define the operator
+  evidence path from `updates:check` and webhook trigger through
+  `updates:confirm`, post-deploy smoke, and Coolify deployment-history
+  rollback.
+- 2026-05-01: Archive update driver preflight now fails closed unless the
+  release manifest stores `release_archive_url` and a valid 64-character
+  `release_archive_sha256`, keeping archive apply preflight-only until
+  download, verification, staging, and switch execution are implemented.
+- 2026-05-01: Archive update driver can now download a release archive to
+  staging and verify SHA-256 without extracting, migrating, switching live
+  files, or marking the update applied.
+- 2026-05-01: Archive update verification now records ZIP extraction readiness;
+  if PHP `ZipArchive` is unavailable, the staged archive remains verified but
+  extraction is marked `unavailable` and live files remain untouched.
+- 2026-05-01: Docker and Git runtime update drivers were explicitly deferred
+  from System Update Manager v1 through DEC-009; Docker/Git deployments remain
+  platform/operator-owned until dedicated contracts exist.
 
 ## Technical Baseline
 - Backend: Laravel 12 + PHP 8.2+
@@ -33,7 +71,14 @@ Last updated: 2026-05-01
 - Infra: Laravel runtime + Vite frontend build/dev
 - Updates: application-owned update discovery with environment-specific
   application drivers, documented in
-  `docs/architecture/system-update-manager-contract.md`
+  `docs/architecture/system-update-manager-contract.md`; current runtime
+  implementation supports update discovery/status/manual instructions and
+  config-gated fake apply tests plus a config-gated Coolify webhook trigger
+  with CLI version and operational health confirmation; archive/Docker/Git code
+  replacement remains unavailable; archive verification can download and verify
+  a staged artifact and record extraction readiness without switching live
+  files, Docker/Git runtime drivers are deferred from v1, and Coolify
+  production readiness still requires captured staging/live rollout evidence
 - External services: optional Sentry and media/integration surfaces as configured
 - MCP / external tools: design-source workflows may use Figma or Stitch where applicable
 

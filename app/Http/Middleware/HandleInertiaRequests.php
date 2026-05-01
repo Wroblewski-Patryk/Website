@@ -5,7 +5,9 @@ namespace App\Http\Middleware;
 use App\Models\Page;
 use App\Models\ComposedBlock;
 use App\Models\AnimationPreset;
+use App\Models\Project;
 use App\Support\SharedInertiaCache;
+use App\Support\ProjectPublicPresenter;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -75,10 +77,15 @@ class HandleInertiaRequests extends Middleware
                 return \App\Models\Language::where('is_active', true)->orderBy('is_default', 'desc')->get();
             });
             $allProjects = \Illuminate\Support\Facades\Cache::rememberForever(SharedInertiaCache::keyProjects(), function () {
-                return \App\Models\Project::query()
+                $projects = Project::query()
+                    ->with(['taxonomies' => fn ($query) => $query
+                        ->where('type', 'category')
+                        ->orderBy('order')])
                     ->select(['id', 'title', 'slug', 'category', 'desktop_image', 'mobile_image', 'order'])
                     ->orderBy('order')
                     ->get();
+
+                return app(ProjectPublicPresenter::class)->presentCollection($projects);
             });
 
             $archivePageIds = collect([

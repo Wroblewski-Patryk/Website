@@ -15,6 +15,12 @@
 - Product impact:
 - Technical impact:
 - Delivery impact:
+- Deployment impact:
+- Documentation parity impact:
+
+## Validation
+- Commands run:
+- Evidence or artifacts:
 
 ## Follow-up Needed
 -

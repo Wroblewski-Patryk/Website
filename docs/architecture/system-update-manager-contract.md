@@ -10,6 +10,49 @@ The application owns update discovery, admin preferences, status visibility,
 preflight checks, audit evidence, and user-facing controls. Code replacement
 and service restart are delegated to an environment-specific update driver.
 
+## Implementation Status
+
+Current implemented baseline:
+
+- admin settings expose update status and update preferences
+- manual "check now" action fetches the trusted release manifest server-side
+- `updates:check` command records current/latest version status
+- manual "apply update" action and `updates:apply` run the configured driver
+  apply contract
+- `updates:confirm` confirms a triggered deployment only after the running
+  application version matches the expected target version and operational
+  health checks pass
+- scheduler runs `updates:check` daily without overlap
+- invalid, missing, or unavailable manifests fail closed to status only
+- effective production fallback driver is currently `manual`
+- manual driver records operator instructions and does not mutate files
+- fake driver exists only when explicitly enabled for automated tests
+- Coolify driver preflight validates configured webhook presence without
+  exposing the secret URL
+- Coolify apply can trigger the configured webhook only when
+  `FEATHERLY_UPDATE_COOLIFY_APPLY_ENABLED=true`
+- archive driver preflight validates configured staging/release paths and
+  writable parent directories, and requires release archive URL plus SHA-256
+  metadata before apply can be considered
+- archive driver apply can download the release archive to staging and verify
+  SHA-256 without extracting or switching live files
+- archive driver records whether ZIP extraction support is unavailable or
+  pending after archive verification
+
+Not implemented yet:
+
+- automatic update application
+- archive apply execution
+- Coolify live rollout validation and production rollback evidence
+- Docker and Git runtime drivers, intentionally deferred from v1
+- driver-specific rollback execution
+- release archive extraction, staging validation, and file switch execution
+  during apply
+
+Until those items are complete, Featherly must treat update availability as a
+notification/status/manual-instructions feature, not a self-mutating runtime
+update feature.
+
 ## Supported Hosting Models
 
 - Coolify or similar platform-as-a-service on a VPS.
@@ -57,12 +100,18 @@ they support.
 Initial driver set:
 
 - `coolify`: trigger a Coolify deploy webhook or API-backed deployment
-- `docker`: pull a published image and restart the configured service
-- `git`: fetch a trusted tag or release branch and run the required build,
-  dependency, migration, and cache commands
 - `archive`: download a built release archive, verify it, unpack it into a
   staging path, preserve local state, and switch the application files safely
 - `manual`: report availability and produce operator instructions only
+
+Deferred v1 driver directions:
+
+- `docker`: use Coolify or another platform/operator rollout path in v1.
+  Runtime image pull, service restart, health, and rollback need a dedicated
+  contract before a Docker driver can exist.
+- `git`: keep as manual/operator deployment in v1. Runtime checkout,
+  dependency install, build, migration, secret handling, and rollback need a
+  dedicated contract before a Git driver can exist.
 
 Drivers must expose:
 
@@ -89,8 +138,21 @@ The preferred release source is a stable release manifest containing:
 - manual-review requirement
 - release notes URL
 
+For archive releases, the manifest fields are:
+
+- `release_archive_url`
+- `release_archive_sha256`
+
 The update manager must verify release integrity before applying an archive or
-image. If verification is not possible, automatic application must fail closed.
+image. If integrity metadata is missing or invalid, automatic application must
+fail closed.
+
+The current archive implementation stops after download and SHA-256
+verification. It records verification evidence but must not extract, migrate,
+switch live files, or mark the update applied until staging and rollback are
+implemented. If the PHP `ZipArchive` extension is unavailable, extraction is
+recorded as unavailable and the operator must enable ZIP support before the
+archive driver can progress to extraction validation.
 
 ## Shared Hosting Strategy
 
@@ -173,9 +235,17 @@ Every automatic update driver must define:
 - failure and rollback behavior
 - operator-visible logs or status
 
+Post-deploy confirmation must not mark an update complete only because a
+deployment webhook was accepted. The running application must report the
+expected `APP_VERSION` and pass operational health checks before
+`system_update_status` can move from `deployment_triggered`,
+`awaiting_confirmation`, or `confirmation_health_failed` to `confirmed`.
+
 For Coolify, rollback can rely on the platform deployment history when
-configured. For archive or Git updates, rollback must be designed explicitly
-before the driver is marked production-ready.
+configured, but the rollout must capture the evidence described in
+`docs/operations/coolify-update-rollout-runbook.md` before the driver is marked
+production-ready. For archive or Git updates, rollback must be designed
+explicitly before the driver is marked production-ready.
 
 ## Architecture Fit
 

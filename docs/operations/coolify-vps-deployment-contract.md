@@ -49,6 +49,9 @@ production target in `.codex/context/PROJECT_STATE.md`.
 - Coolify owns deployment execution through a configured webhook or API path.
 - The webhook secret must live in the hosting environment and must never be
   exposed to the browser.
+- Operator rollout, evidence, confirmation, and failure handling must follow
+  `docs/operations/coolify-update-rollout-runbook.md` before the driver is
+  treated as production-ready.
 - Installations outside Coolify must use the driver contract in
   `docs/architecture/system-update-manager-contract.md`.
 

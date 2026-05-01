@@ -10,6 +10,7 @@ use App\Models\Setting;
 use App\Models\Template;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Support\ProjectPublicPresenter;
 
 class PageController extends Controller
 {
@@ -138,6 +139,7 @@ class PageController extends Controller
 
         $blogId = $settings['blog_page_id'] ?? null;
         $projectsId = $settings['projects_page_id'] ?? null;
+        $projectPresenter = app(ProjectPublicPresenter::class);
 
         $component = 'Public/Page';
         $extraData = [];
@@ -150,9 +152,15 @@ class PageController extends Controller
         }
         elseif ($page->id == $projectsId) {
             $component = 'Public/ProjectList';
-            $extraData['projects'] = Project::where('status', 'published')
+            $projects = Project::query()
+                ->with(['taxonomies' => fn ($query) => $query
+                    ->where('type', 'category')
+                    ->orderBy('order')])
+                ->where('status', 'published')
                 ->orderBy('created_at', 'desc')
                 ->get();
+
+            $extraData['projects'] = $projectPresenter->presentCollection($projects);
         }
 
         $seoService = app(\App\Services\SeoService::class);
@@ -173,7 +181,6 @@ class PageController extends Controller
             'page_template' => $templates['page'] ? ['content' => $contentService->resolveReferences($templates['page']->content ?: [])] : null,
             'settings' => $settings,
             'seo' => $seoService->getMetaData($page),
-            'all_projects' => Project::all(),
             ...$extraData
         ]);
     }

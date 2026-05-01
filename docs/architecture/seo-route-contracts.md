@@ -12,8 +12,11 @@ This document defines stable routing and locale contracts for public SEO behavio
 
 ### Locale-prefixed public content
 Public content is served under `/{locale}` groups loaded from `routes/public.php`:
-- `GET /{locale}` -> home (`PageController@show`)
-- `GET /{locale}/{path?}` -> dynamic content resolver (`PageController@show`)
+- `GET /{locale}` -> home (`home` -> `PageController@show`)
+- `GET /{locale}/{path}` -> named dynamic content resolver (`public.content.show` -> `PageController@show`)
+- The resolver route is intentionally shared by pages, blog post detail paths,
+  and project detail paths so archive page settings remain the authoritative
+  source of URL shape.
 
 ### Non-prefixed fallbacks and redirects
 `FallbackController` normalizes non-prefixed paths into localized equivalents:
@@ -59,6 +62,21 @@ This applies to:
    - projects archive -> delegate tail to `ProjectController@show`
 6. If no match, return configured custom 404 page or standard 404.
 
+### Regression Coverage
+- `tests/Feature/PublicRouteContractTest.php` verifies the named localized
+  entrypoints for home, page detail, post detail, and project detail requests.
+
+## Approved V1 Taxonomy Direction
+
+- Module-scoped taxonomies are the canonical semantic-grouping system for
+  `posts` and `projects`.
+- V1 public taxonomy archive URLs remain a blog surface and are reserved for
+  the `posts` module only.
+- `projects.category` is a legacy compatibility field and is not the long-term
+  semantic-grouping contract.
+- Runtime guard: public taxonomy resolution must fail closed for any taxonomy
+  outside the `posts` module, even when type and localized slug match.
+
 ## SEO Metadata Contract
 
 `SeoService::getMetaData()` provides:
@@ -96,4 +114,6 @@ This applies to:
 - Keep route prefixing and fallback redirects consistent with this contract.
 - Do not introduce mixed locale URL formats for public content.
 - Maintain parity between resolver behavior and generated `alternate_locales`.
+- Do not expose project taxonomy archives publicly through `/category/{slug}` or
+  `/tag/{slug}` without an approved module-qualified route contract.
 - Any route/locale contract change must update this file and associated test coverage.

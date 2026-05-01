@@ -1,6 +1,6 @@
 <script setup>
-import { Head, useForm, router, usePage } from '@inertiajs/vue3';
-import { markRaw, ref, onMounted, computed } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3';
+import { markRaw, ref, computed } from 'vue';
 import { 
     PhFloppyDisk, PhHouse, PhGearSix, PhBrowser, PhBookOpen, PhMagnifyingGlass, PhGlobe, PhImage, PhCheckCircle, PhXCircle, PhMapTrifold, PhLayout
 } from '@phosphor-icons/vue';
@@ -11,7 +11,8 @@ import MediaPickerModal from '@/features/admin/media/components/MediaPickerModal
 
 const props = defineProps({
     settings: Object,
-    pages: Array
+    pages: Array,
+    updateStatus: Object
 });
 
 const languages = usePage().props.languages || [];
@@ -26,11 +27,6 @@ const getEmptyLocales = (field) => {
         return acc;
     }, {});
 };
-
-const breadcrumbs = [
-    { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
-    { label: t('admin.menu.settings', 'Settings') }
-];
 
 const form = useForm({
     home_page_id: props.settings.home_page_id || '',
@@ -58,7 +54,13 @@ const form = useForm({
     robots_disallow_admin: props.settings.robots_disallow_admin !== '0' && props.settings.robots_disallow_admin !== false, // default true
     sitemap_enabled: props.settings.sitemap_enabled !== '0' && props.settings.sitemap_enabled !== false, // default true
     sitemap_cache_minutes: parseInt(props.settings.sitemap_cache_minutes) || 60,
+    update_checks_enabled: props.settings.update_checks_enabled !== '0' && props.settings.update_checks_enabled !== false,
+    auto_update_enabled: props.settings.auto_update_enabled === '1' || props.settings.auto_update_enabled === true,
+    update_release_channel: props.settings.update_release_channel || props.updateStatus?.release_channel || 'stable',
+    preferred_update_driver: props.settings.preferred_update_driver || props.updateStatus?.preferred_update_driver || 'auto',
 });
+const checkUpdatesForm = useForm({});
+const applyUpdateForm = useForm({});
 
 function openMediaPickerFor(field) {
     mediaTargetField.value = field;
@@ -73,6 +75,18 @@ function selectMedia(file) {
 function saveSettings() {
     form.post(route('admin.settings.store'), {
         preserveScroll: true
+    });
+}
+
+function checkForUpdates() {
+    checkUpdatesForm.post(route('admin.settings.check-updates'), {
+        preserveScroll: true,
+    });
+}
+
+function applyUpdate() {
+    applyUpdateForm.post(route('admin.settings.apply-update'), {
+        preserveScroll: true,
     });
 }
 </script>
@@ -261,6 +275,184 @@ function saveSettings() {
                                         <p class="mt-2 text-[10px] opacity-40 italic">Service unavailable / maintenance fallback destination.</p>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-base-100 rounded-box shadow-sm border border-base-300 overflow-hidden">
+                        <div class="p-6 border-b border-base-200 bg-base-200/20">
+                            <h2 class="text-sm font-black uppercase tracking-widest opacity-60 flex items-center gap-2">
+                                <PhCheckCircle weight="bold" class="w-4 h-4" />
+                                {{ t('admin.settings.updates_title', 'System Updates') }}
+                            </h2>
+                            <p class="mt-2 text-sm opacity-60">
+                                {{ t('admin.settings.updates_desc', 'Monitor available Featherly releases and the safe update mode.') }}
+                            </p>
+                        </div>
+
+                        <div class="p-8 space-y-8">
+                            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                                <div class="rounded-2xl border border-base-300 bg-base-200/30 p-4">
+                                    <div class="text-[10px] font-bold uppercase tracking-widest opacity-50">{{ t('admin.settings.current_version', 'Current version') }}</div>
+                                    <div class="mt-2 text-2xl font-black">{{ props.updateStatus?.current_version || '0.0.0' }}</div>
+                                </div>
+                                <div class="rounded-2xl border border-base-300 bg-base-200/30 p-4">
+                                    <div class="text-[10px] font-bold uppercase tracking-widest opacity-50">{{ t('admin.settings.latest_version', 'Latest version') }}</div>
+                                    <div class="mt-2 text-2xl font-black">{{ props.updateStatus?.latest_version || 'n/a' }}</div>
+                                </div>
+                                <div class="rounded-2xl border border-base-300 bg-base-200/30 p-4">
+                                    <div class="text-[10px] font-bold uppercase tracking-widest opacity-50">{{ t('admin.settings.status', 'Status') }}</div>
+                                    <div class="mt-2 flex items-center gap-2 text-sm font-semibold">
+                                        <PhXCircle v-if="props.updateStatus?.failure_message" class="w-4 h-4 text-error" />
+                                        <PhCheckCircle v-else class="w-4 h-4 text-success" />
+                                        <span>{{ props.updateStatus?.status_label || t('admin.settings.not_checked_yet', 'Not checked yet') }}</span>
+                                    </div>
+                                </div>
+                                <div class="rounded-2xl border border-base-300 bg-base-200/30 p-4">
+                                    <div class="text-[10px] font-bold uppercase tracking-widest opacity-50">{{ t('admin.settings.last_check', 'Last check') }}</div>
+                                    <div class="mt-2 text-sm font-medium">{{ props.updateStatus?.checked_at || t('admin.settings.not_checked_yet', 'Not checked yet') }}</div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-4 rounded-3xl border border-base-300 bg-base-200/20 p-6">
+                                    <div class="flex items-center justify-between gap-4">
+                                        <label class="text-xs font-black uppercase tracking-widest opacity-60">{{ t('admin.settings.update_checks_enabled', 'Enable update checks') }}</label>
+                                        <input v-model="form.update_checks_enabled" type="checkbox" class="toggle toggle-primary" />
+                                    </div>
+                                    <div class="flex items-center justify-between gap-4">
+                                        <label class="text-xs font-black uppercase tracking-widest opacity-60">{{ t('admin.settings.auto_update_enabled', 'Enable automatic updates') }}</label>
+                                        <input v-model="form.auto_update_enabled" type="checkbox" class="toggle toggle-primary" />
+                                    </div>
+                                    <p v-if="props.updateStatus?.auto_apply_env_enabled === false" class="text-xs text-warning">
+                                        {{ t('admin.settings.auto_apply_forced_off', 'Automatic apply is disabled by environment configuration.') }}
+                                    </p>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-3xl border border-base-300 bg-base-200/20 p-6">
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text text-xs font-bold uppercase tracking-widest opacity-60">{{ t('admin.settings.channel', 'Channel') }}</span>
+                                        </label>
+                                        <select v-model="form.update_release_channel" class="select select-bordered bg-base-100">
+                                            <option value="stable">stable</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text text-xs font-bold uppercase tracking-widest opacity-60">{{ t('admin.settings.preferred_driver', 'Preferred driver') }}</span>
+                                        </label>
+                                        <select v-model="form.preferred_update_driver" class="select select-bordered bg-base-100">
+                                            <option value="auto">{{ t('admin.settings.auto_driver', 'Automatic selection') }}</option>
+                                            <option value="manual">{{ t('admin.settings.manual_driver', 'Manual mode') }}</option>
+                                            <option value="coolify">Coolify</option>
+                                            <option value="archive">{{ t('admin.settings.archive_driver', 'Archive mode') }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="sm:col-span-2 rounded-2xl border border-base-300 bg-base-100 p-4 text-xs opacity-70">
+                                        <div class="font-bold uppercase tracking-widest opacity-50">{{ t('admin.settings.driver', 'Driver') }}</div>
+                                        <div class="mt-2">{{ props.updateStatus?.driver_label || 'Manual' }}</div>
+                                        <p class="mt-3">{{ props.updateStatus?.driver_preflight_message || t('admin.settings.manual_only', 'This slice runs in manual mode: it shows status and settings, but does not apply updates yet.') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div v-if="props.updateStatus?.driver_options?.length" class="rounded-3xl border border-base-300 bg-base-200/20 p-6">
+                                <div class="text-xs font-black uppercase tracking-widest opacity-60">
+                                    {{ t('admin.settings.driver_preflight', 'Driver preflight') }}
+                                </div>
+                                <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+                                    <div
+                                        v-for="driver in props.updateStatus.driver_options"
+                                        :key="driver.key"
+                                        class="rounded-2xl border border-base-300 bg-base-100 p-4 text-sm"
+                                    >
+                                        <div class="flex items-center justify-between gap-3">
+                                            <div class="font-bold">{{ driver.label }}</div>
+                                            <span
+                                                class="badge badge-sm"
+                                                :class="driver.preflight_ok ? 'badge-success' : 'badge-ghost'"
+                                            >
+                                                {{ driver.preflight_ok ? t('admin.settings.ready', 'Ready') : t('admin.settings.not_ready', 'Not ready') }}
+                                            </span>
+                                        </div>
+                                        <p class="mt-3 text-xs opacity-70">{{ driver.message }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-4 rounded-3xl border border-base-300 bg-base-200/20 p-6 md:flex-row md:items-center md:justify-between">
+                                <div>
+                                    <div class="text-xs font-black uppercase tracking-widest opacity-60">
+                                        {{ t('admin.settings.check_now', 'Check now') }}
+                                    </div>
+                                    <p class="mt-2 text-sm opacity-70">
+                                        {{ t('admin.settings.check_now_desc', 'Run a server-side manifest check immediately without enabling automatic apply.') }}
+                                    </p>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline btn-primary"
+                                    :disabled="checkUpdatesForm.processing"
+                                    @click="checkForUpdates"
+                                >
+                                    <span v-if="checkUpdatesForm.processing" class="loading loading-spinner loading-sm mr-2"></span>
+                                    <PhCheckCircle v-else weight="bold" class="mr-2 h-4 w-4" />
+                                    {{ t('admin.settings.check_now', 'Check now') }}
+                                </button>
+                            </div>
+
+                            <div class="flex flex-col gap-4 rounded-3xl border border-base-300 bg-base-200/20 p-6 md:flex-row md:items-center md:justify-between">
+                                <div>
+                                    <div class="text-xs font-black uppercase tracking-widest opacity-60">
+                                        {{ t('admin.settings.apply_update', 'Apply update') }}
+                                    </div>
+                                    <p class="mt-2 text-sm opacity-70">
+                                        {{ t('admin.settings.apply_update_desc', 'Run the configured server-side update driver contract. Manual mode records operator instructions and does not change files.') }}
+                                    </p>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline"
+                                    :disabled="applyUpdateForm.processing || !props.updateStatus?.update_available"
+                                    @click="applyUpdate"
+                                >
+                                    <span v-if="applyUpdateForm.processing" class="loading loading-spinner loading-sm mr-2"></span>
+                                    <PhCheckCircle v-else weight="bold" class="mr-2 h-4 w-4" />
+                                    {{ t('admin.settings.apply_update', 'Apply update') }}
+                                </button>
+                            </div>
+
+                            <div v-if="props.updateStatus?.operator_message" class="rounded-2xl border border-base-300 bg-base-100 p-4 text-sm">
+                                <div class="text-[10px] font-bold uppercase tracking-widest opacity-50">{{ t('admin.settings.operator_message', 'Operator message') }}</div>
+                                <p class="mt-2">{{ props.updateStatus.operator_message }}</p>
+                                <ul v-if="props.updateStatus.operator_instructions?.length" class="mt-3 list-disc space-y-1 pl-5">
+                                    <li v-for="instruction in props.updateStatus.operator_instructions" :key="instruction">
+                                        {{ instruction }}
+                                    </li>
+                                </ul>
+                                <p v-if="props.updateStatus.rollback_note" class="mt-3 text-xs opacity-60">
+                                    {{ props.updateStatus.rollback_note }}
+                                </p>
+                            </div>
+
+                            <div v-if="props.updateStatus?.failure_message" class="rounded-2xl border border-error/30 bg-error/5 p-4 text-sm text-error">
+                                <div class="text-[10px] font-bold uppercase tracking-widest">{{ t('admin.settings.failure', 'Failure') }}</div>
+                                <div class="mt-2">{{ props.updateStatus.failure_message }}</div>
+                            </div>
+
+                            <div v-if="props.updateStatus?.release_notes_url" class="rounded-2xl border border-base-300 bg-base-100 p-4 text-sm">
+                                <div class="text-[10px] font-bold uppercase tracking-widest opacity-50">{{ t('admin.settings.release_notes', 'Release notes') }}</div>
+                                <a
+                                    :href="props.updateStatus.release_notes_url"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="mt-2 inline-flex text-primary underline underline-offset-4"
+                                >
+                                    {{ props.updateStatus.release_notes_url }}
+                                </a>
                             </div>
                         </div>
                     </div>

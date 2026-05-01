@@ -4,8 +4,8 @@
 - ID: FEA-015
 - Title: Design and implement environment-adaptive System Update Manager
 - Task Type: feature
-- Current Stage: planning
-- Status: READY
+- Current Stage: verification
+- Status: IN_PROGRESS
 - Owner: Backend Builder
 - Depends on: `docs/architecture/system-update-manager-contract.md`
 - Priority: P1
@@ -111,11 +111,66 @@ Out of scope for the first implementation slice:
   Coolify secret, failed archive staging, post-update smoke failure.
 
 ### 4. Execute Implementation
-- Implementation notes: not started.
+- Implementation notes: implemented the first safe slice using the existing
+  settings surface, a new `updates:check` command, manifest parsing/status
+  storage in `settings`, and a manual-mode admin status UI. Automatic
+  application and environment-specific apply drivers remain deferred.
+- Implementation notes: continued the admin/manual slice by adding an
+  authenticated "check now" action that forces an immediate manifest refresh,
+  keeps auto-apply fail-closed, and surfaces release notes when available.
+- Implementation notes: continued the apply-contract slice by adding the
+  `UpdateDriver` interface, manual instructions driver, config-gated fake
+  driver, guarded `updates:apply`, and admin apply action while keeping real
+  code replacement out of scope.
+- Implementation notes: added post-deploy confirmation through
+  `updates:confirm`, which compares the running `APP_VERSION` against the last
+  target release before marking a Coolify-triggered deployment complete.
+- Implementation notes: reused the operational health probes from
+  `ops:health-check` in `updates:confirm`, so version-matching deployments
+  still fail confirmation when database, cache, or queue readiness fails.
+- Implementation notes: added the Coolify rollout runbook and linked it from
+  deployment, rollback, smoke, and architecture docs so production readiness
+  requires captured rollout evidence rather than only code-level tests.
+- Implementation notes: added archive release integrity metadata persistence
+  and preflight gating; archive mode now requires `release_archive_url` and a
+  valid 64-character `release_archive_sha256` before apply can be considered.
+- Implementation notes: added no-switch archive verification; archive apply can
+  download a release archive to staging, verify SHA-256, record evidence, and
+  remove mismatched downloads without extracting or switching live files.
+- Implementation notes: added archive extraction capability evidence; verified
+  archives now record whether PHP `ZipArchive` support is pending/available or
+  unavailable before extraction validation can be attempted.
+- Implementation notes: closed DEC-009 by deferring Docker and Git runtime
+  drivers from v1 and routing Docker/Git deployment responsibility to
+  Coolify/platform/operator workflows until dedicated contracts exist.
 
 ### 5. Verify and Test
-- Validation performed: not started.
-- Result: not started.
+- Validation performed: targeted backend feature tests for settings and update
+  checks; admin i18n scan; frontend lint.
+- Result: first slice verified, full task remains in progress.
+- Result: second slice verified with targeted backend coverage and frontend
+  lint; admin i18n scan remains blocked locally by unavailable MySQL.
+- Result: third slice verified with targeted backend coverage and frontend
+  lint; real production drivers remain pending.
+- Result: fourth slice verified with targeted backend coverage; Coolify live
+  health-check integration remains pending.
+- Result: fifth slice verified with targeted backend coverage and a live
+  `ops:health-check --json` smoke; Coolify live rollout evidence remains
+  pending.
+- Result: sixth slice verified as documentation-only with whitespace checks;
+  actual staging/live Coolify evidence remains pending.
+- Result: seventh slice verified with targeted backend coverage; archive apply
+  remains preflight-only until download, checksum verification, staging, and
+  switch execution are implemented.
+- Result: eighth slice verified with targeted backend coverage; archive apply
+  now performs download/checksum verification but still does not extract,
+  migrate, switch live files, or mark the update applied.
+- Result: ninth slice verified with targeted backend coverage; local runtime
+  lacks ZIP support, so extraction is recorded as unavailable while the staged
+  archive remains verified.
+- Result: tenth slice verified as documentation/architecture decision; Docker
+  and Git runtime drivers are out of v1 scope and no placeholder classes are
+  introduced.
 
 ### 6. Self-Review
 - Simpler option considered: Coolify-only auto-deploy.
@@ -126,8 +181,8 @@ Out of scope for the first implementation slice:
   from update checks.
 
 ### 7. Update Documentation and Knowledge
-- Docs updated: architecture and planning docs for this task.
-- Context updated: project state and task board.
+- Docs updated: task evidence, task board, and progress log.
+- Context updated: task board and automation memory.
 - Learning journal updated: not applicable.
 
 ## Acceptance Criteria
@@ -144,7 +199,7 @@ Out of scope for the first implementation slice:
   state before switching files.
 - [ ] High-risk or manual-review releases do not auto-apply.
 - [ ] Update attempts are audit logged without leaking secrets.
-- [ ] Tests cover manifest parsing, fail-closed behavior, driver selection,
+- [x] Tests cover manifest parsing, fail-closed behavior, driver selection,
   authorization, and at least one successful fake-driver update.
 
 ## Success Signal
@@ -159,8 +214,8 @@ Out of scope for the first implementation slice:
 - Post-launch learning needed: yes
 
 ## Deliverable For This Stage
-Approved architecture and implementation task plan for a safe,
-environment-adaptive update system.
+Verified tenth implementation slice: Docker/Git runtime driver v1 deferral,
+while keeping production code replacement fail-closed.
 
 ## Constraints
 - use existing settings, scheduler, admin permission, and audit patterns first
@@ -192,12 +247,32 @@ environment-adaptive update system.
 - [x] Risks and assumptions for this stage are stated clearly.
 
 ## Validation Evidence
-- Tests: not run; planning/documentation-only stage.
-- Manual checks: architecture, settings, scheduler, operations, and security
-  docs inspected before planning.
-- Screenshots/logs: not applicable.
-- High-risk checks: update application is explicitly fail-closed and driver
-  gated.
+- Tests: `php artisan test --filter=SettingsManagementTest`,
+  `php artisan test --filter=SystemUpdateCheckCommandTest`, `npm run lint`
+- Manual checks: reviewed the admin settings route, forced-check redirect flow,
+  and settings UI contract.
+- Screenshots/logs: command output asserted in feature tests; admin trigger
+  redirect + flash asserted in feature tests.
+- High-risk checks: missing manifest URL or invalid manifest fail closed and
+  store a failed status instead of attempting any apply path; manual checks can
+  bypass disabled scheduler preference without enabling auto-apply.
+- High-risk checks: high-risk/manual-review releases block apply attempts;
+  manual driver records instructions without mutating files; fake driver is
+  config-gated and disabled by default.
+- High-risk checks: Coolify-triggered deployments are not marked complete until
+  `updates:confirm` observes the expected runtime `APP_VERSION`.
+- High-risk checks: matching versions still record
+  `confirmation_health_failed` when DB/cache/queue health fails.
+- High-risk checks: Coolify driver production readiness now requires captured
+  rollout evidence and rollback review from the runbook.
+- High-risk checks: archive driver fails closed without release archive URL and
+  SHA-256 metadata and still does not support apply even when metadata exists.
+- High-risk checks: checksum mismatch removes the staged archive and leaves live
+  files untouched.
+- High-risk checks: missing PHP `ZipArchive` support records extraction as
+  unavailable and does not attempt extraction.
+- High-risk checks: Docker/Git runtime self-updaters are not introduced without
+  dedicated staging, secret, migration, health, and rollback contracts.
 - Coverage ledger updated: not applicable.
 - Coverage rows closed or changed:
 
@@ -235,6 +310,11 @@ environment-adaptive update system.
 - Health/readiness check: required before production auto-apply.
 - Logs, dashboard, or alert route: audit log and operator-visible admin status.
 - Smoke command or manual smoke: required per driver before release.
+- Smoke command or manual smoke: `php artisan updates:confirm` is available
+  after a triggered deployment restarts and runs DB/cache/queue readiness.
+- Smoke command or manual smoke: Coolify rollout evidence must include
+  `updates:apply --force`, `updates:confirm`, deployment history, and
+  post-deploy smoke results.
 - Rollback or disable path: admin setting, environment kill switch, driver
   rollback/recovery instructions.
 
@@ -303,23 +383,45 @@ environment-adaptive update system.
 - [x] Learning journal was updated if a recurring pitfall was confirmed.
 
 ## Result Report
-- Task summary: planning and architecture source-of-truth for the System Update
-  Manager are recorded.
-- Files changed: `docs/architecture/system-update-manager-contract.md`,
-  `docs/architecture/README.md`,
-  `docs/architecture/system-architecture.md`,
-  `docs/architecture/tech-stack.md`,
+- Task summary: continued the System Update Manager by closing the Docker/Git
+  driver direction decision for v1.
+- Files changed: `config/updates.php`,
+  `app/Services/SystemUpdates/UpdateManager.php`,
+  `app/Services/SystemUpdates/UpdateDriver.php`,
+  `app/Services/SystemUpdates/Drivers/ManualUpdateDriver.php`,
+  `app/Services/SystemUpdates/Drivers/FakeUpdateDriver.php`,
+  `app/Console/Commands/CheckForApplicationUpdates.php`,
+  `app/Console/Commands/ApplyApplicationUpdate.php`,
+  `app/Console/Commands/ConfirmApplicationUpdate.php`,
+  `app/Console/Commands/CheckOperationalHealth.php`,
+  `app/Services/Operations/OperationalHealthChecker.php`,
+  `app/Services/SystemUpdates/Drivers/ArchiveUpdateDriver.php`,
+  `docs/operations/coolify-update-rollout-runbook.md`,
   `docs/operations/coolify-vps-deployment-contract.md`,
-  `.codex/context/PROJECT_STATE.md`,
-  `.codex/context/TASK_BOARD.md`,
+  `docs/operations/rollback-and-recovery.md`,
+  `docs/operations/post-deploy-smoke.md`,
+  `app/Http/Controllers/Admin/SettingController.php`,
+  `resources/js/Pages/Admin/Settings/Index.vue`,
+  `routes/admin.php`,
+  `database/seeders/data/translations/settings.php`,
+  `tests/Feature/Admin/SettingsManagementTest.php`,
+  `tests/Feature/SystemUpdateCheckCommandTest.php`,
+  `docs/planning/mvp-execution-plan.md`,
+  `docs/planning/mvp-next-commits.md`,
   `docs/planning/tasks/FEA-015-system-update-manager.md`
-- How tested: documentation-only stage; no runtime tests run.
-- What is incomplete: runtime implementation, release manifest publication,
-  update drivers, admin UI, tests, and driver-specific rollback docs.
-- Next steps: implement the smallest safe slice: update settings, release
-  manifest checker, daily `updates:check`, admin status, and manual/fake driver.
-- Decisions made: Featherly updates are environment-adaptive and driver-based;
-  unsupported hosts degrade to manual mode.
+- How tested: targeted PHPUnit feature tests for update commands and settings;
+  `git diff --check`.
+- What is incomplete: archive extraction, staging validation, switch execution,
+  rollback execution, audit history UI, and captured staging/live Coolify
+  rollout evidence.
+- Next steps: enable/test PHP ZIP extraction staging validation without
+  switching live files, or capture Coolify staging/live evidence using the
+  runbook.
+- Decisions made: first implementation slice remains manual-only for apply
+  behavior and stores status in existing `settings` instead of creating a new
+  model.
+- Decisions made: Docker/Git runtime drivers are deferred from v1; Docker/Git
+  deployments remain platform/operator-owned until dedicated contracts exist.
 
 ## Notes
 The first production-ready auto-apply target should be Coolify because rollback

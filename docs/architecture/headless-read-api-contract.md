@@ -9,9 +9,28 @@ Define a stable, versioned, read-only API contract for external consumers (front
 - Locale-aware responses.
 - No write endpoints.
 
-## Base Path and Versioning
+## Current Implemented Surface
+Featherly currently implements the first integration slice as a token-scoped
+content export endpoint:
+
+- Path: `GET /headless/content-export`
+- Route name: `headless.content-export`
+- Middleware: `api_token_scope:headless:read`
+- Controller: `App\Http\Controllers\Admin\ContentExportController`
+- Token model: `App\Models\ApiToken`
+
+Tokens are stored as SHA-256 hashes, support wildcard or explicit scopes,
+respect `revoked_at` and `expires_at`, and update `last_used_at` after a
+successful authorization check.
+
+## Target Base Path and Versioning
+The fuller read API target remains:
+
 - Base path: `/api/v1/headless`
 - Versioning rule: breaking changes require a new major path (`/api/v2/...`).
+
+Until those endpoints exist, do not document clients as depending on
+`/api/v1/headless/*`. Use the implemented export endpoint for integrations.
 
 ## Transport and Format
 - `Content-Type`: `application/json; charset=utf-8`
@@ -21,6 +40,20 @@ Define a stable, versioned, read-only API contract for external consumers (front
   - `fallback_locale`: app fallback locale
 
 ## Resource Endpoints
+
+### 0) Implemented content export slice
+- `GET /headless/content-export`
+- Required auth:
+  - bearer token with `headless:read` scope or `*` scope
+- Query params:
+  - `type` (`page|post|project`, required)
+  - `status` (`draft|planned|published`, optional, default `published`)
+  - `locale` (optional two-letter locale, default current app locale)
+  - `per_page` (optional, default `50`, max `100`)
+- Response contract:
+  - standard JSON success envelope from the application controller
+  - nested `export` payload with `type`, `status`, `locale`, `items`, and
+    pagination `meta`
 
 ### 1) Content list
 - `GET /api/v1/headless/content`
@@ -116,6 +149,8 @@ All non-2xx responses use:
 - Rate limiting per IP/token.
 - Input normalization for `locale`, `type`, and `slugPath`.
 - No exposure of internal admin-only fields.
+- Current export slice is bearer-token protected and fail-closed for missing,
+  invalid, inactive, expired, revoked, or insufficient-scope tokens.
 
 ## Compatibility Rules
 - Additive fields are allowed in `data` and `meta`.
@@ -123,6 +158,5 @@ All non-2xx responses use:
 - Deprecated fields must be announced before removal in next major version.
 
 ## Out of Scope (Follow-up Tasks)
-- Token-scoped access model (`SCL-056`).
-- Export endpoint and bulk contract (`SCL-057`).
 - Webhook/event stream for content changes.
+- Full `/api/v1/headless/*` endpoint set.

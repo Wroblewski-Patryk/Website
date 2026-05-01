@@ -25,7 +25,7 @@ const columns = [
     { key: 'title', label: t('admin.projects.title_field', 'Title'), sortable: true },
     { key: 'slug', label: t('admin.projects.slug_field', 'Slug'), sortable: true, optional: true },
     { key: 'status', label: t('admin.projects.status_field', 'Status'), sortable: true },
-    { key: 'category', label: t('admin.projects.category_field', 'Category'), sortable: true, optional: true },
+    { key: 'category', label: t('admin.projects.category_field', 'Category'), sortable: false, optional: true },
     { key: 'created_at', label: t('admin.common.created', 'Created'), sortable: true, optional: true },
     { key: 'updated_at', label: t('admin.common.edited', 'Edited'), sortable: true, optional: true },
     { key: 'published_at', label: t('admin.common.published', 'Published'), sortable: true, optional: true },
@@ -66,7 +66,7 @@ function deleteProject(item) {
 
             <template #cell-category="{ item }">
                 <div class="badge badge-outline opacity-50 uppercase text-[10px] font-black tracking-wider">
-                    {{ item.category || t('admin.common.uncategorized', 'Uncategorized') }}
+                    {{ item.category ? t(item.category) : t('admin.common.uncategorized', 'Uncategorized') }}
                 </div>
             </template>
 

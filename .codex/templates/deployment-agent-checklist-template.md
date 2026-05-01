@@ -3,6 +3,13 @@
 ## Mission
 Deploy `Featherly CMS` to `<ENV>` using SHA `<SHA>` and return only after health and smoke validation.
 
+## Scope
+- Environment:
+- Hosting target: Coolify on VPS | direct Docker Compose | other
+- Change summary:
+- Deployment risk:
+- Runtime services affected:
+
 ## Inputs
 1. Repo path
 2. SHA or branch
@@ -14,11 +21,23 @@ Deploy `Featherly CMS` to `<ENV>` using SHA `<SHA>` and return only after health
 ## Required Execution Order
 1. Verify SHA and repo state.
 2. Verify env variables and service routing.
-3. Run migrations.
-4. Deploy app and frontend assets.
-5. Run health or route smoke checks.
-6. Validate one admin route and one public localized route.
-7. Report outcome.
+3. Confirm backup, rollback, health, and smoke preconditions.
+4. Run migrations.
+5. Deploy app and frontend assets.
+6. Run health or route smoke checks.
+7. Validate one admin route and one public localized route.
+8. Review startup logs, metrics, and runtime errors.
+9. Report outcome.
+
+## Pre-Deploy
+- [ ] Release notes reviewed
+- [ ] Required checks passed
+- [ ] `DEPLOYMENT_GATE.md` has no hard blocks
+- [ ] Config or secret changes reviewed
+- [ ] Health endpoints confirmed
+- [ ] Backup / restore preconditions reviewed
+- [ ] Rollback path prepared
+- [ ] Smoke checklist path confirmed
 
 ## Health And Smoke Commands
 1. app health or equivalent runtime check
@@ -48,3 +67,18 @@ Deploy `Featherly CMS` to `<ENV>` using SHA `<SHA>` and return only after health
 - [ ] Required migrations are applied.
 - [ ] Environment variables and secrets are configured.
 - [ ] Rollback path is prepared and appropriate for the risk level.
+- [ ] Observability or alert route is known for critical runtime paths.
+- [ ] Feature flag, staged rollout, or disable path exists for high-risk
+  changes.
+
+## Post-Deploy Evidence
+- Health:
+- Smoke:
+- Logs:
+- Metrics:
+- Manual journey verification:
+
+## Rollback
+- Trigger:
+- Procedure:
+- Verification after rollback:

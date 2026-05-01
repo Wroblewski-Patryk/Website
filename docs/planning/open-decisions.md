@@ -18,10 +18,17 @@
   - A) complete missing implementation
   - B) remove stale route contracts
   - C) maintain partial placeholder state
-- Recommendation: A or B after audit evidence
+- Recommendation: A for canonical content taxonomy ownership, with stale public
+  ambiguity removed through follow-up route hardening
 - Owner: Backend Builder
-- Due date: 2026-04-05
-- Status: OPEN
+- Due date: 2026-05-01
+- Status: CLOSED
+- Decision: Taxonomy is the canonical semantic-grouping system for `posts` and
+  `projects` in V1. Public taxonomy archive URLs (`/category/{slug}` and
+  `/tag/{slug}`) are reserved for `posts` until module-qualified public
+  taxonomy routes are designed. The legacy `projects.category` string remains
+  temporary compatibility debt and must be removed from editor/runtime surfaces
+  in follow-up work.
 
 ## Decision Item
 - ID: DEC-003
@@ -99,3 +106,24 @@
 - Due date: 2026-03-30
 - Status: CLOSED
 - Decision: Use optimistic lock with conflict prompt that allows compare and reload while keeping local draft; no overwrite path in conflict modal.
+
+## Decision Item
+- ID: DEC-009
+- Context: System Update Manager listed Docker and Git drivers as possible
+  hosting-specific update paths, but v1 needs a smaller production-safe driver
+  surface.
+- Options:
+  - A) implement Docker and Git runtime drivers in v1
+  - B) defer Docker and Git runtime drivers and route those deployments through
+    Coolify/platform/operator workflows
+  - C) keep Docker/Git as placeholder drivers with no runtime behavior
+- Recommendation: B
+- Owner: Ops/Release + Backend Builder
+- Due date: 2026-05-01
+- Status: CLOSED
+- Decision: Docker and Git runtime update drivers are deferred from System
+  Update Manager v1. Docker-based deployments should use the Coolify/platform
+  rollout path when available, and Git-based deployments should remain an
+  operator/manual deployment workflow until a dedicated staging, migration,
+  rollback, and secret-handling contract is designed. No placeholder Docker or
+  Git driver classes should be added in v1.

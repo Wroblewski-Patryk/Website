@@ -20,6 +20,7 @@ class TaxonomyController extends Controller
         $fallbackLocale = config('app.fallback_locale');
 
         $taxonomy = Taxonomy::where('type', $type)
+            ->where('module', 'posts')
             ->where(function($query) use ($locale, $fallbackLocale, $slug) {
                 $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$slug])
                       ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$slug]);

@@ -11,3 +11,4 @@ Artisan::command('inspire', function () {
 Schedule::command('publish:scheduled')->everyMinute();
 Schedule::command('ops:metrics')->everyFiveMinutes()->withoutOverlapping();
 Schedule::command('ops:health-check')->everyFiveMinutes()->withoutOverlapping();
+Schedule::command('updates:check')->daily()->withoutOverlapping();

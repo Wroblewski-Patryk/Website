@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Services\SeoService;
 use App\Services\BlockContentService;
+use App\Support\ProjectPublicPresenter;
 
 class ProjectController extends Controller
 {
@@ -20,15 +21,21 @@ class ProjectController extends Controller
         $page404Id = $settings['page_404_id'] ?? null;
         $seoService = app(SeoService::class);
         $contentService = app(BlockContentService::class);
+        $projectPresenter = app(ProjectPublicPresenter::class);
 
         $locale = app()->getLocale();
         $fallbackLocale = config('app.fallback_locale');
 
         try {
-            $project = Project::where(function($query) use ($locale, $fallbackLocale, $slug) {
-                $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$slug])
-                      ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$slug]);
-            })->first();
+            $project = Project::query()
+                ->with(['taxonomies' => fn ($query) => $query
+                    ->where('type', 'category')
+                    ->orderBy('order')])
+                ->where(function ($query) use ($locale, $fallbackLocale, $slug) {
+                    $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$slug])
+                        ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$slug]);
+                })
+                ->first();
 
             if (!$project || ($project->status === 'draft' && !$isAdmin)) {
                 return $this->render404($settings, $page404Id);
@@ -48,10 +55,8 @@ class ProjectController extends Controller
             $projectsId = $settings['projects_page_id'] ?? null;
             $projectsTitle = $projectsId ? $seoService->getEntityTitle(Page::find($projectsId)) : 'Projekty';
 
-            $projectData = $project->toArray();
+            $projectData = $projectPresenter->present($project);
             $projectData['content'] = $contentService->resolveReferences($project->content ?: []);
-            $projectData['title'] = $project->title;
-            $projectData['slug'] = $project->slug;
 
             $templates = $this->resolveTemplates();
 

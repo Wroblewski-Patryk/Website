@@ -74,6 +74,88 @@
 - [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
+- 2026-05-01: Completed FEA-015K by closing DEC-009: Docker and Git runtime
+  update drivers are deferred from System Update Manager v1, Docker
+  deployments should use Coolify/platform rollout paths, Git deployments remain
+  operator/manual until a dedicated contract exists, and no placeholder
+  Docker/Git driver classes should be added in v1.
+- 2026-05-01: Completed FEA-015J by adding archive extraction runtime
+  capability evidence: verified archives now record extraction status as
+  `pending` when ZIP support exists or `unavailable` when PHP `ZipArchive` is
+  missing, keeping live files untouched and making the runtime prerequisite
+  explicit before staging extraction work.
+- 2026-05-01: Completed FEA-015I by adding no-switch archive download
+  verification: archive apply downloads the trusted release archive to staging,
+  validates SHA-256, records verification evidence, removes checksum-mismatched
+  downloads, and still does not extract, migrate, switch live files, or mark the
+  update applied.
+- 2026-05-01: Completed FEA-015H by persisting archive release metadata from
+  the trusted manifest, requiring `release_archive_url` plus a valid
+  64-character `release_archive_sha256` in archive driver preflight, and adding
+  regression coverage that archive mode fails closed without integrity metadata
+  while still staying preflight-only when metadata is present.
+- 2026-05-01: Completed FEA-015G by adding a Coolify update rollout runbook
+  that defines preconditions, trigger steps, post-deploy `updates:confirm`,
+  evidence capture, health-failure handling, and rollback through Coolify
+  deployment history before the driver can be called production-ready.
+- 2026-05-01: Completed FEA-015F by extracting shared DB/cache/queue readiness
+  probes into `OperationalHealthChecker`, reusing that checker from
+  `ops:health-check`, and gating `updates:confirm` so matching runtime
+  versions are marked `confirmed` only when operational health passes; failed
+  readiness records `confirmation_health_failed` instead.
+- 2026-05-01: Completed FEA-015E by adding `updates:confirm`, which compares
+  the running `APP_VERSION` with the last target release after a triggered
+  deployment, records `confirmed` only when the runtime version matches, keeps
+  pending deployments in `awaiting_confirmation`, and documents the smoke path
+  for Coolify-triggered updates.
+- 2026-05-01: Completed FEA-015D by adding a gated Coolify apply trigger path
+  behind `FEATHERLY_UPDATE_COOLIFY_APPLY_ENABLED`, posting the configured
+  webhook server-side only when enabled, recording `deployment_triggered`
+  status without marking the app version current, and covering enabled/disabled
+  webhook behavior with HTTP fake regression tests that protect the secret URL
+  from status payloads.
+- 2026-05-01: Completed FEA-015C by adding production-driver preflight/status
+  for Coolify and archive update drivers, exposing driver preflight cards in
+  admin settings, protecting Coolify webhook secrets from status payloads, and
+  keeping both production drivers preflight-only until apply execution,
+  rollback, and integrity checks are implemented.
+- 2026-05-01: Completed FEA-015B by adding the System Update Manager driver
+  contract, safe manual apply instructions, config-gated fake apply coverage,
+  guarded `updates:apply`, admin apply action, and regression tests for fake
+  apply success, high-risk block behavior, and manual admin instructions.
+- 2026-05-01: Completed FEA-015A by verifying the System Update Manager
+  update-check baseline: admin settings status/preferences, manual check
+  action, trusted manifest parsing, fail-closed invalid manifest handling,
+  daily scheduled `updates:check`, and documentation updates that keep
+  automatic apply drivers explicitly out of the current runtime slice.
+- 2026-05-01: Continued FEA-015 with an authenticated admin "check now"
+  action that forces a server-side manifest refresh even when scheduled checks
+  are disabled, exposed release-notes visibility in settings, and added
+  regression coverage for the manual trigger plus disabled-scheduler behavior.
+- 2026-05-01: Started FEA-015 runtime work by adding the first safe System
+  Update Manager slice: persisted update preferences in existing settings,
+  added daily `updates:check` manifest polling, exposed admin update status in
+  manual-only mode, and covered the slice with targeted settings/command tests.
+- 2026-05-01: Completed FEA-016 by removing legacy free-text project category
+  authoring from the admin project editor, switching the admin project index to
+  taxonomy-backed category labels, and adding regression coverage that hides the
+  deprecated `project.category` edit prop while proving taxonomy-first admin
+  listing output.
+- 2026-05-01: Completed FEA-014 by routing public project detail, project
+  archive, and shared runtime `all_projects` payloads through a taxonomy-backed
+  presenter with legacy-string fallback, plus regression coverage for
+  taxonomy-backed project categories on localized public routes.
+- 2026-05-01: Completed FEA-013 by restricting public taxonomy archive
+  resolution to `taxonomies.module = posts`, adding regression coverage for
+  post taxonomy success and project taxonomy rejection, and syncing the active
+  V1 queue to FEA-014.
+- 2026-05-01: Completed FEA-010 by auditing taxonomy/category behavior,
+  closing DEC-002, declaring module-scoped taxonomies canonical for
+  posts/projects, limiting V1 public taxonomy archives to posts in docs, and
+  queuing FEA-013/FEA-014 follow-up implementation slices.
+- 2026-05-01: Completed FEA-001 by making `routes/public.php` expose explicit
+  localized home + named public resolver entrypoints and adding
+  `PublicRouteContractTest` coverage for home/page/post/project runtime paths.
 - 2026-03-26: Completed FEX-078 by adding integration coverage for bulk action authorization + outcome contract (`BulkActionContractTest` with success/validation/permission cases).
 - 2026-03-26: Completed FEX-077 by adding optimistic bulk updates in shared `ResourceTable` with snapshot rollback on request failure.
 - 2026-03-26: Completed FEX-076 by adding audit logging for content bulk actions (`content.bulk_action` entries with action/module/ids metadata).

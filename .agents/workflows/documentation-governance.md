@@ -14,7 +14,7 @@ humans and coding agents.
   - implementation-facing deep-dives
   - code ownership, dependencies, routes, and test surfaces
 - `docs/planning/`
-  - active queue, sequencing, and unresolved decisions
+  - active queue, sequencing, rollout waves, and unresolved decisions
 - `docs/operations/`
   - deployment, smoke checks, rollback, evidence, and runbooks
 - `docs/product/`
@@ -29,20 +29,23 @@ When work touches runtime behavior, read in this order:
 1. `docs/architecture/README.md`
 2. `docs/architecture/architecture-source-of-truth.md`
 3. the most relevant architecture files for the task
-4. related module deep-dives in `docs/modules/`
+4. related module deep-dives in `docs/modules/` if they exist
 
 ## Decision Promotion Rule
 
 - If a behavior or invariant is accepted as the intended system rule, it must
   live in `docs/architecture/`.
-- Do not leave accepted architecture only in planning notes, closure notes, or
-  module deep-dives.
+- Do not leave accepted architecture only in:
+  - `docs/planning/*.md`
+  - closure notes
+  - task summaries
+  - module deep-dives
 
 ## Open Decisions Rule
 
 - `docs/planning/open-decisions.md` is for unresolved decisions only.
 - Once resolved:
-  1. close it there
+  1. remove or close it there
   2. write the resulting truth into `docs/architecture/`
 
 ## Deep-Dive Rule
@@ -51,6 +54,12 @@ When work touches runtime behavior, read in this order:
 - They must not become the primary source of runtime truth.
 - When module docs rely on architecture rules, link back to architecture files.
 
+## Historical Docs Rule
+
+- Closure snapshots, remediation deltas, and audits are historical references.
+- Keep them out of the canonical reading path.
+- If retained, archive them or clearly mark them non-canonical.
+
 ## When To Update Which Docs
 
 ### Update `docs/architecture/` when:
@@ -58,6 +67,7 @@ When work touches runtime behavior, read in this order:
 - runtime behavior changed
 - source-of-truth ownership changed
 - routing, localization, or safety invariants changed
+- a resolved decision changed how the system is supposed to work
 
 ### Update `docs/modules/` when:
 
@@ -67,7 +77,7 @@ When work touches runtime behavior, read in this order:
 
 ### Update `docs/planning/` when:
 
-- queue changed
+- queue or active wave changed
 - a real unresolved decision appears
 
 ### Update `docs/operations/` when:

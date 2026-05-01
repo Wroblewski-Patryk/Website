@@ -78,14 +78,7 @@
                         :available-taxonomies="availableTaxonomies"
                         :active-locale="activeLocale"
                     />
-
-                    <div class="divider opacity-10 my-0"></div>
-
                     <div class="space-y-4">
-                        <div class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.projects.category', 'Category') }}</span></label>
-                            <input type="text" v-model="form.category" class="input input-bordered input-sm focus:input-primary transition-all" placeholder="Web Design" />
-                        </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.projects.client', 'Client') }}</span></label>
                             <select v-model="form.client_id" class="select select-bordered select-sm focus:select-primary transition-all">
@@ -181,7 +174,6 @@ const form = useForm({
     desktop_image: props.project?.desktop_image || '',
     mobile_image: props.project?.mobile_image || '',
     url: props.project?.url || '',
-    category: props.project?.category || '',
     client_id: props.project?.client_id || null,
     order: props.project?.order || 0,
     status: props.project?.status || 'draft',

@@ -71,6 +71,8 @@ Route::middleware('permission:manage-settings')->group(function () {
 
     Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
     Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class, 'store'])->name('settings.store');
+    Route::post('settings/check-updates', [\App\Http\Controllers\Admin\SettingController::class, 'checkForUpdates'])->name('settings.check-updates');
+    Route::post('settings/apply-update', [\App\Http\Controllers\Admin\SettingController::class, 'applyUpdate'])->name('settings.apply-update');
 
     Route::name('theme.')->prefix('theme')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\ThemeController::class, 'index'])->name('index');

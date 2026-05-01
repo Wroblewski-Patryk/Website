@@ -9,3 +9,12 @@ Use planning and context files instead:
 - `docs/planning/mvp-next-commits.md`
 - `.codex/context/PROJECT_STATE.md`
 - `.codex/context/TASK_BOARD.md`
+
+For agent and delivery standards, use:
+
+- `AGENTS.md`
+- `.agents/workflows/general.md`
+- `.agents/workflows/user-collaboration.md`
+- `.agents/workflows/world-class-delivery.md`
+- `.codex/templates/task-template.md`
+- `docs/README.md`

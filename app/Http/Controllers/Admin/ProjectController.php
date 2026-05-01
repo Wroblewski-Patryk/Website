@@ -23,8 +23,19 @@ class ProjectController extends BaseAdminContentController
     {
         Gate::authorize('viewAny', Project::class);
 
+        $projects = $this->getBaseIndexQuery($request)
+            ->with([
+                'taxonomies' => fn ($query) => $query
+                    ->where('module', $this->module)
+                    ->where('type', 'category')
+                    ->orderBy('order'),
+            ])
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn (Project $project) => $this->serializeProjectForIndex($project));
+
         return Inertia::render("{$this->viewPath}/Index", [
-            'projects' => $this->getBaseIndexQuery($request)->paginate(10)->withQueryString()
+            'projects' => $projects,
         ]);
     }
 
@@ -41,7 +52,7 @@ class ProjectController extends BaseAdminContentController
         $project->setAttribute('content', []);
         
         return Inertia::render("{$this->viewPath}/Edit", array_merge([
-            'project' => $project,
+            'project' => $this->serializeProjectForEditor($project),
             'availableClients' => \App\Models\Client::orderBy('title')->get(),
         ], $this->getSharedProps()));
     }
@@ -70,10 +81,14 @@ class ProjectController extends BaseAdminContentController
     {
         Gate::authorize('update', $project);
 
-        return Inertia::render("{$this->viewPath}/Edit", array_merge(
+        $props = array_merge(
             $this->getEditProps($project, ['title', 'slug', 'description', 'meta_title', 'meta_description', 'og_image']),
             ['availableClients' => \App\Models\Client::orderBy('title')->get()]
-        ));
+        );
+
+        unset($props['project']['category']);
+
+        return Inertia::render("{$this->viewPath}/Edit", $props);
     }
 
     public function update(UpdateProjectRequest $request, Project $project, AdminContentPersistenceService $persistence)
@@ -110,5 +125,22 @@ class ProjectController extends BaseAdminContentController
         Gate::authorize('viewAny', Project::class);
 
         return $this->handleBulkAction($request);
+    }
+
+    protected function serializeProjectForIndex(Project $project): array
+    {
+        $data = $project->toArray();
+        $data['category'] = $project->taxonomies->first()?->getTranslations('title');
+        unset($data['taxonomies']);
+
+        return $data;
+    }
+
+    protected function serializeProjectForEditor(Project $project): array
+    {
+        $data = $project->toArray();
+        unset($data['category']);
+
+        return $data;
     }
 }

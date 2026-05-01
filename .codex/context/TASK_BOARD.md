@@ -4,16 +4,16 @@ Last updated: 2026-05-01
 
 ## READY
 
-- [ ] FEA-015 Design and implement environment-adaptive System Update Manager
+- [ ] FEA-015 Implement archive/Docker/Git update drivers and Coolify rollout hardening
   - Status: READY
   - Owner: Backend Builder
-  - Depends on: architecture approval in
-    `docs/architecture/system-update-manager-contract.md`
+  - Depends on: FEA-015K
   - Priority: P1
   - Done when:
-    - update settings, scheduler checks, release manifest parsing, and admin
-      status are implemented
-    - Coolify and archive/manual driver paths are covered by tests or fakes
+    - archive apply execution has extraction/staging/switch/rollback tests
+    - Coolify staging/live rollout evidence is captured from the runbook
+    - Docker/Git follow-up contracts are queued only if v2 needs runtime drivers
+    - automatic application is blocked unless a safe driver passes preflight
     - deployment, rollback, security, and smoke docs are synchronized
 
 - [ ] FEA-001 Finalize public dynamic routes for page/post/project
@@ -64,6 +64,17 @@ Last updated: 2026-05-01
 
 ## DONE
 
+- [x] FEA-015K Defer Docker/Git runtime drivers from System Update Manager v1
+- [x] FEA-015J Add archive extraction runtime capability gate
+- [x] FEA-015I Add no-switch archive download and SHA-256 verifier
+- [x] FEA-015H Add archive release integrity metadata preflight gate
+- [x] FEA-015G Add Coolify update rollout evidence runbook
+- [x] FEA-015F Gate post-deploy confirmation on operational health checks
+- [x] FEA-015E Add post-deploy version confirmation for Coolify-triggered updates
+- [x] FEA-015D Add gated Coolify apply trigger test path
+- [x] FEA-015C Implement production driver preflight status
+- [x] FEA-015B Implement manual/fake System Update Manager apply contract
+- [x] FEA-015A Implement verified System Update Manager update-check baseline
 - [x] DOC-ARCH-001 Synchronize architecture folder with current implementation map
 - [x] DOC-001 Migrate Featherly docs and agent files to template-aligned structure with project-specific content
 - [x] FEX-001..FEX-080 Prior feature execution waves completed and recorded in docs/project state

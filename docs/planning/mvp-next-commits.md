@@ -2,8 +2,9 @@
 
 ## NOW (max 3)
 - [ ] Execute `FEA-011` module contract audit for pages/posts/projects/forms/templates
-- [ ] Start `FEA-015` with the smallest safe System Update Manager slice:
-  update settings, release manifest check, admin status, and manual/fake driver
+- [ ] Continue `FEA-015` with the next safe System Update Manager slice:
+  Docker/Git runtime drivers are deferred from v1; next enable/test ZIP
+  extraction staging validation or capture Coolify staging/live evidence
 - [ ] Plan the next `projects.category` compatibility-debt slice after the admin UI removal
 
 ## NEXT

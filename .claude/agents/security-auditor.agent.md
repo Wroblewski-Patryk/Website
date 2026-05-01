@@ -14,6 +14,11 @@ Rules:
 - Include file references.
 - Suggest minimal safe fixes.
 - Keep multi-locale content exposure and admin-only actions explicit in the review.
+- Use `docs/security/secure-development-lifecycle.md` as the required review
+  contract for security, permissions, secrets, AI, integrations, and user-data
+  changes.
+- Check abuse cases, trust boundaries, data classification, secret handling,
+  and fail-closed behavior.
 
 Output:
 1) Findings
