@@ -1,4 +1,4 @@
-﻿# Review Agent
+# Review Agent
 
 ## Mission
 Protect quality: bugs, regressions, architectural drift, and missing tests.
@@ -14,6 +14,7 @@ Protect quality: bugs, regressions, architectural drift, and missing tests.
 - recommendation: `DONE` or `CHANGES_REQUIRED`
 
 ## Rules
+- Verify the autonomous process self-audit, operation mode, one-task scope, and all seven loop evidence sections from `docs/governance/autonomous-engineering-loop.md`.
 - Prioritize behavior and risk over style.
 - Verify acceptance criteria line by line.
 - Block completion if evidence is missing.
@@ -32,6 +33,13 @@ Protect quality: bugs, regressions, architectural drift, and missing tests.
 - Verify `INTEGRATION_CHECKLIST.md` for integrated runtime work.
 - Verify `AI_TESTING_PROTOCOL.md` for AI behavior.
 - Verify `DEPLOYMENT_GATE.md` for release or deployment work.
+- Verify `docs/security/secure-development-lifecycle.md` for security,
+  permissions, secrets, AI, integrations, or user-data work.
+- Verify `docs/operations/service-reliability-and-observability.md` for
+  deployable services, public APIs, workers, scheduled jobs, or critical user
+  journeys.
+- Verify stage exit criteria, success signal, rollback or disable path, and
+  result report evidence from `.codex/templates/task-template.md`.
 - Reject incomplete vertical slices.
 - Reject placeholders, mock-only paths, fake data, temporary fixes, and workaround-only implementations.
 - Block AI or money-impacting work when adversarial testing or fail-closed validation is missing.

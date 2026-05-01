@@ -1,4 +1,4 @@
-﻿# AGENTS.md - Featherly CMS
+# AGENTS.md - Featherly CMS
 
 ## Purpose
 
@@ -16,6 +16,13 @@ task/context discipline.
 - `.agents/workflows/general.md`
 - `.agents/workflows/documentation-governance.md`
 - `.agents/workflows/subagent-orchestration.md`
+- `.agents/workflows/user-collaboration.md`
+- `.agents/workflows/world-class-delivery.md`
+- `DEFINITION_OF_DONE.md`
+- `INTEGRATION_CHECKLIST.md`
+- `NO_TEMPORARY_SOLUTIONS.md`
+- `DEPLOYMENT_GATE.md`
+- `AI_TESTING_PROTOCOL.md`
 
 ### Planning
 
@@ -31,8 +38,30 @@ task/context discipline.
 - `docs/governance/subagent-delegation-policy.md`
 - `docs/governance/code-quality-guardrails.md` (optional)
 - `docs/governance/template-usage.md`
+- `docs/governance/agent-setup-blueprint.md` (optional)
+- `docs/governance/world-class-product-engineering-standard.md`
 - `docs/governance/function-coverage-ledger-standard.md`
 - `docs/governance/function-coverage-ledger-template.csv`
+
+### Operations
+
+- `docs/operations/coolify-vps-deployment-contract.md`
+- `docs/operations/post-deploy-smoke.md`
+- `docs/operations/rollback-and-recovery.md`
+- `docs/operations/service-reliability-and-observability.md`
+
+### Engineering And Security
+
+- `docs/engineering/local-development.md`
+- `docs/engineering/testing.md`
+- `docs/security/secure-development-lifecycle.md`
+
+### Templates and Review
+
+- `.codex/templates/task-template.md`
+- `.codex/templates/project-state-template.md`
+- `.codex/templates/deployment-agent-checklist-template.md`
+- `.github/pull_request_template.md`
 
 ### Architecture and UX Truth
 
@@ -41,6 +70,18 @@ task/context discipline.
 - `docs/architecture/system-architecture.md`
 - `docs/architecture/tech-stack.md`
 - `docs/ux/ux-ui-mcp-collaboration.md`
+- `docs/ux/design-system-contract.md`
+- `docs/ux/experience-quality-bar.md`
+- `docs/ux/design-memory.md`
+- `docs/ux/visual-direction-brief.md`
+- `docs/ux/ui-scorecard.md`
+- `docs/ux/pattern-gallery.md`
+- `docs/ux/screen-quality-checklist.md`
+- `docs/ux/anti-patterns.md`
+- `docs/ux/brand-personality-tokens.md`
+- `docs/ux/canonical-visual-implementation-workflow.md`
+- `docs/ux/background-and-decorative-asset-strategy.md`
+- `docs/ux/evidence-driven-ux-review.md`
 
 ## Core Rules
 
@@ -77,6 +118,12 @@ When architecture and implementation clash:
 ### 5. Delivery Discipline
 
 - Keep changes tiny, reversible, and evidence-backed.
+- Every task must declare `Task Type`, `Current Stage`, and `Deliverable For
+  This Stage` using `.codex/templates/task-template.md`.
+- Supported stages are `intake`, `analysis`, `planning`, `implementation`,
+  `verification`, `release`, and `post-release`.
+- Do not skip stages implicitly. Do not mark work complete without verification
+  evidence and a result report.
 - Run relevant validation before proposing a commit.
 - Keep docs and context synchronized with implementation changes.
 - When active work is unclear, a release or handoff needs confidence, or the
@@ -96,6 +143,18 @@ When architecture and implementation clash:
   - review architecture and risk follow-up
   - sync task/state/docs
   - repeat
+- Follow `.agents/workflows/user-collaboration.md` when intent, blocker
+  decisions, active visual notes, or handoff expectations need to stay explicit.
+- Follow `.agents/workflows/world-class-delivery.md` for substantial product,
+  runtime, release, UX, security, or AI work.
+- For substantial changes, define why the work matters, the smallest safe
+  slice, the success signal, the main failure mode, and the rollback or recovery
+  path.
+- For deployable services or important journeys, use
+  `docs/operations/service-reliability-and-observability.md` to define health,
+  observability, alerting, and rollback expectations when appropriate.
+- For auth, AI, secrets, permissions, integrations, or user-data work, use
+  `docs/security/secure-development-lifecycle.md`.
 
 ## Stack-Specific Quality Gate
 
@@ -111,6 +170,25 @@ Use narrower checks when useful, for example:
 - `php artisan test --filter=SomeFeatureTest`
 - `php artisan i18n:scan --scope=admin`
 
+## Autonomous Engineering Loop
+
+Follow `docs/governance/autonomous-engineering-loop.md` for every autonomous iteration:
+
+1. analyze current state
+2. select exactly one priority task
+3. plan implementation
+4. execute implementation
+5. verify and test
+6. self-review
+7. update documentation and knowledge
+
+Before starting an iteration, perform the process self-audit from that document. Do not continue until all seven steps, one-task scope, and the correct operation mode are represented in the task contract.
+
+Operation mode rotates by iteration number:
+
+- `BUILDER`: default mode
+- `ARCHITECT`: every third iteration, unless the iteration is also a tester iteration
+- `TESTER`: every fifth iteration
 ## Agent Catalog
 
 - Planner: `.agents/prompts/planner.md` or `.claude/agents/planner.agent.md`
@@ -126,6 +204,7 @@ Use narrower checks when useful, for example:
 - Codex Planning Agent: `.codex/agents/planning-agent.md`
 - Codex Execution Agent: `.codex/agents/execution-agent.md`
 - Codex Review Agent: `.codex/agents/review-agent.md`
+- Codex AI Red Team Agent: `.codex/agents/ai-red-team-agent.md`
 
 ## Trigger Intent
 
@@ -145,6 +224,42 @@ If the user sends a short execution nudge (`start`, `go`, `next`, `run`, `dziala
 - Preserve locale-aware routing conventions and route segregation.
 - Keep i18n integrity (`php artisan i18n:scan --scope=admin`) in the workflow when copy changes.
 - Prefer extending shared admin components, builder controls, and content-module contracts over one-off implementations.
+
+## UX/UI Contract
+
+For UX/UI tasks, always include:
+
+- design source reference when available
+- existing design-system pattern reused, or a clear justification for a new
+  shared pattern
+- expected states: `loading`, `empty`, `error`, `success`
+- responsive checks: desktop, tablet, and mobile when relevant
+- accessibility checks
+- screenshot or parity evidence for substantial visual work
+
+Use the UX starter docs to keep direction explicit:
+
+- `docs/ux/design-system-contract.md`
+- `docs/ux/experience-quality-bar.md`
+- `docs/ux/visual-direction-brief.md`
+- `docs/ux/pattern-gallery.md`
+- `docs/ux/screen-quality-checklist.md`
+- `docs/ux/anti-patterns.md`
+- `docs/ux/canonical-visual-implementation-workflow.md`
+- `docs/ux/evidence-driven-ux-review.md`
+
+## Deployment Contract
+
+Featherly currently declares a Laravel runtime with Vite frontend build/dev in
+`.codex/context/PROJECT_STATE.md`. If a deployment target is confirmed or
+changed, update:
+
+- `.codex/context/PROJECT_STATE.md`
+- `docs/operations/coolify-vps-deployment-contract.md` or the documented
+  alternative deploy contract
+- `docs/operations/post-deploy-smoke.md`
+- `docs/operations/rollback-and-recovery.md`
+- `docs/operations/service-reliability-and-observability.md`
 
 ## Commit Rule
 

@@ -1,4 +1,4 @@
-﻿# Execution Agent
+# Execution Agent
 
 ## Mission
 Implement one planned task with minimal ambiguity.
@@ -18,11 +18,21 @@ Implement one planned task with minimal ambiguity.
 - brief implementation notes
 
 ## Rules
+- Before implementation, confirm the task contract includes the autonomous process self-audit, iteration number, operation mode, and all seven loop evidence sections.
 - Start only a `READY` or `IN_PROGRESS` task.
 - Keep one-task scope.
 - Treat approved architecture docs as implementation constraints.
 - If execution would require changing approved architecture or established UX
   contracts, stop and surface a proposal first.
+- Use `.agents/workflows/user-collaboration.md` when ambiguity, blocker
+  decisions, or user-authored interpretation notes affect the implementation
+  path.
+- Use `.agents/workflows/world-class-delivery.md` for substantial product,
+  runtime, release, UX, security, or AI work.
+- For UX/UI tasks with an approved screenshot, mockup, or canonical image,
+  follow `docs/ux/canonical-visual-implementation-workflow.md`.
+- For broad UX work, use `docs/ux/evidence-driven-ux-review.md` to turn
+  clickthrough or screenshot evidence into focused implementation slices.
 - When accepted behavior changes, update `docs/architecture/` in the same task
   instead of leaving truth only in planning notes or module deep-dives.
 - Run relevant checks before completion.
@@ -44,5 +54,10 @@ Implement one planned task with minimal ambiguity.
 - Validate `INTEGRATION_CHECKLIST.md` before completing integrated work.
 - Validate `AI_TESTING_PROTOCOL.md` before completing AI behavior.
 - Validate `DEPLOYMENT_GATE.md` before release or deploy handoff.
+- Validate `docs/security/secure-development-lifecycle.md` before completing
+  security, permissions, secrets, AI, integrations, or user-data risk.
+- Validate `docs/operations/service-reliability-and-observability.md` before
+  completing deployable service, API, worker, scheduler, or critical-journey
+  changes.
 
-Completion requires a result report with what was done, files changed, how it was tested, what is incomplete, next steps, and decisions made.
+Completion requires a result report with what was done, files changed, how it was tested, what is incomplete, next steps, decisions made, and residual risks or assumptions. If runtime behavior changed, review deploy docs, smoke steps, and rollback notes in the same task.

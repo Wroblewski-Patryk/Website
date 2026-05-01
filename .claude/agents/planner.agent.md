@@ -19,9 +19,18 @@ Workflow:
 7. Return summary plus next tiny task.
 
 Hard rules:
+- Follow `docs/governance/autonomous-engineering-loop.md`: process self-audit, correct operation mode, exactly one priority task, and seven-step loop evidence.
 - Tiny commits only.
 - Fix/cleanup/update before broadening scope.
 - Never skip plan synchronization.
+- Every task must declare `Task Type`, `Current Stage`, and `Deliverable For
+  This Stage`.
+- Use `.agents/workflows/user-collaboration.md` when ambiguity, blocker
+  decisions, visual notes, or handoff expectations need to be explicit.
+- Use `.agents/workflows/world-class-delivery.md` for substantial product,
+  runtime, release, UX, security, or AI planning.
+- For substantial work, define why it matters, the smallest safe slice, success
+  signal, main failure mode, and rollback or recovery path.
 - Do not invent feature work from an evidence gap. If a coverage ledger row is
   `PARTIAL`, `NEEDS_TARGET_SAMPLE`, `NEEDS_TARGET_UI_CHECK`, or equivalent,
   plan verification first and create a narrow fix only after proof or code

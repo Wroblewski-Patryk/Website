@@ -1,6 +1,6 @@
 # PROJECT_STATE
 
-Last updated: 2026-04-16
+Last updated: 2026-05-01
 
 ## Product Snapshot
 - Name: Featherly CMS
@@ -12,6 +12,10 @@ Last updated: 2026-04-16
 - 2026-03-17: translation scanning and integrity checks are part of the baseline workflow.
 - 2026-03-24: documentation and agent setup were aligned to the template-era structure with Featherly-specific content.
 - 2026-04-16: agent workflow has been refreshed to use stronger `.codex/context` guidance and the plan -> implement -> test -> review loop while preserving Featherly-specific docs as canonical inputs.
+- 2026-05-01: project instructions were refreshed with stage-based delivery,
+  user-collaboration, world-class delivery, UX quality, security lifecycle,
+  deployment, rollback, and observability guidance while preserving
+  Featherly-specific Laravel/Vue/i18n constraints.
 
 ## Technical Baseline
 - Backend: Laravel 12 + PHP 8.2+
@@ -47,6 +51,12 @@ Last updated: 2026-04-16
 - Keep repository artifacts in English.
 - Communicate with users in their language.
 - Use the default loop: plan -> implement -> test -> architecture review -> sync context.
+- Use `.codex/templates/task-template.md` with task type, current stage, stage
+  deliverable, success signal, validation evidence, and result report.
+- Use `.agents/workflows/user-collaboration.md` for ambiguous intent, blocker
+  decisions, visual notes, or handoffs.
+- Use `.agents/workflows/world-class-delivery.md` for substantial product,
+  runtime, release, UX, security, or AI work.
 
 ## Canonical Docs
 - `docs/overview.md`
@@ -59,5 +69,20 @@ Last updated: 2026-04-16
 - `docs/planning/open-decisions.md`
 - `docs/governance/function-coverage-ledger-standard.md`
 - `docs/governance/function-coverage-ledger-template.csv`
+- `docs/governance/world-class-product-engineering-standard.md`
+- `docs/security/secure-development-lifecycle.md`
+- `docs/operations/service-reliability-and-observability.md`
+- `docs/operations/post-deploy-smoke.md`
+- `docs/operations/rollback-and-recovery.md`
+- `docs/ux/design-system-contract.md`
+- `docs/ux/experience-quality-bar.md`
+- `docs/ux/canonical-visual-implementation-workflow.md`
 - `.codex/context/PROJECT_STATE.md`
 - `.codex/context/TASK_BOARD.md`
+
+## Autonomous Iteration State
+- Current iteration:
+- Current operation mode: BUILDER | ARCHITECT | TESTER
+- Last completed iteration:
+- Last completed task:
+- Next required mode:
