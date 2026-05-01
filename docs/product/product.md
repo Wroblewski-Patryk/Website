@@ -16,6 +16,7 @@ Teams need a CMS that is fast for editors, supports multilingual content, and do
 
 ## Current Product Baseline
 - Localized route model with locale middleware and language switching.
+- Public home/page/post/project resolution through localized named routes.
 - Block Builder as central editing UX.
 - Admin CRUD across core content and configuration modules.
 - Translation scan + integrity checks to reduce missing UI keys.
@@ -25,9 +26,12 @@ Teams need a CMS that is fast for editors, supports multilingual content, and do
 - Block-based content authoring for primary modules.
 - Admin operations for media, settings, templates, and users.
 - SEO baseline (`sitemap.xml`, `robots.txt`, core meta fields).
+- System Update Manager local contracts for safe update discovery and gated
+  apply drivers.
 
 ## Post-MVP Focus
-- Full public dynamic route exposure for page/blog/project.
+- Production rollout evidence for environment-specific update drivers.
+- Legacy project category fallback backfill/removal.
 - Expanded animation tooling and scene/timeline authoring.
 - Additional hardening for release and runtime observability.
 

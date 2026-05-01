@@ -16,7 +16,8 @@ Enable fast content delivery by non-technical editors while preserving strong ar
   - core admin modules and settings
   - translation management and scan/integrity checks
 - Post-MVP:
-  - full public dynamic routing parity for page/blog/project
+  - production update rollout evidence in the target environment
+  - legacy project category fallback backfill and removal
   - deeper animation timeline tooling
   - advanced ops and observability hardening
 - Out of scope:
@@ -29,4 +30,4 @@ Enable fast content delivery by non-technical editors while preserving strong ar
 - Planning: `docs/planning/mvp-execution-plan.md`
 - Scaling roadmap: `docs/planning/scaling-roadmap.md`
 - Scaling backlog (65): `docs/planning/scaling-backlog-65.md`
-- Ops: `docs/operations/mvp-ops-runbook.md`
+- Ops: `docs/operations/service-reliability-and-observability.md`

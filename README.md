@@ -27,19 +27,24 @@ Routing is modular and localized:
 
 Locale behavior is wired in `bootstrap/app.php` and locale middleware.
 
-## Current Status (2026-03-24)
+## Current Status (2026-05-02)
 
 Implemented:
 
 - Admin modules: pages, posts, media, projects, forms, templates, translations, languages, users, settings, theme, blocks, clients.
 - i18n backend: `languages` + `translations`, shared to frontend via Inertia props.
-- SEO base: `sitemap.xml`, `robots.txt`, default meta handling.
+- SEO base: `sitemap.xml`, `robots.txt`, canonical/alternate locale behavior, and default meta handling.
 - Translation scanning workflow: `php artisan i18n:scan --scope=admin` + integrity test.
+- Public dynamic routes for home, pages, blog posts, project detail, and project archive through localized named routes.
+- Posts-only public taxonomy archives for V1.
+- Taxonomy-first project category presentation with `projects.category` retained as a read-only compatibility fallback.
+- System Update Manager v1 local contracts for manual, Coolify, and archive update flows.
 
-Known gaps:
+Known gaps and blockers:
 
-- Public dynamic routes for page/blog/project are partially prepared in controllers but not fully exposed in `routes/public.php`.
-- Category taxonomy routes were introduced before full implementation and still require validation against the current model set.
+- Coolify production update enablement still requires captured staging/live rollout evidence in the target environment.
+- `projects.category` column removal requires a later data inventory/backfill/removal plan.
+- The fuller `/api/v1/headless/*` contract remains target architecture; the implemented read integration route is `/headless/content-export`.
 
 ## Documentation
 
@@ -48,5 +53,6 @@ Start from:
 
 - `docs/overview.md`
 - `docs/product/product.md`
+- `docs/architecture/current-implementation-map.md`
 - `docs/architecture/system-architecture.md`
 - `docs/planning/mvp-next-commits.md`

@@ -74,6 +74,11 @@
 - [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
+- 2026-05-02: Completed FEA-012 by normalizing residual root documentation:
+  README no longer reports obsolete public-route/category gaps, CHANGELOG is
+  now Featherly-specific instead of Laravel skeleton release notes,
+  NEW_PROJECT_BOOTSTRAP is explicitly deprecated, and docs index/product
+  overview links now point at current source-of-truth surfaces.
 - 2026-05-02: Completed FEA-018 by auditing remaining `projects.category`
   surfaces and recording the V1 compatibility decision: project taxonomies are
   canonical, the legacy column stays read-only as a fallback, and actual column

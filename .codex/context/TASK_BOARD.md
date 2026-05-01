@@ -4,13 +4,7 @@ Last updated: 2026-05-01
 
 ## READY
 
-- [ ] FEA-012 Residual legacy docs normalization
-  - Status: READY
-  - Owner: Product Docs Agent
-  - Depends on: FEA-011
-  - Priority: P3
-  - Done when:
-    - legacy root docs are either migrated or explicitly deprecated
+- [ ] (none)
 
 ## BACKLOG
 
@@ -44,6 +38,7 @@ Last updated: 2026-05-01
 
 ## DONE
 
+- [x] FEA-012 Residual legacy docs normalization
 - [x] FEA-018 Decide project category compatibility retirement path
 - [x] FEA-017 Decide and harden forms/templates admin ownership contract
 - [x] FEA-011 Module contract audit for pages/posts/projects/forms/templates

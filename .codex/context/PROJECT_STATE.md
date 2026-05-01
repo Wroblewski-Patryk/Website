@@ -94,6 +94,10 @@ Last updated: 2026-05-01
   module-scoped project taxonomies are canonical, while `projects.category`
   remains a read-only fallback only until a later inventory/backfill/removal
   migration plan can retire it safely.
+- 2026-05-02: Residual root documentation was normalized: README and product
+  overview now reflect current routing/category/update-manager state, the root
+  changelog is Featherly-specific, and the bootstrap checklist is explicitly a
+  deprecated template artifact.
 
 ## Technical Baseline
 - Backend: Laravel 12 + PHP 8.2+
@@ -131,6 +135,8 @@ Last updated: 2026-05-01
   - Coolify production update enablement still needs staging/live rollout evidence
   - legacy project category column removal needs a later data inventory and
     backfill plan before the fallback can be removed safely
+  - local READY task queue is empty after residual docs normalization; refill
+    should come from `mvp-next-commits.md` or the scaling backlog
 - Success criteria for this phase:
   - small reversible execution slices
   - synchronized docs and task context

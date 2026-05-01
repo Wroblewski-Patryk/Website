@@ -36,8 +36,11 @@
 - `architecture/README.md`
 - `architecture/architecture-source-of-truth.md`
 - `architecture/system-architecture.md`
+- `architecture/current-implementation-map.md`
 - `architecture/modules.md`
 - `architecture/tech-stack.md`
+- `architecture/module-contract-audit.md`
+- `architecture/project-category-compatibility-policy.md`
 - `architecture/admin-frontend-architecture.md`
 - `architecture/seo-route-contracts.md`
 - `architecture/headless-read-api-contract.md`
@@ -97,9 +100,3 @@
 - `ux/canonical-visual-implementation-workflow.md`
 - `ux/background-and-decorative-asset-strategy.md`
 - `ux/evidence-driven-ux-review.md`
-
-## Governance Addendum
-
-## Governance Addendum
-
-## Governance Addendum

@@ -1,11 +1,12 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] Execute `FEA-012` residual legacy docs normalization
 - [ ] Resolve `FEA-015` production gate blocker by capturing Coolify
   staging/live rollout evidence in the target environment
 - [ ] Plan `FEA-019` project category fallback inventory/backfill/removal path
   after residual docs are normalized
+- [ ] Refill the local task queue from `docs/planning/scaling-backlog-65.md`
+  if no external Coolify evidence is available
 
 ## NEXT
 - [ ] Inventory data requirements for legacy `projects.category` values without
