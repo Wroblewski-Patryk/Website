@@ -15,6 +15,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use App\Policies\ContentPolicy;
 use App\Policies\UserPolicy;
 
@@ -37,6 +38,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (str_starts_with((string) config('app.url'), 'https://')) {
+            URL::forceScheme('https');
+        }
+
         Gate::policy(Page::class, ContentPolicy::class);
         Gate::policy(Post::class, ContentPolicy::class);
         Gate::policy(Project::class, ContentPolicy::class);
