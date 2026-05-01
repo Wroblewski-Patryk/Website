@@ -90,6 +90,10 @@ Last updated: 2026-05-01
   modules and hardened with dedicated create/update FormRequests using
   `manage-settings` authorization, plus regression coverage for validation and
   editor denial.
+- 2026-05-02: Project category compatibility was settled for V1:
+  module-scoped project taxonomies are canonical, while `projects.category`
+  remains a read-only fallback only until a later inventory/backfill/removal
+  migration plan can retire it safely.
 
 ## Technical Baseline
 - Backend: Laravel 12 + PHP 8.2+
@@ -125,8 +129,8 @@ Last updated: 2026-05-01
 - Main active objective: continue the next smallest CMS delivery slice with strong admin, i18n, and builder integrity
 - Top blockers:
   - Coolify production update enablement still needs staging/live rollout evidence
-  - project category compatibility needs a retirement or explicit long-term
-    fallback decision
+  - legacy project category column removal needs a later data inventory and
+    backfill plan before the fallback can be removed safely
 - Success criteria for this phase:
   - small reversible execution slices
   - synchronized docs and task context

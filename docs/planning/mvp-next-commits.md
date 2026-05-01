@@ -1,17 +1,17 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] Execute `FEA-018` project category compatibility retirement decision
+- [ ] Execute `FEA-012` residual legacy docs normalization
 - [ ] Resolve `FEA-015` production gate blocker by capturing Coolify
   staging/live rollout evidence in the target environment
-- [ ] Execute `FEA-012` residual legacy docs normalization after project
-  category direction is settled
+- [ ] Plan `FEA-019` project category fallback inventory/backfill/removal path
+  after residual docs are normalized
 
 ## NEXT
-- [ ] Audit remaining runtime persistence surfaces still depending on legacy
-  `projects.category`
-- [ ] Decide whether retiring the `projects.category` column needs a dedicated
-  migration/backfill plan
+- [ ] Inventory data requirements for legacy `projects.category` values without
+  project category taxonomy relations
+- [ ] Decide whether FEA-019 should be MVP-blocking only after a real data
+  inventory exists
 - [ ] Keep per-task validation evidence in `mvp-execution-plan` progress log
 
 ## LATER

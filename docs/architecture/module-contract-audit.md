@@ -63,9 +63,10 @@ that authorize through `manage-settings`.
 - Contract fit: mostly strong.
 - Uses project FormRequests, client relation, taxonomies, shared persistence,
   bulk actions, and taxonomy-backed public presentation.
-- Remaining debt: `projects.category` still exists as compatibility fallback in
-  persistence/runtime surfaces. Admin authoring is removed, but the field still
-  needs a deliberate retirement/backfill decision.
+- Compatibility policy: `projects.category` is retained through V1 as a
+  read-only fallback for existing installations, while module-scoped project
+  taxonomies remain canonical. See
+  `docs/architecture/project-category-compatibility-policy.md`.
 
 ### Forms
 
@@ -89,14 +90,13 @@ that authorize through `manage-settings`.
 
 ## Follow-Up Queue
 
-1. FEA-018: Audit remaining `projects.category` persistence/runtime fallback
-   surfaces and decide retirement or explicit long-term compatibility.
-2. FEA-012: Normalize residual legacy docs after module ownership decisions are
+1. FEA-012: Normalize residual legacy docs after module ownership decisions are
    recorded.
 
 ## Verification
 
 - `php artisan test --filter=PublicRouteContractTest`
+- `php artisan test --filter=ProjectManagementTest`
 - `php artisan test --filter=FormManagementTest`
 - `php artisan test --filter=TemplateManagementTest`
 - Code reads:

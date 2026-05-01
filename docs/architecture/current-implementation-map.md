@@ -116,7 +116,7 @@ without relying on chat history or stale planning notes.
   composed blocks, animation presets, and taxonomy-backed project payloads.
 - Project public payloads go through `ProjectPublicPresenter`, which prefers
   loaded project category taxonomies and falls back to legacy
-  `projects.category` only for compatibility.
+  `projects.category` only for read-only compatibility through V1.
 - SEO metadata is centralized in `SeoService`; canonical and alternate locale
   behavior is documented in `seo-route-contracts.md`.
 
@@ -249,8 +249,9 @@ without relying on chat history or stale planning notes.
   - `php artisan i18n:scan --scope=admin`
 
 ## Known Architecture Debt
-- `projects.category` remains a compatibility fallback. Canonical semantic
-  grouping for projects is module-scoped taxonomy.
+- `projects.category` remains a V1 read-only compatibility fallback. Canonical
+  semantic grouping for projects is module-scoped taxonomy, and column removal
+  requires a later data inventory/backfill migration plan before it is safe.
 - The documented full `/api/v1/headless/*` API is not fully implemented; the
   implemented integration route is `/headless/content-export`.
 - FEA-011 verified that pages/posts/projects align with the strongest shared

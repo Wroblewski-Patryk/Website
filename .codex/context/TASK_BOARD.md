@@ -4,24 +4,25 @@ Last updated: 2026-05-01
 
 ## READY
 
-- [ ] FEA-018 Decide project category compatibility retirement path
-  - Status: READY
-  - Owner: Backend Builder
-  - Depends on: FEA-011
-  - Priority: P2
-  - Done when:
-    - remaining `projects.category` read/write surfaces are audited
-    - backfill/removal or explicit compatibility policy is documented
-
-## BACKLOG
-
 - [ ] FEA-012 Residual legacy docs normalization
-  - Status: BACKLOG
+  - Status: READY
   - Owner: Product Docs Agent
   - Depends on: FEA-011
   - Priority: P3
   - Done when:
     - legacy root docs are either migrated or explicitly deprecated
+
+## BACKLOG
+
+- [ ] FEA-019 Project category fallback backfill and removal plan
+  - Status: BACKLOG
+  - Owner: DB/Migrations
+  - Depends on: FEA-018
+  - Priority: P3
+  - Done when:
+    - production/staging data inventory requirements are documented
+    - deterministic legacy category to taxonomy backfill plan is documented
+    - column removal migration criteria are explicit
 
 ## IN_PROGRESS
 
@@ -43,6 +44,7 @@ Last updated: 2026-05-01
 
 ## DONE
 
+- [x] FEA-018 Decide project category compatibility retirement path
 - [x] FEA-017 Decide and harden forms/templates admin ownership contract
 - [x] FEA-011 Module contract audit for pages/posts/projects/forms/templates
 - [x] FEA-016 Remove legacy project category authoring from admin project surfaces

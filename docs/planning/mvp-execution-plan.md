@@ -74,6 +74,11 @@
 - [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
+- 2026-05-02: Completed FEA-018 by auditing remaining `projects.category`
+  surfaces and recording the V1 compatibility decision: project taxonomies are
+  canonical, the legacy column stays read-only as a fallback, and actual column
+  removal requires a later data inventory/backfill/removal plan. Regression
+  checks re-ran project admin and public route category contracts.
 - 2026-05-02: Completed FEA-017 by confirming forms/templates as
   settings-owned admin modules and replacing inline store/update validation
   with dedicated FormRequests that authorize through `manage-settings`.
