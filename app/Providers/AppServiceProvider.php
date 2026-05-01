@@ -38,8 +38,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (str_starts_with((string) config('app.url'), 'https://')) {
+        $rootUrl = env('COOLIFY_URL') ?: config('app.url');
+
+        if (app()->environment('production') || str_starts_with((string) $rootUrl, 'https://')) {
             URL::forceScheme('https');
+
+            if (str_starts_with((string) $rootUrl, 'https://')) {
+                URL::forceRootUrl((string) $rootUrl);
+            }
         }
 
         Gate::policy(Page::class, ContentPolicy::class);
