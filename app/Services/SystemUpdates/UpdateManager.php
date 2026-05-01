@@ -222,6 +222,8 @@ class UpdateManager
                 'archive_verified_filename',
                 'archive_extraction_status',
                 'archive_extraction_message',
+                'archive_extracted_directory',
+                'archive_extracted_file_count',
             ] as $archiveField) {
                 if (array_key_exists($archiveField, $result)) {
                     $updates[$archiveField] = $result[$archiveField];
@@ -437,6 +439,10 @@ class UpdateManager
             'archive_verified_filename' => $this->toString($normalized['archive_verified_filename'] ?? null, null),
             'archive_extraction_status' => $this->toString($normalized['archive_extraction_status'] ?? null, null),
             'archive_extraction_message' => $this->toString($normalized['archive_extraction_message'] ?? null, null),
+            'archive_extracted_directory' => $this->toString($normalized['archive_extracted_directory'] ?? null, null),
+            'archive_extracted_file_count' => is_numeric($normalized['archive_extracted_file_count'] ?? null)
+                ? (int) $normalized['archive_extracted_file_count']
+                : null,
             'manual_review_required' => $this->toBool($normalized['manual_review_required'] ?? false, false),
             'minimum_php_version' => $this->toString($normalized['minimum_php_version'] ?? null, null),
             'php_requirement_ok' => $this->toBool($normalized['php_requirement_ok'] ?? true, true),

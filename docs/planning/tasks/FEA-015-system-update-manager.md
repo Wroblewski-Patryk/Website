@@ -143,6 +143,10 @@ Out of scope for the first implementation slice:
 - Implementation notes: closed DEC-009 by deferring Docker and Git runtime
   drivers from v1 and routing Docker/Git deployment responsibility to
   Coolify/platform/operator workflows until dedicated contracts exist.
+- Implementation notes: added no-switch archive extraction staging validation
+  for runtimes with PHP `ZipArchive`; verified archives are extracted into
+  staging and required Laravel release files are checked before any future
+  switch can be considered.
 
 ### 5. Verify and Test
 - Validation performed: targeted backend feature tests for settings and update
@@ -171,6 +175,9 @@ Out of scope for the first implementation slice:
 - Result: tenth slice verified as documentation/architecture decision; Docker
   and Git runtime drivers are out of v1 scope and no placeholder classes are
   introduced.
+- Result: eleventh slice verified with targeted backend coverage, including a
+  direct PHPUnit run with `php -d extension=zip`; archive staging validation now
+  passes for complete archives and fails closed for missing required files.
 
 ### 6. Self-Review
 - Simpler option considered: Coolify-only auto-deploy.
@@ -214,8 +221,8 @@ Out of scope for the first implementation slice:
 - Post-launch learning needed: yes
 
 ## Deliverable For This Stage
-Verified tenth implementation slice: Docker/Git runtime driver v1 deferral,
-while keeping production code replacement fail-closed.
+Verified eleventh implementation slice: no-switch archive extraction staging
+validation, while keeping production code replacement fail-closed.
 
 ## Constraints
 - use existing settings, scheduler, admin permission, and audit patterns first
@@ -273,6 +280,8 @@ while keeping production code replacement fail-closed.
   unavailable and does not attempt extraction.
 - High-risk checks: Docker/Git runtime self-updaters are not introduced without
   dedicated staging, secret, migration, health, and rollback contracts.
+- High-risk checks: archive extraction validates required files in staging and
+  removes failed extraction output without switching live files.
 - Coverage ledger updated: not applicable.
 - Coverage rows closed or changed:
 
@@ -383,8 +392,8 @@ while keeping production code replacement fail-closed.
 - [x] Learning journal was updated if a recurring pitfall was confirmed.
 
 ## Result Report
-- Task summary: continued the System Update Manager by closing the Docker/Git
-  driver direction decision for v1.
+- Task summary: continued the System Update Manager by adding no-switch archive
+  extraction staging validation.
 - Files changed: `config/updates.php`,
   `app/Services/SystemUpdates/UpdateManager.php`,
   `app/Services/SystemUpdates/UpdateDriver.php`,
@@ -411,12 +420,10 @@ while keeping production code replacement fail-closed.
   `docs/planning/tasks/FEA-015-system-update-manager.md`
 - How tested: targeted PHPUnit feature tests for update commands and settings;
   `git diff --check`.
-- What is incomplete: archive extraction, staging validation, switch execution,
-  rollback execution, audit history UI, and captured staging/live Coolify
-  rollout evidence.
-- Next steps: enable/test PHP ZIP extraction staging validation without
-  switching live files, or capture Coolify staging/live evidence using the
-  runbook.
+- What is incomplete: archive switch execution, rollback execution, audit
+  history UI, and captured staging/live Coolify rollout evidence.
+- Next steps: design the archive switch/rollback gate or capture Coolify
+  staging/live evidence using the runbook.
 - Decisions made: first implementation slice remains manual-only for apply
   behavior and stores status in existing `settings` instead of creating a new
   model.

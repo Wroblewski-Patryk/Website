@@ -62,6 +62,10 @@ Last updated: 2026-05-01
 - 2026-05-01: Docker and Git runtime update drivers were explicitly deferred
   from System Update Manager v1 through DEC-009; Docker/Git deployments remain
   platform/operator-owned until dedicated contracts exist.
+- 2026-05-01: Archive update driver now supports no-switch staging extraction
+  validation when PHP `ZipArchive` is available; tests verify required release
+  files are present and missing-file archives fail closed without touching live
+  files.
 
 ## Technical Baseline
 - Backend: Laravel 12 + PHP 8.2+
@@ -76,8 +80,8 @@ Last updated: 2026-05-01
   config-gated fake apply tests plus a config-gated Coolify webhook trigger
   with CLI version and operational health confirmation; archive/Docker/Git code
   replacement remains unavailable; archive verification can download and verify
-  a staged artifact and record extraction readiness without switching live
-  files, Docker/Git runtime drivers are deferred from v1, and Coolify
+  a staged artifact and validate extracted staging structure without switching
+  live files, Docker/Git runtime drivers are deferred from v1, and Coolify
   production readiness still requires captured staging/live rollout evidence
 - External services: optional Sentry and media/integration surfaces as configured
 - MCP / external tools: design-source workflows may use Figma or Stitch where applicable

@@ -74,6 +74,11 @@
 - [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
+- 2026-05-01: Completed FEA-015L by adding no-switch archive extraction
+  staging validation for runtimes with PHP `ZipArchive`: verified archives are
+  extracted into staging, required Laravel release files are checked, missing
+  required files fail closed and remove extracted output, and no live files are
+  switched or marked applied.
 - 2026-05-01: Completed FEA-015K by closing DEC-009: Docker and Git runtime
   update drivers are deferred from System Update Manager v1, Docker
   deployments should use Coolify/platform rollout paths, Git deployments remain

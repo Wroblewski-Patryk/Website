@@ -132,6 +132,10 @@ Every meaningful runtime path should provide:
 - Runtime prerequisite: PHP `ZipArchive` support is required before archive
   extraction validation can run. Without it, verification records
   `archive_extraction_status=unavailable`.
+- Staging validation: when PHP `ZipArchive` support exists, verification can
+  extract the archive to staging and requires `artisan`, `composer.json`,
+  `bootstrap/app.php`, and `public/index.php` before recording
+  `archive_extraction_status=validated`.
 
 ## Incident Learning
 

@@ -6,6 +6,7 @@ use App\Services\SystemUpdates\UpdateDriver;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
+use ZipArchive;
 
 class ArchiveUpdateDriver implements UpdateDriver
 {
@@ -123,7 +124,7 @@ class ArchiveUpdateDriver implements UpdateDriver
             ];
         }
 
-        if (!class_exists(\ZipArchive::class)) {
+        if (!class_exists(ZipArchive::class)) {
             return [
                 'ok' => true,
                 'applied' => false,
@@ -144,23 +145,46 @@ class ArchiveUpdateDriver implements UpdateDriver
             ];
         }
 
+        $extraction = $this->extractAndValidate($targetPath, $targetVersion);
+        if (!($extraction['ok'] ?? false)) {
+            return [
+                'ok' => false,
+                'applied' => false,
+                'apply_status' => 'archive_staging_failed',
+                'message' => $this->stringValue($extraction['message'] ?? 'Archive staging validation failed.'),
+                'operator_instructions' => [
+                    'Do not switch live files.',
+                    'Inspect the release archive structure and rebuild the artifact before retrying.',
+                ],
+                'rollback_note' => 'No live files were changed. Failed extraction output was removed.',
+                'archive_verified_at' => Carbon::now()->toIso8601String(),
+                'archive_verified_sha256' => $actualSha256,
+                'archive_verified_bytes' => $bytes,
+                'archive_verified_filename' => $filename,
+                'archive_extraction_status' => 'failed',
+                'archive_extraction_message' => $this->stringValue($extraction['message'] ?? 'Archive staging validation failed.'),
+            ];
+        }
+
         return [
             'ok' => true,
             'applied' => false,
-            'apply_status' => 'archive_verified',
-            'message' => 'Release archive downloaded and verified. No live files were changed.',
+            'apply_status' => 'archive_staged',
+            'message' => 'Release archive downloaded, verified, and extracted to staging. No live files were changed.',
             'operator_instructions' => [
-                'Review the staged archive before enabling extraction or file switching.',
+                'Review the validated staging directory before enabling file switching.',
                 'Back up .env, storage, uploaded media, and the database before replacing files.',
-                'Run the later archive staging/switch task before any live file replacement.',
+                'Run the later archive switch task before any live file replacement.',
             ],
             'rollback_note' => 'No live files were changed. Remove the staged archive if it should not be used.',
             'archive_verified_at' => Carbon::now()->toIso8601String(),
             'archive_verified_sha256' => $actualSha256,
             'archive_verified_bytes' => $bytes,
             'archive_verified_filename' => $filename,
-            'archive_extraction_status' => 'pending',
-            'archive_extraction_message' => 'Archive extraction validation has not been run yet.',
+            'archive_extraction_status' => 'validated',
+            'archive_extraction_message' => 'Archive extracted to staging and required files were found.',
+            'archive_extracted_directory' => $extraction['directory'] ?? null,
+            'archive_extracted_file_count' => $extraction['file_count'] ?? null,
         ];
     }
 
@@ -213,6 +237,148 @@ class ArchiveUpdateDriver implements UpdateDriver
         $safeVersion = preg_replace('/[^A-Za-z0-9._-]/', '-', $targetVersion);
 
         return 'featherly-' . ($safeVersion ?: 'release') . '.zip';
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function extractAndValidate(string $archivePath, string $targetVersion): array
+    {
+        $zip = new ZipArchive();
+        if ($zip->open($archivePath) !== true) {
+            return ['ok' => false, 'message' => 'Release archive could not be opened for extraction.'];
+        }
+
+        try {
+            $unsafeEntry = $this->unsafeArchiveEntry($zip);
+            if ($unsafeEntry !== null) {
+                return ['ok' => false, 'message' => "Release archive contains an unsafe path: {$unsafeEntry}."];
+            }
+
+            $directory = $this->extractionDirectory($targetVersion);
+            $this->resetDirectory($directory);
+
+            if (!$zip->extractTo($directory)) {
+                $this->removeDirectory($directory);
+
+                return ['ok' => false, 'message' => 'Release archive could not be extracted to staging.'];
+            }
+        } finally {
+            $zip->close();
+        }
+
+        $missing = $this->missingRequiredFiles($directory);
+        if ($missing !== []) {
+            $this->removeDirectory($directory);
+
+            return [
+                'ok' => false,
+                'message' => 'Release archive staging validation failed. Missing: ' . implode(', ', $missing) . '.',
+            ];
+        }
+
+        return [
+            'ok' => true,
+            'directory' => $directory,
+            'file_count' => $this->countFiles($directory),
+        ];
+    }
+
+    private function unsafeArchiveEntry(ZipArchive $zip): ?string
+    {
+        for ($index = 0; $index < $zip->numFiles; $index++) {
+            $name = $zip->getNameIndex($index);
+
+            if (!is_string($name)) {
+                return 'unknown';
+            }
+
+            $normalized = str_replace('\\', '/', $name);
+            if (
+                str_starts_with($normalized, '/')
+                || preg_match('/^[A-Za-z]:\//', $normalized) === 1
+                || str_contains($normalized, '../')
+                || $normalized === '..'
+            ) {
+                return $name;
+            }
+        }
+
+        return null;
+    }
+
+    private function extractionDirectory(string $targetVersion): string
+    {
+        $safeVersion = preg_replace('/[^A-Za-z0-9._-]/', '-', $targetVersion) ?: 'release';
+
+        return $this->ensureStagingDirectory() . DIRECTORY_SEPARATOR . 'extracted' . DIRECTORY_SEPARATOR . $safeVersion;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function missingRequiredFiles(string $directory): array
+    {
+        $required = [
+            'artisan',
+            'composer.json',
+            'bootstrap/app.php',
+            'public/index.php',
+        ];
+
+        return array_values(array_filter($required, fn (string $path): bool => !is_file($directory . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path))));
+    }
+
+    private function resetDirectory(string $directory): void
+    {
+        if (is_dir($directory)) {
+            $this->removeDirectory($directory);
+        }
+
+        if (!mkdir($directory, 0775, true) && !is_dir($directory)) {
+            throw new RuntimeException('Archive extraction directory could not be created.');
+        }
+    }
+
+    private function removeDirectory(string $directory): void
+    {
+        $stagingRoot = realpath($this->ensureStagingDirectory());
+        $target = realpath($directory);
+
+        if ($stagingRoot === false || $target === false || !str_starts_with($target, $stagingRoot)) {
+            throw new RuntimeException('Refusing to remove a directory outside archive staging.');
+        }
+
+        $items = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($target, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($items as $item) {
+            if ($item->isDir()) {
+                rmdir($item->getPathname());
+            } else {
+                unlink($item->getPathname());
+            }
+        }
+
+        rmdir($target);
+    }
+
+    private function countFiles(string $directory): int
+    {
+        $count = 0;
+        $items = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS)
+        );
+
+        foreach ($items as $item) {
+            if ($item->isFile()) {
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     private function stringValue(mixed $value): string

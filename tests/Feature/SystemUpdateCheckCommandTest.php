@@ -7,6 +7,7 @@ use App\Services\SystemUpdates\UpdateManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
+use ZipArchive;
 
 class SystemUpdateCheckCommandTest extends TestCase
 {
@@ -401,7 +402,14 @@ class SystemUpdateCheckCommandTest extends TestCase
 
     public function test_archive_apply_downloads_and_verifies_archive_without_switching_files(): void
     {
-        $archiveBody = 'verified archive bytes';
+        $archiveBody = class_exists(ZipArchive::class)
+            ? $this->buildReleaseArchive([
+                'artisan' => '#!/usr/bin/env php',
+                'composer.json' => '{"name":"featherly/release"}',
+                'bootstrap/app.php' => '<?php return true;',
+                'public/index.php' => '<?php echo "ok";',
+            ])
+            : 'verified archive bytes';
         $archiveSha256 = hash('sha256', $archiveBody);
         $basePath = storage_path('framework/testing/archive-apply-success');
         $stagingPath = $basePath . '/staging/current';
@@ -436,17 +444,17 @@ class SystemUpdateCheckCommandTest extends TestCase
         ]);
 
         $this->artisan('updates:apply --force')
-            ->expectsOutputToContain('Release archive downloaded and verified.')
+            ->expectsOutputToContain('Release archive downloaded')
             ->assertSuccessful();
 
         $status = Setting::query()->where('key', 'system_update_status')->firstOrFail()->value;
 
-        $this->assertSame('archive_verified', $status['apply_status']);
+        $this->assertContains($status['apply_status'], ['archive_verified', 'archive_staged']);
         $this->assertSame($archiveSha256, $status['archive_verified_sha256']);
         $this->assertSame(strlen($archiveBody), $status['archive_verified_bytes']);
         $this->assertSame('featherly-1.1.0.zip', $status['archive_verified_filename']);
         $this->assertTrue(file_exists($stagingPath . '/featherly-1.1.0.zip'));
-        $this->assertContains($status['archive_extraction_status'], ['pending', 'unavailable']);
+        $this->assertContains($status['archive_extraction_status'], ['pending', 'unavailable', 'validated']);
         $this->assertTrue($status['update_available']);
         $this->assertSame('1.0.0', $status['current_version']);
     }
@@ -496,5 +504,139 @@ class SystemUpdateCheckCommandTest extends TestCase
         $this->assertFalse(file_exists($stagingPath . '/featherly-1.1.0.zip'));
         $this->assertTrue($status['update_available']);
         $this->assertSame('1.0.0', $status['current_version']);
+    }
+
+    public function test_archive_apply_extracts_verified_archive_to_staging_without_switching_files(): void
+    {
+        if (!class_exists(ZipArchive::class)) {
+            $this->markTestSkipped('ZipArchive extension is required for archive extraction validation.');
+        }
+
+        $archiveBody = $this->buildReleaseArchive([
+            'artisan' => '#!/usr/bin/env php',
+            'composer.json' => '{"name":"featherly/release"}',
+            'bootstrap/app.php' => '<?php return true;',
+            'public/index.php' => '<?php echo "ok";',
+        ]);
+        $archiveSha256 = hash('sha256', $archiveBody);
+        $basePath = storage_path('framework/testing/archive-extract-success');
+        $stagingPath = $basePath . '/staging/current';
+        $releasePath = $basePath . '/releases/current';
+
+        $this->prepareArchivePaths($stagingPath, $releasePath);
+
+        config()->set('updates.drivers.archive.staging_path', $stagingPath);
+        config()->set('updates.drivers.archive.release_path', $releasePath);
+
+        Setting::updateOrCreate(['key' => 'preferred_update_driver'], ['value' => 'archive']);
+        Setting::updateOrCreate(['key' => 'system_update_status'], ['value' => [
+            'current_version' => '1.0.0',
+            'latest_version' => '1.1.0',
+            'release_archive_url' => 'https://example.test/releases/featherly-1.1.0.zip',
+            'release_archive_sha256' => $archiveSha256,
+            'update_available' => true,
+            'manual_review_required' => false,
+            'php_requirement_ok' => true,
+            'status' => 'available',
+            'status_label' => 'Update available',
+        ]]);
+
+        Http::fake([
+            'https://example.test/releases/featherly-1.1.0.zip' => Http::response($archiveBody, 200),
+        ]);
+
+        $this->artisan('updates:apply --force')
+            ->expectsOutputToContain('Release archive downloaded, verified, and extracted to staging.')
+            ->assertSuccessful();
+
+        $status = Setting::query()->where('key', 'system_update_status')->firstOrFail()->value;
+
+        $this->assertSame('archive_staged', $status['apply_status']);
+        $this->assertSame('validated', $status['archive_extraction_status']);
+        $this->assertSame(4, $status['archive_extracted_file_count']);
+        $this->assertTrue(is_file($status['archive_extracted_directory'] . '/artisan'));
+        $this->assertTrue($status['update_available']);
+        $this->assertSame('1.0.0', $status['current_version']);
+    }
+
+    public function test_archive_apply_rejects_extracted_archive_missing_required_files(): void
+    {
+        if (!class_exists(ZipArchive::class)) {
+            $this->markTestSkipped('ZipArchive extension is required for archive extraction validation.');
+        }
+
+        $archiveBody = $this->buildReleaseArchive([
+            'artisan' => '#!/usr/bin/env php',
+            'composer.json' => '{"name":"featherly/release"}',
+        ]);
+        $archiveSha256 = hash('sha256', $archiveBody);
+        $basePath = storage_path('framework/testing/archive-extract-missing');
+        $stagingPath = $basePath . '/staging/current';
+        $releasePath = $basePath . '/releases/current';
+
+        $this->prepareArchivePaths($stagingPath, $releasePath);
+
+        config()->set('updates.drivers.archive.staging_path', $stagingPath);
+        config()->set('updates.drivers.archive.release_path', $releasePath);
+
+        Setting::updateOrCreate(['key' => 'preferred_update_driver'], ['value' => 'archive']);
+        Setting::updateOrCreate(['key' => 'system_update_status'], ['value' => [
+            'current_version' => '1.0.0',
+            'latest_version' => '1.1.0',
+            'release_archive_url' => 'https://example.test/releases/featherly-1.1.0.zip',
+            'release_archive_sha256' => $archiveSha256,
+            'update_available' => true,
+            'manual_review_required' => false,
+            'php_requirement_ok' => true,
+            'status' => 'available',
+            'status_label' => 'Update available',
+        ]]);
+
+        Http::fake([
+            'https://example.test/releases/featherly-1.1.0.zip' => Http::response($archiveBody, 200),
+        ]);
+
+        $this->artisan('updates:apply --force')
+            ->expectsOutputToContain('Release archive staging validation failed.')
+            ->assertSuccessful();
+
+        $status = Setting::query()->where('key', 'system_update_status')->firstOrFail()->value;
+
+        $this->assertSame('archive_staging_failed', $status['apply_status']);
+        $this->assertSame('failed', $status['archive_extraction_status']);
+        $this->assertFalse(is_dir($stagingPath . '/extracted/1.1.0'));
+        $this->assertTrue($status['update_available']);
+        $this->assertSame('1.0.0', $status['current_version']);
+    }
+
+    /**
+     * @param  array<string, string>  $files
+     */
+    private function buildReleaseArchive(array $files): string
+    {
+        $zipPath = tempnam(sys_get_temp_dir(), 'featherly-release-');
+        $zip = new ZipArchive();
+        $zip->open($zipPath, ZipArchive::OVERWRITE);
+
+        foreach ($files as $path => $contents) {
+            $zip->addFromString($path, $contents);
+        }
+
+        $zip->close();
+        $contents = file_get_contents($zipPath);
+        @unlink($zipPath);
+
+        return is_string($contents) ? $contents : '';
+    }
+
+    private function prepareArchivePaths(string $stagingPath, string $releasePath): void
+    {
+        if (!is_dir(dirname($stagingPath))) {
+            mkdir(dirname($stagingPath), 0777, true);
+        }
+
+        if (!is_dir(dirname($releasePath))) {
+            mkdir(dirname($releasePath), 0777, true);
+        }
     }
 }

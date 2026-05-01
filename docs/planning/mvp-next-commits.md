@@ -3,8 +3,8 @@
 ## NOW (max 3)
 - [ ] Execute `FEA-011` module contract audit for pages/posts/projects/forms/templates
 - [ ] Continue `FEA-015` with the next safe System Update Manager slice:
-  Docker/Git runtime drivers are deferred from v1; next enable/test ZIP
-  extraction staging validation or capture Coolify staging/live evidence
+  archive extraction staging validation is done; next design archive
+  switch/rollback gate or capture Coolify staging/live evidence
 - [ ] Plan the next `projects.category` compatibility-debt slice after the admin UI removal
 
 ## NEXT

@@ -214,6 +214,9 @@ without relying on chat history or stale planning notes.
     verify SHA-256, but does not extract or switch live files
   - archive verification records extraction readiness as `pending` or
     `unavailable` depending on PHP `ZipArchive` support
+  - when `ZipArchive` is available, archive driver extracts the verified
+    archive into staging and validates required release files without switching
+    live files
   - archive apply execution is not enabled yet
 - Safety posture:
   - no deploy secrets are exposed to the browser
@@ -246,6 +249,6 @@ without relying on chat history or stale planning notes.
   Coolify has a gated webhook trigger path plus version and operational health
   confirmation plus an operator rollout runbook, but still needs captured
   live-environment rollout evidence; archive apply has a no-switch
-  download/verification path plus extraction capability evidence but still
-  needs extraction, staging validation, switch execution, and rollback; Docker
-  and Git runtime drivers are deferred from v1 by DEC-009.
+  download/verification and staging extraction validation path but still needs
+  switch execution and rollback; Docker and Git runtime drivers are deferred
+  from v1 by DEC-009.

@@ -7,10 +7,10 @@ Last updated: 2026-05-01
 - [ ] FEA-015 Implement archive/Docker/Git update drivers and Coolify rollout hardening
   - Status: READY
   - Owner: Backend Builder
-  - Depends on: FEA-015K
+  - Depends on: FEA-015L
   - Priority: P1
   - Done when:
-    - archive apply execution has extraction/staging/switch/rollback tests
+    - archive apply execution has switch/rollback tests
     - Coolify staging/live rollout evidence is captured from the runbook
     - Docker/Git follow-up contracts are queued only if v2 needs runtime drivers
     - automatic application is blocked unless a safe driver passes preflight
@@ -64,6 +64,7 @@ Last updated: 2026-05-01
 
 ## DONE
 
+- [x] FEA-015L Add no-switch archive extraction staging validation
 - [x] FEA-015K Defer Docker/Git runtime drivers from System Update Manager v1
 - [x] FEA-015J Add archive extraction runtime capability gate
 - [x] FEA-015I Add no-switch archive download and SHA-256 verifier

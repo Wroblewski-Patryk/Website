@@ -38,6 +38,9 @@ Current implemented baseline:
   SHA-256 without extracting or switching live files
 - archive driver records whether ZIP extraction support is unavailable or
   pending after archive verification
+- when PHP `ZipArchive` is available, archive driver can extract the verified
+  archive to staging and validate the required Laravel release files without
+  switching live files
 
 Not implemented yet:
 
@@ -46,8 +49,7 @@ Not implemented yet:
 - Coolify live rollout validation and production rollback evidence
 - Docker and Git runtime drivers, intentionally deferred from v1
 - driver-specific rollback execution
-- release archive extraction, staging validation, and file switch execution
-  during apply
+- release archive file switch execution during apply
 
 Until those items are complete, Featherly must treat update availability as a
 notification/status/manual-instructions feature, not a self-mutating runtime
@@ -147,12 +149,12 @@ The update manager must verify release integrity before applying an archive or
 image. If integrity metadata is missing or invalid, automatic application must
 fail closed.
 
-The current archive implementation stops after download and SHA-256
-verification. It records verification evidence but must not extract, migrate,
-switch live files, or mark the update applied until staging and rollback are
-implemented. If the PHP `ZipArchive` extension is unavailable, extraction is
-recorded as unavailable and the operator must enable ZIP support before the
-archive driver can progress to extraction validation.
+The current archive implementation stops after download, SHA-256 verification,
+and staging extraction validation. It records verification and staging evidence
+but must not migrate, switch live files, or mark the update applied until
+switching and rollback are implemented. If the PHP `ZipArchive` extension is
+unavailable, extraction is recorded as unavailable and the operator must enable
+ZIP support before the archive driver can progress to extraction validation.
 
 ## Shared Hosting Strategy
 
