@@ -7,8 +7,10 @@ Status: APPROVED FOR V1 COMPATIBILITY
 
 Project category semantics are owned by module-scoped taxonomies. The legacy
 `projects.category` column remains only as read-only compatibility data for
-existing installations and historical fixtures until a dedicated backfill and
-column-removal migration is planned.
+existing installations and historical fixtures until the dedicated backfill and
+column-removal plan in
+`docs/planning/project-category-backfill-removal-plan.md` is approved for
+execution.
 
 ## Current Contract
 
@@ -52,6 +54,9 @@ of these outcomes for every project:
    unchanged for one release.
 5. Remove the `ProjectPublicPresenter` fallback and the database column in a
    later migration only after rollback and smoke evidence exists.
+
+The detailed inventory, dry-run, mapping, rollback, and column-removal criteria
+are recorded in `docs/planning/project-category-backfill-removal-plan.md`.
 
 ## Guardrails
 

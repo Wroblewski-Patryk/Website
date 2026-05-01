@@ -8,15 +8,7 @@ Last updated: 2026-05-01
 
 ## BACKLOG
 
-- [ ] FEA-019 Project category fallback backfill and removal plan
-  - Status: BACKLOG
-  - Owner: DB/Migrations
-  - Depends on: FEA-018
-  - Priority: P3
-  - Done when:
-    - production/staging data inventory requirements are documented
-    - deterministic legacy category to taxonomy backfill plan is documented
-    - column removal migration criteria are explicit
+- [ ] (none)
 
 ## IN_PROGRESS
 
@@ -38,6 +30,7 @@ Last updated: 2026-05-01
 
 ## DONE
 
+- [x] FEA-019 Project category fallback backfill and removal plan
 - [x] FEA-012 Residual legacy docs normalization
 - [x] FEA-018 Decide project category compatibility retirement path
 - [x] FEA-017 Decide and harden forms/templates admin ownership contract

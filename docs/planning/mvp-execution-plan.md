@@ -74,6 +74,12 @@
 - [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
+- 2026-05-02: Completed FEA-019 as a planning slice by documenting the
+  data-safe project category fallback retirement path: target environment
+  inventory, deterministic mapping rules, dry-run report, transactional
+  backfill expectations, rollback posture, and strict column-removal criteria.
+  No migration was executed because real staging/production data is required
+  before approval.
 - 2026-05-02: Completed FEA-012 by normalizing residual root documentation:
   README no longer reports obsolete public-route/category gaps, CHANGELOG is
   now Featherly-specific instead of Laravel skeleton release notes,

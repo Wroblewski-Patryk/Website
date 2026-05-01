@@ -3,16 +3,14 @@
 ## NOW (max 3)
 - [ ] Resolve `FEA-015` production gate blocker by capturing Coolify
   staging/live rollout evidence in the target environment
-- [ ] Plan `FEA-019` project category fallback inventory/backfill/removal path
-  after residual docs are normalized
 - [ ] Refill the local task queue from `docs/planning/scaling-backlog-65.md`
   if no external Coolify evidence is available
 
 ## NEXT
-- [ ] Inventory data requirements for legacy `projects.category` values without
-  project category taxonomy relations
-- [ ] Decide whether FEA-019 should be MVP-blocking only after a real data
-  inventory exists
+- [ ] Run target environment inventory for legacy `projects.category` values
+  before approving any future backfill implementation
+- [ ] Decide whether category column removal should wait until after V1 release
+  once real inventory evidence exists
 - [ ] Keep per-task validation evidence in `mvp-execution-plan` progress log
 
 ## LATER

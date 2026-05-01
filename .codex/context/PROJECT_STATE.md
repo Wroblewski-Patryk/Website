@@ -98,6 +98,10 @@ Last updated: 2026-05-01
   overview now reflect current routing/category/update-manager state, the root
   changelog is Featherly-specific, and the bootstrap checklist is explicitly a
   deprecated template artifact.
+- 2026-05-02: Project category fallback retirement was planned as a future
+  data-safe path: inventory, deterministic mapping, dry-run report, backfill,
+  rollback, and column-removal criteria are documented, but execution is not
+  approved without target environment data.
 
 ## Technical Baseline
 - Backend: Laravel 12 + PHP 8.2+
@@ -133,8 +137,8 @@ Last updated: 2026-05-01
 - Main active objective: continue the next smallest CMS delivery slice with strong admin, i18n, and builder integrity
 - Top blockers:
   - Coolify production update enablement still needs staging/live rollout evidence
-  - legacy project category column removal needs a later data inventory and
-    backfill plan before the fallback can be removed safely
+  - legacy project category column removal needs target environment inventory
+    evidence before any backfill or column-removal migration is approved
   - local READY task queue is empty after residual docs normalization; refill
     should come from `mvp-next-commits.md` or the scaling backlog
 - Success criteria for this phase:
