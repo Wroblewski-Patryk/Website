@@ -76,6 +76,12 @@ Last updated: 2026-05-01
 - 2026-05-01: Archive rollback execution was added through
   `updates:rollback-archive --force`; tests verify the recorded backup path
   restores release files while preserving current `.env` and `storage`.
+- 2026-05-01: System Update Manager v1 implementation is locally verified for
+  discovery, safe driver gating, Coolify trigger/confirmation contracts, archive
+  verify/stage/switch/rollback, and Docker/Git v1 deferral. Coolify
+  production-ready rollout evidence remains blocked on an external configured
+  Coolify staging/live environment and must satisfy the deployment gate before
+  production enablement.
 
 ## Technical Baseline
 - Backend: Laravel 12 + PHP 8.2+
@@ -94,8 +100,8 @@ Last updated: 2026-05-01
   plan; gated archive switch can replace a configured release path with backup
   evidence when explicitly enabled, archive rollback can restore the recorded
   backup path, Docker/Git runtime drivers are deferred from v1, and Coolify
-  production readiness still requires captured
-  staging/live rollout evidence
+  production readiness is blocked until captured staging/live rollout evidence
+  exists for the target environment
 - External services: optional Sentry and media/integration surfaces as configured
 - MCP / external tools: design-source workflows may use Figma or Stitch where applicable
 

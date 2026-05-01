@@ -4,17 +4,6 @@ Last updated: 2026-05-01
 
 ## READY
 
-- [ ] FEA-015 Implement archive/Docker/Git update drivers and Coolify rollout hardening
-  - Status: READY
-  - Owner: Backend Builder
-  - Depends on: FEA-015O
-  - Priority: P1
-  - Done when:
-    - Coolify staging/live rollout evidence is captured from the runbook
-    - Docker/Git follow-up contracts are queued only if v2 needs runtime drivers
-    - automatic application is blocked unless a safe driver passes preflight
-    - deployment, rollback, security, and smoke docs are synchronized
-
 - [ ] FEA-001 Finalize public dynamic routes for page/post/project
   - Status: READY
   - Owner: Backend Builder
@@ -59,10 +48,21 @@ Last updated: 2026-05-01
 
 ## BLOCKED
 
-- [ ] (none)
+- [ ] FEA-015 Implement archive/Docker/Git update drivers and Coolify rollout hardening
+  - Status: BLOCKED
+  - Owner: Backend Builder
+  - Depends on: FEA-015P
+  - Priority: P1
+  - Blocker: Coolify staging/live rollout evidence requires an external
+    configured Coolify environment that is not available in this local
+    workspace.
+  - Done when:
+    - Coolify staging/live rollout evidence is captured from the runbook
+    - deployment gate evidence is attached for the target environment
 
 ## DONE
 
+- [x] FEA-015P Record Coolify rollout evidence blocker for v1 gate
 - [x] FEA-015O Add archive rollback command from recorded backup
 - [x] FEA-015N Add gated archive live switch with backup and preserve paths
 - [x] FEA-015M Add archive switch and rollback plan evidence

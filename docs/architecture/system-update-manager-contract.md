@@ -64,6 +64,12 @@ Until those items are complete, Featherly must treat update availability as a
 notification/status/manual-instructions feature by default. Archive file
 replacement is available only as an explicitly enabled operator path.
 
+Current v1 gate status: local implementation and automated tests cover update
+discovery, safe driver gating, Coolify trigger/confirmation contracts, archive
+verify/stage/switch/rollback, and Docker/Git v1 deferral. Coolify production
+enablement remains blocked until the rollout runbook evidence is captured in a
+configured staging/live Coolify environment.
+
 ## Supported Hosting Models
 
 - Coolify or similar platform-as-a-service on a VPS.

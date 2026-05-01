@@ -258,7 +258,7 @@ without relying on chat history or stale planning notes.
 - System Update Manager real apply drivers are not fully production-ready yet.
   Coolify has a gated webhook trigger path plus version and operational health
   confirmation plus an operator rollout runbook, but still needs captured
-  live-environment rollout evidence; archive apply has a no-switch
-  download/verification, staging extraction validation, and switch-plan evidence
-  path plus gated switch and rollback execution; Docker and Git runtime drivers
-  are deferred from v1 by DEC-009.
+  live-environment rollout evidence before production enablement; archive apply
+  has no-switch download/verification, staging extraction validation,
+  switch-plan evidence, gated switch execution, and rollback execution; Docker
+  and Git runtime drivers are deferred from v1 by DEC-009.

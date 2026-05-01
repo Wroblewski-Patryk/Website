@@ -2,9 +2,8 @@
 
 ## NOW (max 3)
 - [ ] Execute `FEA-011` module contract audit for pages/posts/projects/forms/templates
-- [ ] Continue `FEA-015` with the next safe System Update Manager slice:
-  archive rollback command is done; next capture Coolify staging/live evidence
-  or explicitly record the remaining environment blocker for v1
+- [ ] Resolve `FEA-015` production gate blocker by capturing Coolify
+  staging/live rollout evidence in the target environment
 - [ ] Plan the next `projects.category` compatibility-debt slice after the admin UI removal
 
 ## NEXT

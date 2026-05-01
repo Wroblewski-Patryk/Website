@@ -74,6 +74,12 @@
 - [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
+- 2026-05-01: Completed FEA-015P by recording the remaining System Update
+  Manager v1 production gate blocker: local implementation and tests cover
+  update discovery, Coolify trigger/confirmation contracts, archive
+  verify/stage/switch/rollback, and Docker/Git v1 deferral, but Coolify
+  staging/live rollout evidence cannot be captured without an external
+  configured Coolify environment.
 - 2026-05-01: Completed FEA-015O by adding
   `updates:rollback-archive --force`: archive rollback now restores the
   configured release path from the recorded `archive_backup_path`, preserves

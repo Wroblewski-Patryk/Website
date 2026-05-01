@@ -430,10 +430,10 @@ evidence, while keeping production code replacement fail-closed.
   `docs/planning/tasks/FEA-015-system-update-manager.md`
 - How tested: targeted PHPUnit feature tests for update commands and settings;
   `git diff --check`.
-- What is incomplete: audit history UI and captured staging/live Coolify
-  rollout evidence.
-- Next steps: capture Coolify staging/live evidence using the runbook, or
-  explicitly record the environment blocker for v1.
+- What is incomplete: captured staging/live Coolify rollout evidence from an
+  external configured environment.
+- Next steps: run the Coolify rollout runbook in the target environment and
+  attach deployment gate evidence before production enablement.
 - Decisions made: first implementation slice remains manual-only for apply
   behavior and stores status in existing `settings` instead of creating a new
   model.

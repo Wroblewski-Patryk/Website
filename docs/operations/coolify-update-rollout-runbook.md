@@ -84,6 +84,16 @@ version and passes operational readiness checks.
 
 Use this evidence before marking a Coolify driver rollout as production-ready.
 
+## Current Evidence Status
+
+- Local automated evidence exists for webhook trigger gating, secret-safe status
+  payloads, post-deploy version confirmation, and operational health
+  confirmation.
+- Staging/live Coolify evidence is not captured in this repository because the
+  local workspace has no configured external Coolify target.
+- Production enablement remains blocked by `DEPLOYMENT_GATE.md` until an
+  operator captures the evidence above in the target environment.
+
 ## Failure Handling
 
 ### Webhook Trigger Fails
