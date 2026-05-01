@@ -74,6 +74,10 @@
 - [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
+- 2026-05-02: Completed FEA-017 by confirming forms/templates as
+  settings-owned admin modules and replacing inline store/update validation
+  with dedicated FormRequests that authorize through `manage-settings`.
+  Regression tests cover form/template validation and editor denial.
 - 2026-05-02: Completed FEA-011 module contract audit. Pages/posts/projects
   align with the strongest shared content contract; forms/templates are working
   modules but need an explicit ownership hardening decision because they use

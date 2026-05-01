@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\Form\StoreFormRequest;
+use App\Http\Requests\Admin\Form\UpdateFormRequest;
 use App\Models\Form;
 use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
@@ -33,11 +35,9 @@ class FormController extends BaseAdminContentController
         ], $this->getSharedProps()));
     }
 
-    public function store(Request $request)
+    public function store(StoreFormRequest $request)
     {
-        $validated = $request->validate(array_merge($this->getBaseValidationRules(), [
-            'settings' => 'nullable|array',
-        ]));
+        $validated = $request->validated();
 
         $this->applyStatusLogic(null, $validated);
 
@@ -60,11 +60,10 @@ class FormController extends BaseAdminContentController
         ], $this->getSharedProps()));
     }
 
-    public function update(Request $request, Form $form)
+    public function update(UpdateFormRequest $request, Form $form)
     {
-        $validated = $request->validate(array_merge($this->getBaseValidationRules($form), [
-            'settings' => 'nullable|array',
-        ]));
+        $validated = $request->validated();
+        $this->assertOptimisticLock($form, $request);
 
         $this->applyStatusLogic($form, $validated);
 

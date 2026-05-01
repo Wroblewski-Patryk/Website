@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\Template\StoreTemplateRequest;
+use App\Http\Requests\Admin\Template\UpdateTemplateRequest;
 use App\Models\Revision;
 use App\Models\Template;
 use Illuminate\Http\Request;
@@ -36,15 +38,9 @@ class TemplateController extends BaseAdminContentController
         ], $this->getSharedProps()));
     }
 
-    public function store(Request $request)
+    public function store(StoreTemplateRequest $request)
     {
-        $this->normalizeCanonicalUrlPayload($request);
-
-        $validated = $request->validate(array_merge($this->getBaseValidationRules(), [
-            'type' => 'required|in:header,footer,sidebar,page',
-            'is_active' => 'boolean',
-            'is_default' => 'boolean',
-        ]));
+        $validated = $request->validated();
 
         $template = $this->modelClass::create($validated);
 
@@ -68,15 +64,10 @@ class TemplateController extends BaseAdminContentController
         ], $this->getSharedProps()));
     }
 
-    public function update(Request $request, Template $template)
+    public function update(UpdateTemplateRequest $request, Template $template)
     {
-        $this->normalizeCanonicalUrlPayload($request);
-
-        $validated = $request->validate(array_merge($this->getBaseValidationRules($template), [
-            'type' => 'required|in:header,footer,sidebar,page',
-            'is_active' => 'boolean',
-            'is_default' => 'boolean',
-        ]));
+        $validated = $request->validated();
+        $this->assertOptimisticLock($template, $request);
 
         $this->saveRevision($template);
 

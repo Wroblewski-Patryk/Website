@@ -26,8 +26,9 @@ contract:
   normalization, SEO fields, publish status handling, revisions, and block
   builder module categories
 
-Forms and templates reuse meaningful parts of this contract but are not fully
-aligned with the pages/posts/projects implementation style.
+Forms and templates reuse meaningful parts of this contract. FEA-017 confirms
+they are settings-owned modules and hardens them with dedicated FormRequests
+that authorize through `manage-settings`.
 
 ## Module Matrix
 
@@ -36,8 +37,8 @@ aligned with the pages/posts/projects implementation style.
 | Pages | `manage-content` | Dedicated FormRequests | `ContentPolicy` gates | No | Yes | Home and dynamic page resolver |
 | Posts | `manage-content` | Dedicated FormRequests | `ContentPolicy` gates | Posts categories/tags | Yes | Blog archive/detail via configured archive page |
 | Projects | `manage-content` | Dedicated FormRequests | `ContentPolicy` gates | Projects categories/tags | Yes | Project archive/detail via configured archive page |
-| Forms | `manage-settings` | Inline controller validation | Route middleware only | No | No explicit revision route | Preview + throttled public submit |
-| Templates | `manage-settings` | Inline controller validation | Route middleware + system delete guard | No | Yes | Header/footer/sidebar/page layout resolution |
+| Forms | `manage-settings` | Dedicated FormRequests | Route middleware + FormRequest authorization | No | No explicit revision route | Preview + throttled public submit |
+| Templates | `manage-settings` | Dedicated FormRequests | Route middleware + FormRequest authorization + system delete guard | No | Yes | Header/footer/sidebar/page layout resolution |
 
 ## Findings
 
@@ -68,37 +69,36 @@ aligned with the pages/posts/projects implementation style.
 
 ### Forms
 
-- Contract fit: partial.
+- Contract fit: aligned as settings-owned.
 - Forms have admin CRUD, block-builder module categories, public preview, and
   throttled public submission with idempotency support.
-- Drift: forms are routed under `manage-settings`, use inline controller
-  validation, and do not use explicit policy checks in the controller.
-- Follow-up: decide whether forms are configuration-owned or content-owned. If
-  content-owned, add FormRequest classes and policy checks aligned with shared
-  admin content modules.
+- Ownership decision: forms remain settings-owned because form definitions can
+  affect public data capture behavior and submission configuration.
+- FEA-017 added dedicated create/update FormRequests with `manage-settings`
+  authorization.
 
 ### Templates
 
-- Contract fit: partial.
+- Contract fit: aligned as settings-owned.
 - Templates have admin CRUD, block-builder template slots, revision restore,
   system-template delete protection, and public layout resolution.
-- Drift: templates are routed under `manage-settings`, use inline controller
-  validation, and do not use explicit policy checks in the controller.
-- Follow-up: keep templates settings-owned by explicit decision, or add
-  template-specific FormRequests and policy checks to match the shared content
-  quality bar.
+- Ownership decision: templates remain settings-owned because they control
+  shared layout and system rendering behavior.
+- FEA-017 added dedicated create/update FormRequests with `manage-settings`
+  authorization.
 
 ## Follow-Up Queue
 
-1. FEA-017: Decide and harden forms/templates admin ownership contract.
-2. FEA-018: Audit remaining `projects.category` persistence/runtime fallback
+1. FEA-018: Audit remaining `projects.category` persistence/runtime fallback
    surfaces and decide retirement or explicit long-term compatibility.
-3. FEA-012: Normalize residual legacy docs after module ownership decisions are
+2. FEA-012: Normalize residual legacy docs after module ownership decisions are
    recorded.
 
 ## Verification
 
 - `php artisan test --filter=PublicRouteContractTest`
+- `php artisan test --filter=FormManagementTest`
+- `php artisan test --filter=TemplateManagementTest`
 - Code reads:
   - `routes/admin.php`
   - `routes/public.php`

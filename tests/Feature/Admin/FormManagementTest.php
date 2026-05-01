@@ -44,6 +44,16 @@ class FormManagementTest extends TestCase
         $this->assertEquals('Contact Us', $form->getTranslation('title', 'en'));
     }
 
+    public function test_form_store_validation_requires_content_array(): void
+    {
+        $response = $this->actingAs($this->admin)->post(route('admin.forms.store'), [
+            'title' => ['en' => 'Contact Us'],
+            'content' => 'not-an-array',
+        ]);
+
+        $response->assertSessionHasErrors('content');
+    }
+
     public function test_admin_can_update_form(): void
     {
         $form = Form::factory()->create();
@@ -71,5 +81,14 @@ class FormManagementTest extends TestCase
 
         $response->assertRedirect();
         $this->assertDatabaseMissing('forms', ['id' => $form->id]);
+    }
+
+    public function test_editor_cannot_manage_forms(): void
+    {
+        $editor = User::factory()->editor()->create();
+
+        $response = $this->actingAs($editor)->get(route('admin.forms.index'));
+
+        $response->assertForbidden();
     }
 }

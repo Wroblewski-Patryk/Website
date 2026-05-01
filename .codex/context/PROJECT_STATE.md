@@ -86,6 +86,10 @@ Last updated: 2026-05-01
   with the strongest shared content contract and queued forms/templates
   ownership hardening plus `projects.category` retirement as narrow follow-up
   tasks.
+- 2026-05-02: Forms and templates were confirmed as settings-owned admin
+  modules and hardened with dedicated create/update FormRequests using
+  `manage-settings` authorization, plus regression coverage for validation and
+  editor denial.
 
 ## Technical Baseline
 - Backend: Laravel 12 + PHP 8.2+
@@ -121,8 +125,8 @@ Last updated: 2026-05-01
 - Main active objective: continue the next smallest CMS delivery slice with strong admin, i18n, and builder integrity
 - Top blockers:
   - Coolify production update enablement still needs staging/live rollout evidence
-  - forms/templates admin ownership needs a hardening decision before broad
-    module cleanup
+  - project category compatibility needs a retirement or explicit long-term
+    fallback decision
 - Success criteria for this phase:
   - small reversible execution slices
   - synchronized docs and task context

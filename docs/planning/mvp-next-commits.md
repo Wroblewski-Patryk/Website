@@ -1,10 +1,11 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] Execute `FEA-017` forms/templates admin ownership hardening decision
+- [ ] Execute `FEA-018` project category compatibility retirement decision
 - [ ] Resolve `FEA-015` production gate blocker by capturing Coolify
   staging/live rollout evidence in the target environment
-- [ ] Execute `FEA-018` project category compatibility retirement decision
+- [ ] Execute `FEA-012` residual legacy docs normalization after project
+  category direction is settled
 
 ## NEXT
 - [ ] Audit remaining runtime persistence surfaces still depending on legacy

@@ -47,6 +47,17 @@ class TemplateManagementTest extends TestCase
         $this->assertTrue($template->is_default);
     }
 
+    public function test_template_store_validation_rejects_unknown_type(): void
+    {
+        $response = $this->actingAs($this->admin)->post(route('admin.templates.store'), [
+            'title' => ['en' => 'Custom Header'],
+            'type' => 'widget',
+            'content' => [['type' => 'text', 'body' => 'Test']],
+        ]);
+
+        $response->assertSessionHasErrors('type');
+    }
+
     public function test_admin_can_update_template(): void
     {
         $template = Template::factory()->create(['title' => ['en' => 'Old Name']]);
@@ -73,5 +84,14 @@ class TemplateManagementTest extends TestCase
 
         $response->assertRedirect(); // Redirects back
         $this->assertDatabaseMissing('templates', ['id' => $template->id]);
+    }
+
+    public function test_editor_cannot_manage_templates(): void
+    {
+        $editor = User::factory()->editor()->create();
+
+        $response = $this->actingAs($editor)->get(route('admin.templates.index'));
+
+        $response->assertForbidden();
     }
 }

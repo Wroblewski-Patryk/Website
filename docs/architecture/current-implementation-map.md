@@ -254,10 +254,9 @@ without relying on chat history or stale planning notes.
 - The documented full `/api/v1/headless/*` API is not fully implemented; the
   implemented integration route is `/headless/content-export`.
 - FEA-011 verified that pages/posts/projects align with the strongest shared
-  content contract. Forms/templates are working modules but still need an
-  explicit ownership hardening decision because they use inline validation and
-  settings-route middleware rather than dedicated FormRequests and
-  policy-backed controllers.
+  content contract. FEA-017 confirmed forms/templates as settings-owned modules
+  and hardened them with dedicated FormRequests plus `manage-settings`
+  authorization.
 - System Update Manager real apply drivers are not fully production-ready yet.
   Coolify has a gated webhook trigger path plus version and operational health
   confirmation plus an operator rollout runbook, but still needs captured
